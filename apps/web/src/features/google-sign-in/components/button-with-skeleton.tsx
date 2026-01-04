@@ -2,9 +2,11 @@
 
 import { Skeleton } from '@/components/ui/skeleton'
 import { useGoogleSignIn } from '../context'
-import GoogleSignInButton from './button'
+import GoogleSignInButton, { GoogleSignInButtonProps } from './button'
 
-export default function GoogleSignInButtonWithSkeleton() {
+export default function GoogleSignInButtonWithSkeleton(
+  props: GoogleSignInButtonProps,
+) {
   const { status } = useGoogleSignIn()
 
   return (
@@ -12,7 +14,7 @@ export default function GoogleSignInButtonWithSkeleton() {
       {status !== 'success' ? (
         <Skeleton className="h-10 w-48" />
       ) : (
-        <GoogleSignInButton />
+        <GoogleSignInButton {...props} />
       )}
     </div>
   )

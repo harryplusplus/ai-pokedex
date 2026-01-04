@@ -11,7 +11,7 @@ declare global {
         id: {
           initialize: (options: {
             client_id: string
-            callback: (response: { credential?: string }) => void
+            callback: (response: GoogleSignInResponse) => void
           }) => void
           prompt: () => void
           renderButton: (element: HTMLElement, options: unknown) => void
@@ -21,7 +21,17 @@ declare global {
   }
 }
 
-export default function GoogleSignInButton() {
+export interface GoogleSignInResponse extends Record<string, unknown> {
+  credential?: string
+}
+
+export interface GoogleSignInButtonProps {
+  onResponse: (response: GoogleSignInResponse) => void
+}
+
+export default function GoogleSignInButton({
+  onResponse,
+}: GoogleSignInButtonProps) {
   const { status } = useGoogleSignIn()
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -33,28 +43,12 @@ export default function GoogleSignInButton() {
     window.google.accounts.id.initialize({
       client_id: GOOGLE_CLIENT_ID,
       callback: (response) => {
-        try {
-          const { credential = '' } = response
-          const {
-            name = '',
-            given_name = '',
-            picture = '',
-          } = JSON.parse(atob(credential.split('.')[1])) as {
-            name?: string
-            given_name?: string
-            picture?: string
-          }
-        } catch (e) {
-          // TODO: toast
-          console.error(e)
-        }
+        onResponse(response)
       },
     })
 
     window.google.accounts.id.renderButton(containerRef.current, {})
-
-    window.google.accounts.id.prompt()
-  }, [status])
+  }, [onResponse, status])
 
   return <div ref={containerRef}></div>
 }

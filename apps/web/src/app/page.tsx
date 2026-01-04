@@ -1,8 +1,33 @@
+// TODO: remove use client
+'use client'
+
+import { GoogleSignInResponse } from '@/features/google-sign-in/components/button'
 import GoogleSignInButtonWithSkeleton from '@/features/google-sign-in/components/button-with-skeleton'
 import { GoogleSingInProvider } from '@/features/google-sign-in/context'
+import { toPrintable } from '@/lib/utils'
 import Image from 'next/image'
+import { toast } from 'sonner'
 
 export default function Home() {
+  const onResponse = (response: GoogleSignInResponse) => {
+    console.log('login callback', response)
+
+    try {
+      const { credential = '' } = response
+      const {
+        name = '',
+        given_name = '',
+        picture = '',
+      } = JSON.parse(atob(credential.split('.')[1])) as {
+        name?: string
+        given_name?: string
+        picture?: string
+      }
+    } catch (e) {
+      toast.error(`Failed to sign in. error: ${toPrintable(e)}`)
+    }
+  }
+
   return (
     <GoogleSingInProvider>
       <main className="flex min-h-screen max-w-full flex-col items-center justify-start">
@@ -37,7 +62,7 @@ export default function Home() {
           />
         </div>
         <div className="mb-16" />
-        <GoogleSignInButtonWithSkeleton />
+        <GoogleSignInButtonWithSkeleton onResponse={onResponse} />
       </main>
     </GoogleSingInProvider>
   )

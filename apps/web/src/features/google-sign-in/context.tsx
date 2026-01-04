@@ -10,6 +10,7 @@ import {
 
 interface PendingContext {
   status: 'pending'
+  error?: never
 }
 
 interface ErrorContext {
@@ -19,6 +20,7 @@ interface ErrorContext {
 
 interface SuccessContext {
   status: 'success'
+  error?: never
 }
 
 type GoogleSignInContext = PendingContext | ErrorContext | SuccessContext
@@ -51,10 +53,18 @@ export function GoogleSingInProvider({ children }: { children?: ReactNode }) {
     }
   }, [])
 
-  const context: GoogleSignInContext = {
-    status,
-    error,
-  }
+  const context = (() => {
+    switch (status) {
+      case 'pending':
+        return { status } satisfies PendingContext
+      case 'error':
+        return { status, error } satisfies ErrorContext
+      case 'success':
+        return { status } satisfies SuccessContext
+      default:
+        throw new Error('Invalid status.')
+    }
+  })()
 
   return (
     <GoogleSignInContext.Provider value={context}>
