@@ -5,7 +5,7 @@ import Image from 'next/image'
 export default function Home() {
   return (
     <GoogleSingInProvider>
-      <main className="flex min-h-screen max-w-full flex-col items-center justify-start pt-16">
+      <main className="flex min-h-screen max-w-full flex-col items-center justify-start pt-14">
         <Image
           src="/pokemon-2023-ko.webp"
           alt="pokedex"
