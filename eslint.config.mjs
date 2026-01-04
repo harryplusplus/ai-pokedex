@@ -5,13 +5,7 @@ import { defineConfig } from "eslint/config";
 
 const config = defineConfig([
   {
-    files: ["apps/web/**/*.{ts,tsx}"],
-    ignores: [
-      "apps/web/.next/**",
-      "apps/web/out/**",
-      "apps/web/build/**",
-      "apps/web/next-env.d.ts",
-    ],
+    files: ["apps/web/src/**/*.{ts,tsx}", "apps/web/next.config.ts"],
     extends: [nextVitals, nextTs],
   },
 ]);
