@@ -140,3 +140,6 @@ vite.config.ts.timestamp-*
 
 # VS Code
 /.vscode/
+
+# Turborepo
+.turbo/
