@@ -1,5 +1,6 @@
 'use client'
 
+import { cn } from '@/lib/utils'
 import { useEffect, useRef } from 'react'
 import { GOOGLE_CLIENT_ID } from '../constants'
 import { useGoogleSignIn } from '../context'
@@ -26,10 +27,12 @@ export interface GoogleSignInResponse extends Record<string, unknown> {
 }
 
 export interface GoogleSignInButtonProps {
+  className?: string
   onResponse: (response: GoogleSignInResponse) => void
 }
 
 export default function GoogleSignInButton({
+  className,
   onResponse,
 }: GoogleSignInButtonProps) {
   const { status } = useGoogleSignIn()
@@ -50,5 +53,5 @@ export default function GoogleSignInButton({
     window.google.accounts.id.renderButton(containerRef.current, {})
   }, [onResponse, status])
 
-  return <div ref={containerRef}></div>
+  return <div ref={containerRef} className={cn(className)}></div>
 }
