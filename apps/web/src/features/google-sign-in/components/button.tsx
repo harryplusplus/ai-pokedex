@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { GOOGLE_CLIENT_ID } from '../constants'
-import { useGoogleSignIn } from '../contexts/google-sign-in-context'
+import { useGoogleSignIn } from '../context'
 
 declare global {
   interface Window {
@@ -21,7 +21,7 @@ declare global {
   }
 }
 
-export function GoogleSignInButton() {
+export default function GoogleSignInButton() {
   const { status } = useGoogleSignIn()
   const containerRef = useRef<HTMLDivElement>(null)
 
