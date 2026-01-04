@@ -1,10 +1,8 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import { GOOGLE_CLIENT_ID } from '../constants'
 import { useGoogleSignIn } from '../contexts/google-sign-in-context'
-
-const GOOGLE_CLIENT_ID =
-  '179009707988-aej3ieths6olvv4amed5asbc2meaubic.apps.googleusercontent.com'
 
 declare global {
   interface Window {
