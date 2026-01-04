@@ -1,6 +1,7 @@
 'use client'
 
 import { Skeleton } from '@/components/ui/skeleton'
+import { cn } from '@/lib/utils'
 import { useGoogleSignIn } from '../context'
 import GoogleSignInButton, { GoogleSignInButtonProps } from './button'
 
@@ -9,10 +10,11 @@ export default function GoogleSignInButtonWithSkeleton(
 ) {
   const { status } = useGoogleSignIn()
 
+  const size = 'h-10 w-48'
   return (
-    <div className="flex h-12 w-48 items-center justify-center">
+    <div className={cn('flex items-center justify-center', size)}>
       {status !== 'success' ? (
-        <Skeleton className="h-10 w-48" />
+        <Skeleton className={cn('rounded-sm', size)} />
       ) : (
         <GoogleSignInButton {...props} />
       )}
