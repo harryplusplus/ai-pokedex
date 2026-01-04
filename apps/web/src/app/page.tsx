@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <GoogleSingInProvider>
       <main className="flex min-h-screen flex-col items-center justify-center">
-        <Image src="/pokedex-dp.webp" alt="" width={500} height={500} />
+        <Image src="/pokedex-dp.webp" alt="pokedex" width={400} height={400} />
         <GoogleSignInButton />
       </main>
     </GoogleSingInProvider>
