@@ -26,15 +26,7 @@ export function GoogleSignInButton() {
   const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (status !== 'success') {
-      return
-    }
-
-    if (!containerRef.current) {
-      return
-    }
-
-    if (!window.google) {
+    if (status !== 'success' || !containerRef.current || !window.google) {
       return
     }
 
