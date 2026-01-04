@@ -9,6 +9,18 @@ const config = defineConfig([
     files: ['apps/web/src/**/*.{ts,tsx}', 'apps/web/next.config.ts'],
     extends: [nextVitals, nextTs],
   },
+  {
+    rules: {
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
+    },
+  },
   prettierRecommended,
 ])
 
