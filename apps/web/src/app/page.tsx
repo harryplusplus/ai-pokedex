@@ -5,7 +5,7 @@ import Image from 'next/image'
 export default function Home() {
   return (
     <GoogleSingInProvider>
-      <main className="flex min-h-screen max-w-full flex-col items-center justify-center">
+      <main className="flex min-h-screen max-w-full flex-col items-center justify-start pt-16">
         <Image
           src="/pokemon-2023-ko.webp"
           alt="pokedex"
@@ -18,7 +18,7 @@ export default function Home() {
             AI 도감
           </span>
         </h1>
-        <div className="mb-12 flex justify-center gap-8">
+        <div className="mb-16 flex justify-center gap-8">
           <Image
             src="/rotom-phone1.webp"
             alt="pokedex"
