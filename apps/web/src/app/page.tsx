@@ -8,7 +8,7 @@ export default function Home() {
       <main className="flex min-h-screen max-w-full flex-col items-center justify-start pt-14">
         <Image
           src="/pokemon-2023-ko.webp"
-          alt="pokedex"
+          alt="pokemon-2023-ko"
           width={1000}
           height={257}
           className="h-auto w-84 shrink-0 object-contain"
@@ -21,14 +21,14 @@ export default function Home() {
         <div className="mb-16 flex justify-center gap-8">
           <Image
             src="/rotom-phone1.webp"
-            alt="pokedex"
+            alt="rotom-phone1"
             width={449}
             height={599}
             className="h-auto w-40 shrink-0 object-contain"
           />
           <Image
             src="/rotom-phone2.webp"
-            alt="pokedex"
+            alt="rotom-phone2"
             width={444}
             height={1024}
             className="h-auto w-22 shrink-0 object-contain"
