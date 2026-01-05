@@ -84,9 +84,6 @@ importers:
         specifier: 4.3.5
         version: 4.3.5
     devDependencies:
-      '@dotenvx/dotenvx':
-        specifier: 1.51.4
-        version: 1.51.4
       '@nestjs/cli':
         specifier: 11.0.14
         version: 11.0.14(@swc/core@1.15.8)(@types/node@25.0.3)
@@ -111,6 +108,9 @@ importers:
       '@types/supertest':
         specifier: 6.0.3
         version: 6.0.3
+      dotenv:
+        specifier: 17.2.3
+        version: 17.2.3
       node-pg-migrate:
         specifier: 8.0.4
         version: 8.0.4(@types/pg@8.16.0)(pg@8.16.3)

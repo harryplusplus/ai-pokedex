@@ -11,8 +11,8 @@
   "scripts": {
     "build": "nest build",
     "dev": "nest start --watch --env-file .env",
-    "migrate:create": "dotenvx run -- node-pg-migrate create -j=sql",
-    "migrate:up": "dotenvx run -- node-pg-migrate up",
+    "migrate:create": "dotenv run -- node-pg-migrate create -j=sql",
+    "migrate:up": "dotenv run -- node-pg-migrate up",
     "start": "node dist/main"
   },
   "dependencies": {
@@ -28,7 +28,6 @@
     "zod": "4.3.5"
   },
   "devDependencies": {
-    "@dotenvx/dotenvx": "1.51.4",
     "@nestjs/cli": "11.0.14",
     "@nestjs/schematics": "11.0.9",
     "@nestjs/testing": "11.1.11",
@@ -37,6 +36,7 @@
     "@types/pg": "8.16.0",
     "@types/qs": "6.14.0",
     "@types/supertest": "6.0.3",
+    "dotenv": "17.2.3",
     "node-pg-migrate": "8.0.4",
     "pg": "8.16.3",
     "source-map-support": "0.5.21",
