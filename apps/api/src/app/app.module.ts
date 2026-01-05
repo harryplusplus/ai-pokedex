@@ -5,8 +5,6 @@ import { ConfigModule } from '../config/config.module.js'
 import { DbModule } from '../db/db.module.js'
 import { TrpcModule } from '../trpc/trpc.module.js'
 import { UserModule } from '../user/user.module.js'
-import { AppController } from './app.controller.js'
-import { AppService } from './app.service.js'
 import { AppTrpcRouter } from './app.trpc-router.js'
 
 @Module({
@@ -18,8 +16,7 @@ import { AppTrpcRouter } from './app.trpc-router.js'
     ApiKeyModule,
     DbModule,
   ],
-  controllers: [AppController],
-  providers: [AppService, AppTrpcRouter],
+  providers: [AppTrpcRouter],
 })
 export class AppModule implements NestModule {
   constructor(private readonly appTrpcRouter: AppTrpcRouter) {}

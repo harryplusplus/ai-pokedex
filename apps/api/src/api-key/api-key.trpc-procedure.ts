@@ -27,7 +27,7 @@ export class ApiKeyTrpcProcedure {
 
       const apiKey = parseHeader()
 
-      if (!(await apiKeyService.validate({ apiKey }))) {
+      if (!(await apiKeyService.validate(apiKey))) {
         throw new TRPCError({
           code: 'UNAUTHORIZED',
           message: 'Invalid API key.',
