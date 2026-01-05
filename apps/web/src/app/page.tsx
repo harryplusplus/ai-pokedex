@@ -1,8 +1,9 @@
 // TODO: remove use client
 'use client'
 
-import { GoogleSignInResponse } from '@/features/google-sign-in/components/button'
-import GoogleSignInButtonWithSkeleton from '@/features/google-sign-in/components/button-with-skeleton'
+import GoogleSignInButton, {
+  GoogleSignInResponse,
+} from '@/features/google-sign-in/components/button'
 import { GoogleSingInProvider } from '@/features/google-sign-in/context'
 import { toPrintable } from '@/lib/utils'
 import Image from 'next/image'
@@ -62,7 +63,7 @@ export default function Home() {
           />
         </div>
         <div className="mb-16" />
-        <GoogleSignInButtonWithSkeleton onResponse={onResponse} />
+        <GoogleSignInButton onResponse={onResponse} />
       </main>
     </GoogleSingInProvider>
   )
