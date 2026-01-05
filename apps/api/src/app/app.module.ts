@@ -3,6 +3,7 @@ import { GracefulShutdownModule } from '@tygra/nestjs-graceful-shutdown'
 import { ApiKeyModule } from '../api-key/api-key.module.js'
 import { ConfigModule } from '../config/config.module.js'
 import { DbModule } from '../db/db.module.js'
+import { GoogleAuthModule } from '../google-auth/google-auth.module.js'
 import { TrpcModule } from '../trpc/trpc.module.js'
 import { UserModule } from '../user/user.module.js'
 import { AppTrpcRouter } from './app.trpc-router.js'
@@ -15,6 +16,7 @@ import { AppTrpcRouter } from './app.trpc-router.js'
     UserModule,
     ApiKeyModule,
     DbModule,
+    GoogleAuthModule,
   ],
   providers: [AppTrpcRouter],
 })

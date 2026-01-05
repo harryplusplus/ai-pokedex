@@ -7,5 +7,6 @@ import { ApiKeyTrpcProcedure } from './api-key.trpc-procedure.js'
 @Module({
   imports: [TrpcModule, DbModule],
   providers: [ApiKeyTrpcProcedure, ApiKeyService],
+  exports: [ApiKeyTrpcProcedure],
 })
 export class ApiKeyModule {}
