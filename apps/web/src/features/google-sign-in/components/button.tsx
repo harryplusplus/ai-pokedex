@@ -36,7 +36,6 @@ export default function GoogleSignInButton({ className, onResponse }: Props) {
 
 function renderButton(parent: HTMLElement, onResponse: GoogleSignInOnResponse) {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     window.google.accounts.id.initialize({
       client_id: GOOGLE_CLIENT_ID,
       callback: (response) => {
@@ -44,7 +43,6 @@ function renderButton(parent: HTMLElement, onResponse: GoogleSignInOnResponse) {
       },
     })
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     window.google.accounts.id.renderButton(parent, {
       type: 'standard',
     })

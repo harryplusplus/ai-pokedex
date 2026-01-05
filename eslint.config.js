@@ -7,13 +7,28 @@ import { defineConfig, globalIgnores } from 'eslint/config'
 import tseslint from 'typescript-eslint'
 
 const config = defineConfig([
-  globalIgnores(['eslint.config.mjs', 'prettier.config.js']),
+  globalIgnores([
+    '**/node_modules/**',
+    '**/dist/**',
+    '**/.turbo/**',
+    '**/.next/**',
+    'eslint.config.js',
+    'apps/web/next-env.d.ts',
+  ]),
+  {
+    files: ['apps/*/src/**/*.{ts,tsx}', 'packages/*/src/**/*.{ts,tsx}'],
+  },
   eslint.configs.recommended,
   tseslint.configs.recommendedTypeChecked,
   {
     languageOptions: {
       parserOptions: {
-        projectService: true,
+        projectService: {
+          allowDefaultProject: [
+            'prettier.config.js',
+            'apps/web/postcss.config.mjs',
+          ],
+        },
         tsconfigRootDir: import.meta.dirname,
       },
     },
@@ -31,8 +46,13 @@ const config = defineConfig([
     },
   },
   {
-    files: ['apps/web/src/**/*.{ts,tsx}', 'apps/web/next.config.ts'],
+    files: ['apps/web/src/**/*.{ts,tsx}'],
     extends: [nextVitals, nextTs],
+    settings: {
+      next: {
+        rootDir: ['apps/web'],
+      },
+    },
   },
   {
     files: ['apps/api/src/**/*.ts'],
