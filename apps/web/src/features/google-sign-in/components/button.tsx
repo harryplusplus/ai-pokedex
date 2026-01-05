@@ -1,40 +1,25 @@
 'use client'
 
-import { cn } from '@/lib/utils'
+import { cn, toPrintable } from '@/lib/utils'
 import { useEffect, useRef } from 'react'
+import { toast } from 'sonner'
 import { GOOGLE_CLIENT_ID } from '../constants'
 import { useGoogleSignIn } from '../context'
 
-declare global {
-  interface Window {
-    google?: {
-      accounts: {
-        id: {
-          initialize: (options: {
-            client_id: string
-            callback: (response: GoogleSignInResponse) => void
-          }) => void
-          prompt: () => void
-          renderButton: (element: HTMLElement, options: unknown) => void
-        }
-      }
-    }
-  }
-}
-
-export interface GoogleSignInResponse extends Record<string, unknown> {
+export interface GoogleSignInResponse {
   credential?: string
 }
 
-export interface GoogleSignInButtonProps {
-  className?: string
-  onResponse: (response: GoogleSignInResponse) => void
+export interface GoogleSignInOnResponse {
+  (response: GoogleSignInResponse): void
 }
 
-export default function GoogleSignInButton({
-  className,
-  onResponse,
-}: GoogleSignInButtonProps) {
+interface Props {
+  className?: string
+  onResponse: GoogleSignInOnResponse
+}
+
+export default function GoogleSignInButton({ className, onResponse }: Props) {
   const { status } = useGoogleSignIn()
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -43,15 +28,27 @@ export default function GoogleSignInButton({
       return
     }
 
-    window.google.accounts.id.initialize({
-      client_id: GOOGLE_CLIENT_ID,
-      callback: (response) => {
-        onResponse(response)
-      },
-    })
-
-    window.google.accounts.id.renderButton(containerRef.current, {})
+    renderButton(containerRef.current, onResponse)
   }, [onResponse, status])
 
   return <div ref={containerRef} className={cn(className)}></div>
+}
+
+function renderButton(parent: HTMLElement, onResponse: GoogleSignInOnResponse) {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    window.google.accounts.id.initialize({
+      client_id: GOOGLE_CLIENT_ID,
+      callback: (response) => {
+        onResponse(response as GoogleSignInResponse)
+      },
+    })
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    window.google.accounts.id.renderButton(parent, {
+      type: 'standard',
+    })
+  } catch (e) {
+    toast.error(`Invalid GIS rendering. error: ${toPrintable(e)}`)
+  }
 }

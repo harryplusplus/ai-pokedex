@@ -20,7 +20,8 @@
     ],
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "types": ["google.accounts"]
   },
   "include": [
     ".next/dev/types/**/*.ts",
