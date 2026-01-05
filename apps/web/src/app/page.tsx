@@ -25,7 +25,7 @@ export default function Home() {
         picture?: string
       }
     } catch (e) {
-      toast.error(`Failed to sign in. error: ${toPrintable(e)}`)
+      toast.error(`Invalid GIS response. error: ${toPrintable(e)}`)
     }
   }
 
