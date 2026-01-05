@@ -14,12 +14,9 @@ const config = defineConfig([
     languageOptions: {
       parserOptions: {
         projectService: true,
+        tsconfigRootDir: import.meta.dirname,
       },
     },
-  },
-  {
-    files: ['apps/web/src/**/*.{ts,tsx}', 'apps/web/next.config.ts'],
-    extends: [nextVitals, nextTs],
   },
   {
     rules: {
@@ -31,6 +28,17 @@ const config = defineConfig([
           caughtErrorsIgnorePattern: '^_',
         },
       ],
+    },
+  },
+  {
+    files: ['apps/web/src/**/*.{ts,tsx}', 'apps/web/next.config.ts'],
+    extends: [nextVitals, nextTs],
+  },
+  {
+    files: ['apps/api/src/**/*.ts'],
+    rules: {
+      '@typescript-eslint/no-floating-promises': 'error',
+      '@typescript-eslint/await-thenable': 'error',
     },
   },
   prettierRecommended,
