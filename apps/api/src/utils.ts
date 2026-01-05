@@ -13,3 +13,15 @@ type NodeEnv = z.infer<typeof NodeEnv>
 export function checkNodeEnv(): void {
   NodeEnv.parse(process.env.NODE_ENV)
 }
+
+export function toPrintable(e: unknown): Error | string {
+  if (e instanceof Error || typeof e === 'string') {
+    return e
+  }
+
+  if (typeof e === 'object' && e && 'message' in e) {
+    return String(e.message)
+  }
+
+  return JSON.stringify(e)
+}
