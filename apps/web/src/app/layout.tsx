@@ -1,4 +1,3 @@
-import TrpcQueryProviders from '@/components/trpc-query-providers'
 import { Toaster } from '@/components/ui/sonner'
 import type { Metadata } from 'next'
 import './globals.css'
