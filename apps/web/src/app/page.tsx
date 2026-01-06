@@ -5,16 +5,14 @@ import Image from 'next/image'
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen max-w-full flex-col items-center justify-start overflow-hidden">
-      <div className="z-0">
-        <Image
-          src="/nature-1767703122177-7577.jpg"
-          alt="sign-in-background"
-          fill
-          className="object-cover object-center brightness-80"
-        />
-      </div>
-      <div className="z-10">
+    <main>
+      <Image
+        src="/nature-1767703122177-7577.jpg"
+        alt="sign-in-background"
+        fill
+        className="z-0 brightness-80"
+      />
+      <div className="relative z-10 flex flex-col items-center justify-start">
         <div className="mt-14 lg:mt-10" />
         <Image
           src="/pokemon-2023-ko.webp"
