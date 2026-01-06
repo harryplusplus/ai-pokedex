@@ -1,17 +1,20 @@
 import TrpcQueryProviders from '@/components/trpc-query-providers'
 import { GoogleSingInProvider } from '@/features/google-sign-in/contexts/google-sign-in-context'
-import SignInButtons from '@/features/sign-in/components/sign-in-buttons'
+import SignInButtonSection from '@/features/sign-in/components/sign-in-button-section'
 import Image from 'next/image'
 
 export default function Home() {
   return (
-    <main>
-      <Image
-        src="/nature-1767703122177-7577.jpg"
-        alt="sign-in-background"
-        fill
-        className="z-0 brightness-80"
-      />
+    <main className="relative min-h-screen w-full">
+      <div className="z-0">
+        <Image
+          src="/nature-1767703122177-7577.jpg"
+          alt="sign-in-background"
+          fill
+          priority
+          className="object-cover brightness-80"
+        />
+      </div>
       <div className="relative z-10 flex flex-col items-center justify-start">
         <div className="mt-14 lg:mt-10" />
         <Image
@@ -46,7 +49,7 @@ export default function Home() {
         <div className="mb-16" />
         <TrpcQueryProviders>
           <GoogleSingInProvider>
-            <SignInButtons />
+            <SignInButtonSection />
           </GoogleSingInProvider>
         </TrpcQueryProviders>
       </div>

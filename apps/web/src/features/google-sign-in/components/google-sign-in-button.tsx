@@ -10,13 +10,13 @@ export interface GoogleSignInResponse {
   credential?: string
 }
 
-export interface GoogleSignInOnResponse {
+export interface OnGoogleSignInResponse {
   (response: GoogleSignInResponse): void
 }
 
 interface Props {
   className?: string
-  onResponse: GoogleSignInOnResponse
+  onResponse: OnGoogleSignInResponse
 }
 
 export default function GoogleSignInButton({ className, onResponse }: Props) {
@@ -34,7 +34,7 @@ export default function GoogleSignInButton({ className, onResponse }: Props) {
   return <div ref={containerRef} className={cn(className)}></div>
 }
 
-function renderButton(parent: HTMLElement, onResponse: GoogleSignInOnResponse) {
+function renderButton(parent: HTMLElement, onResponse: OnGoogleSignInResponse) {
   try {
     window.google.accounts.id.initialize({
       client_id: GOOGLE_CLIENT_ID,
