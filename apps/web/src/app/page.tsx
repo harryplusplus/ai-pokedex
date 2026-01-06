@@ -1,6 +1,4 @@
-import TrpcQueryProviders from '@/components/trpc-query-providers'
-import { GoogleSingInProvider } from '@/features/google-sign-in/contexts/google-sign-in-context'
-import SignInButtonSection from '@/features/sign-in/components/sign-in-button-section'
+import SignInIsland from '@/features/sign-in/components/sign-in-island'
 import Image from 'next/image'
 
 export default function Home() {
@@ -47,11 +45,7 @@ export default function Home() {
           />
         </div>
         <div className="mb-16" />
-        <TrpcQueryProviders>
-          <GoogleSingInProvider>
-            <SignInButtonSection />
-          </GoogleSingInProvider>
-        </TrpcQueryProviders>
+        <SignInIsland />
       </div>
     </main>
   )

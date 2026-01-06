@@ -8,7 +8,7 @@ import { toPrintable } from '@/lib/utils'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
-export default function SignInButtonSection() {
+export default function SignInIsland() {
   const trpc = useTRPC()
   const authSignIn = useMutation(trpc.auth.signIn.mutationOptions())
 

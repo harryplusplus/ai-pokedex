@@ -1,4 +1,7 @@
+import TrpcQueryProviders from '@/components/trpc-query-providers'
 import { Toaster } from '@/components/ui/sonner'
+import { GoogleSingInProvider } from '@/features/google-sign-in/contexts/google-sign-in-context'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import type { Metadata } from 'next'
 import './globals.css'
 
@@ -15,7 +18,10 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className="overflow-y-scroll antialiased">
-        {children}
+        <TrpcQueryProviders>
+          <GoogleSingInProvider>{children}</GoogleSingInProvider>
+          <ReactQueryDevtools />
+        </TrpcQueryProviders>
         <Toaster />
       </body>
     </html>
