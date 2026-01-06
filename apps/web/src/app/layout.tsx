@@ -16,7 +16,7 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className="antialiased">
-        <TrpcQueryProviders>{children}</TrpcQueryProviders>
+        {children}
         <Toaster />
       </body>
     </html>

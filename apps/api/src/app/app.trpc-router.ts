@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common'
 import { createExpressMiddleware } from '@trpc/server/adapters/express'
+import { AuthTrpcRouter } from '../auth/auth.trpc-router.js'
 import { TrpcService } from '../trpc/trpc.service.js'
-import { UserTrpcRouter } from '../user/user.trpc-router.js'
 
 @Injectable()
 export class AppTrpcRouter {
   readonly router
 
-  constructor(trpcService: TrpcService, userTrpcRouter: UserTrpcRouter) {
+  constructor(trpcService: TrpcService, authTrpcRouter: AuthTrpcRouter) {
     this.router = trpcService.trpc.router({
-      user: userTrpcRouter.router,
+      auth: authTrpcRouter.router,
     })
   }
 

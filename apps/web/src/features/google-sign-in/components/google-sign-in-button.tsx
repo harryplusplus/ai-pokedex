@@ -3,8 +3,8 @@
 import { cn, toPrintable } from '@/lib/utils'
 import { useEffect, useRef } from 'react'
 import { toast } from 'sonner'
-import { GOOGLE_CLIENT_ID } from '../constant'
-import { useGoogleSignIn } from '../context'
+import { GOOGLE_CLIENT_ID } from '../constants'
+import { useGoogleSignIn } from '../contexts/google-sign-in-context'
 
 export interface GoogleSignInResponse {
   credential?: string
