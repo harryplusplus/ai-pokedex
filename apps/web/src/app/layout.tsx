@@ -15,7 +15,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className="antialiased">
+      <body className="overflow-y-scroll antialiased">
         {children}
         <Toaster />
       </body>
