@@ -14,7 +14,7 @@ export default function SignInButtons() {
 
   const onGoogleSignInResponse = (response: GoogleSignInResponse) => {
     if (process.env.NODE_ENV === 'development') {
-      console.log('google sign in response:', response)
+      console.log('Google sign in response:', response)
     }
 
     const { credential = '' } = response

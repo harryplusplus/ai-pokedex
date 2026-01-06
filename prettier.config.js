@@ -5,9 +5,9 @@ const config = {
   semi: false,
   singleQuote: true,
   plugins: [
-    'prettier-plugin-tailwindcss',
     'prettier-plugin-embed',
     'prettier-plugin-sql-exec',
+    'prettier-plugin-tailwindcss',
   ],
   sqlExecCommand: 'perl pgFormatter/pg_format',
 }
