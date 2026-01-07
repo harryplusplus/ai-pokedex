@@ -1,6 +1,15 @@
-export default function GoogleSignInButton() {
+interface Props {
+  onClick?: () => void
+  disabled?: boolean
+}
+
+export default function GoogleSignInButton({ onClick, disabled }: Props) {
   return (
-    <button className="gsi-material-button">
+    <button
+      className="gsi-material-button"
+      onClick={onClick}
+      disabled={disabled}
+    >
       <div className="gsi-material-button-state"></div>
       <div className="gsi-material-button-content-wrapper">
         <div className="gsi-material-button-icon">
