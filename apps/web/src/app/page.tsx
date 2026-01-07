@@ -1,47 +1,24 @@
 import GoogleSignInButton from '@/features/google-sign-in/components/google-sign-in-button'
 import { GoogleSingInProvider } from '@/features/google-sign-in/contexts/google-sign-in-context'
-import SignInIsland from '@/features/sign-in/components/sign-in-island'
-import Image from 'next/image'
 
 export default function Home() {
   return (
     <GoogleSingInProvider>
       <div className="flex h-full items-center">
         <div className="flex w-1/2 justify-center">
-          <GoogleSignInButton />
+          <div className="rounded-full bg-black/20 p-1 backdrop-blur-sm">
+            <GoogleSignInButton />
+          </div>
         </div>
-        <div className="flex w-1/2 justify-center" />
-        {/* <Image
-          src="/pokemon-2023-ko.webp"
-          alt="pokemon-2023-ko"
-          width={1000}
-          height={257}
-          className="h-auto w-84 shrink-0 object-contain"
-        />
-        <h1 className="text-center text-8xl font-extrabold">
-          <span className="bg-gradient-to-b from-[#0099D9] to-[#EC424B] bg-clip-text text-transparent">
-            AI 도감
-          </span>
-        </h1>
-        <div className="mb-4" />
-        <div className="flex justify-center gap-8">
-          <Image
-            src="/rotom-phone1.webp"
-            alt="rotom-phone1"
-            width={449}
-            height={599}
-            className="h-auto w-40 shrink-0 object-contain"
-          />
-          <Image
-            src="/rotom-phone2.webp"
-            alt="rotom-phone2"
-            width={444}
-            height={1024}
-            className="h-auto w-22 shrink-0 object-contain"
-          />
+        <div className="flex w-1/2 flex-col items-center justify-center gap-6">
+          <div className="mb-8 space-y-2 text-center">
+            <div className="rounded-2xl bg-black/20 px-1 py-1 backdrop-blur-sm">
+              <h1 className="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-6xl font-bold text-transparent">
+                AI 포켓몬 도감
+              </h1>
+            </div>
+          </div>
         </div>
-        <div className="mb-16" />
-        <SignInIsland /> */}
       </div>
     </GoogleSingInProvider>
   )
