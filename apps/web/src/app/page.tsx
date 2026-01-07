@@ -1,3 +1,4 @@
+import GoogleSignInButton from '@/features/google-sign-in/components/google-sign-in-button'
 import { GoogleSingInProvider } from '@/features/google-sign-in/contexts/google-sign-in-context'
 import SignInIsland from '@/features/sign-in/components/sign-in-island'
 import Image from 'next/image'
@@ -5,9 +6,12 @@ import Image from 'next/image'
 export default function Home() {
   return (
     <GoogleSingInProvider>
-      <div className="flex flex-col items-center justify-start">
-        <div className="mt-14 lg:mt-10" />
-        <Image
+      <div className="flex h-full items-center">
+        <div className="flex w-1/2 justify-center">
+          <GoogleSignInButton />
+        </div>
+        <div className="flex w-1/2 justify-center" />
+        {/* <Image
           src="/pokemon-2023-ko.webp"
           alt="pokemon-2023-ko"
           width={1000}
@@ -37,7 +41,7 @@ export default function Home() {
           />
         </div>
         <div className="mb-16" />
-        <SignInIsland />
+        <SignInIsland /> */}
       </div>
     </GoogleSingInProvider>
   )
