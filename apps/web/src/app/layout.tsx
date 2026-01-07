@@ -18,7 +18,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="ko">
+    <html lang="ko" className="bg-black">
       <body className="overflow-y-scroll antialiased">
         <TrpcQueryProviders>
           <Background />
