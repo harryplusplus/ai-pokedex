@@ -8,11 +8,11 @@ import { ApiKey } from './api-key.schema.js'
 export class ApiKeyService {
   constructor(private readonly dbService: DbService) {}
 
-  createRepo(sql: Sql): ApiKeyRepo {
+  newRepo(sql: Sql): ApiKeyRepo {
     return new ApiKeyRepo(sql)
   }
 
   async validate(apiKey: ApiKey): Promise<boolean> {
-    return await this.createRepo(this.dbService.sql).validate(apiKey)
+    return await this.newRepo(this.dbService.sql).validate(apiKey)
   }
 }

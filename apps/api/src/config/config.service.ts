@@ -9,6 +9,14 @@ export class ConfigService {
   ) {}
 
   get databaseUrl(): string {
-    return this.nestConfigService.get('DATABASE_URL', { infer: true })
+    return this.nestConfigService.getOrThrow('DATABASE_URL', { infer: true })
+  }
+
+  get jwtSecret(): string {
+    return this.nestConfigService.getOrThrow('JWT_SECRET', { infer: true })
+  }
+
+  get jwtSecretOlds(): string[] {
+    return this.nestConfigService.getOrThrow('JWT_SECRET_OLDS', { infer: true })
   }
 }

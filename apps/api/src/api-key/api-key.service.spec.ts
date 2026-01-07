@@ -20,7 +20,7 @@ beforeAll(async () => {
 
   dbService = app.get(DbService)
   apiKeyService = app.get(ApiKeyService)
-  apiKeyRepo = apiKeyService.createRepo(dbService.sql)
+  apiKeyRepo = apiKeyService.newRepo(dbService.sql)
 })
 
 afterAll(async () => {

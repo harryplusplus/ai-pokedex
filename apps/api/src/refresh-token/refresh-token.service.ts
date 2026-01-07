@@ -4,7 +4,7 @@ import { RefreshTokenRepo } from './refresh-token.repo.js'
 
 @Injectable()
 export class RefreshTokenService {
-  createRepo(sql: Sql): RefreshTokenRepo {
+  newRepo(sql: Sql): RefreshTokenRepo {
     return new RefreshTokenRepo(sql)
   }
 }

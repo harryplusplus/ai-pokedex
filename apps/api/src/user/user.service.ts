@@ -4,7 +4,7 @@ import { UserRepo } from './user.repo.js'
 
 @Injectable()
 export class UserService {
-  createRepo(sql: Sql): UserRepo {
+  newRepo(sql: Sql): UserRepo {
     return new UserRepo(sql)
   }
 }
