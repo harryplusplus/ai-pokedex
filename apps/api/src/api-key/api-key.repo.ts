@@ -8,12 +8,12 @@ export class ApiKeyRepo {
     const { sql } = this
     const result = await sql`
       SELECT
-          *
+        *
       FROM
-          api_keys
+        api_keys
       WHERE
-          api_key = ${apiKey}
-          AND is_enabled = TRUE
+        api_key = ${apiKey}
+        AND is_enabled = TRUE
     `
 
     return result.count === 1

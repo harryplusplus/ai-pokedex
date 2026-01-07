@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { OAuth2Client } from 'google-auth-library'
-import { GOOGLE_CLIENT_ID } from './google-auth.constant.js'
+import { GOOGLE_CLIENT_ID } from '../constants.js'
 
 @Injectable()
 export class GoogleAuthService {
@@ -12,11 +12,11 @@ export class GoogleAuthService {
     })
   }
 
-  async verifyIdToken(idToken: string): Promise<boolean> {
+  async verifyIdToken(idToken: string): Promise<string | null> {
     const loginTicket = await this.#client.verifyIdToken({
       idToken,
     })
-    console.log(loginTicket)
-    return true
+
+    return loginTicket.getPayload()?.sub ?? null
   }
 }

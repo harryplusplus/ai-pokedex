@@ -28,6 +28,7 @@ export default function GoogleSignInIsland() {
       const parsedIdToken = parseGoogleIdToken(credential)
       if (parsedIdToken) {
         mutateAuthSignIn({
+          provider: 'google',
           idToken: credential,
         })
       }

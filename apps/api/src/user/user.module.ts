@@ -5,6 +5,6 @@ import { UserService } from './user.service.js'
 @Module({
   imports: [TrpcModule],
   providers: [UserService],
-  exports: [],
+  exports: [UserService],
 })
 export class UserModule {}
