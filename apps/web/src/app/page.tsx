@@ -1,19 +1,11 @@
+import { GoogleSingInProvider } from '@/features/google-sign-in/contexts/google-sign-in-context'
 import SignInIsland from '@/features/sign-in/components/sign-in-island'
 import Image from 'next/image'
 
 export default function Home() {
   return (
-    <main className="relative min-h-screen w-full">
-      <div className="z-0">
-        <Image
-          src="/nature-1767703122177-7577.jpg"
-          alt="sign-in-background"
-          fill
-          priority
-          className="object-cover brightness-80"
-        />
-      </div>
-      <div className="relative z-10 flex flex-col items-center justify-start">
+    <GoogleSingInProvider>
+      <div className="flex flex-col items-center justify-start">
         <div className="mt-14 lg:mt-10" />
         <Image
           src="/pokemon-2023-ko.webp"
@@ -47,6 +39,6 @@ export default function Home() {
         <div className="mb-16" />
         <SignInIsland />
       </div>
-    </main>
+    </GoogleSingInProvider>
   )
 }
