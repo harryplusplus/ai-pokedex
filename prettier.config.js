@@ -9,7 +9,7 @@ const config = {
     'prettier-plugin-sql-exec',
     'prettier-plugin-tailwindcss',
   ],
-  sqlExecCommand: 'perl pgFormatter/pg_format',
+  sqlExecCommand: 'perl pgFormatter/pg_format --spaces=2',
 }
 
 export default config
