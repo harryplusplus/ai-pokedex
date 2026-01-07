@@ -1,16 +1,16 @@
 'use client'
 
+import { GOOGLE_CLIENT_ID } from '@/lib/constants'
 import { useTRPC } from '@/lib/trpc-query'
 import { toPrintable } from '@/lib/utils'
 import { useMutation } from '@tanstack/react-query'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
-import { GOOGLE_CLIENT_ID } from '../constants'
 import GoogleSignInButton from './google-sign-in-button'
 
 export default function GoogleSignInIsland() {
   const [isLoaded, setIsLoaded] = useState(false)
-  const hiddenButtonRef = useRef<HTMLDivElement>(null)
+  const hiddenButtonContainerRef = useRef<HTMLDivElement>(null)
 
   const trpc = useTRPC()
   const { mutate: mutateAuthSignIn } = useMutation(
@@ -36,11 +36,11 @@ export default function GoogleSignInIsland() {
   )
 
   useEffect(() => {
-    if (!hiddenButtonRef.current) {
+    if (!hiddenButtonContainerRef.current) {
       return
     }
 
-    const container = hiddenButtonRef.current
+    const hiddenButtonContainer = hiddenButtonContainerRef.current
 
     const script = document.createElement('script')
     script.src = 'https://accounts.google.com/gsi/client'
@@ -51,7 +51,7 @@ export default function GoogleSignInIsland() {
         callback: onResponse,
       })
 
-      window.google.accounts.id.renderButton(container, {
+      window.google.accounts.id.renderButton(hiddenButtonContainer, {
         type: 'icon',
         click_listener: () => {
           if (process.env.NODE_ENV === 'development') {
@@ -75,8 +75,9 @@ export default function GoogleSignInIsland() {
   }, [onResponse])
 
   const onClick = () => {
-    if (hiddenButtonRef.current) {
-      const button = hiddenButtonRef.current.querySelector('div[role="button"]')
+    if (hiddenButtonContainerRef.current) {
+      const button =
+        hiddenButtonContainerRef.current.querySelector('div[role="button"]')
       if (button && button instanceof HTMLElement) {
         button.click()
         return
@@ -88,7 +89,7 @@ export default function GoogleSignInIsland() {
 
   return (
     <>
-      <div ref={hiddenButtonRef} className="hidden"></div>
+      <div ref={hiddenButtonContainerRef} className="hidden"></div>
       <GoogleSignInButton disabled={!isLoaded} onClick={onClick} />
     </>
   )
