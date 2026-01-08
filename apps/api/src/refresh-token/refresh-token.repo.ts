@@ -21,4 +21,19 @@ export class RefreshTokenRepo {
       throw new Error('Invalid refresh token creation.')
     }
   }
+
+  async revoke(refreshToken: string): Promise<void> {
+    const { sql } = this
+
+    await sql`
+      UPDATE
+        refresh_tokens
+      SET
+        revoked_at = now(),
+        updated_at = now()
+      WHERE
+        token = ${refreshToken}
+        AND revoked_at IS NULL
+    `
+  }
 }

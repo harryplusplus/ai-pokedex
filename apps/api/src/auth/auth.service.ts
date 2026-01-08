@@ -91,4 +91,11 @@ export class AuthService {
       throw new Error(`Invalid sign in input. logId: ${logId}.`)
     }
   }
+
+  async signOut(refreshToken: string) {
+    const refreshTokenRepo = this.refreshTokenRepoFactory.create(
+      this.dbService.sql,
+    )
+    await refreshTokenRepo.revoke(refreshToken)
+  }
 }

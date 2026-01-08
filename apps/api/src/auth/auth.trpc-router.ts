@@ -1,7 +1,18 @@
 import { Injectable } from '@nestjs/common'
+import z from 'zod'
 import { TrpcService } from '../trpc/trpc.service.js'
 import { AuthSignIn, AuthSignInOutput } from './auth.schema.js'
 import { AuthService } from './auth.service.js'
+
+const REFRESH_TOKEN_COOKIE_INFO = {
+  name: `${process.env.NODE_ENV === 'production' ? '__Secure-' : ''}refreshToken`,
+  options: {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    // TODO: test strict, lax, none
+    // sameSite: 'none',
+  },
+} as const
 
 @Injectable()
 export class AuthTrpcRouter {
@@ -18,12 +29,8 @@ export class AuthTrpcRouter {
           const { accessToken, refreshToken, refreshTokenExpiresAt } =
             await authService.signIn(input)
 
-          const isProd = process.env.NODE_ENV === 'production'
-          const prefix = isProd ? '__Secure-' : ''
-          res.cookie(`${prefix}refreshToken`, refreshToken, {
-            httpOnly: true,
-            secure: isProd,
-            sameSite: isProd ? 'none' : 'lax',
+          res.cookie(REFRESH_TOKEN_COOKIE_INFO.name, refreshToken, {
+            ...REFRESH_TOKEN_COOKIE_INFO.options,
             expires: refreshTokenExpiresAt,
           })
 
@@ -31,8 +38,28 @@ export class AuthTrpcRouter {
             accessToken,
           }
         }),
+      signOut: trpcService.publicProcedure
+        .input(z.object({}))
+        .output(z.void())
+        .mutation(async ({ ctx }) => {
+          const { req, res } = ctx
 
-      ping: trpcService.publicProcedure.query(() => {}),
+          const [_, refreshToken] =
+            req.headers.cookie
+              ?.split(';')
+              .map((x) => x.trim())
+              .map((x) => x.split('='))
+              .find(([key]) => key === 'refreshToken') ?? []
+
+          if (refreshToken) {
+            await authService.signOut(refreshToken)
+          }
+
+          res.clearCookie(
+            REFRESH_TOKEN_COOKIE_INFO.name,
+            REFRESH_TOKEN_COOKIE_INFO.options,
+          )
+        }),
     })
   }
 }

@@ -23,10 +23,6 @@ export default function GoogleSignInIsland() {
 
   const onResponse = useCallback(
     (response: google.accounts.id.CredentialResponse) => {
-      if (process.env.NODE_ENV === 'development') {
-        console.log('Google sign in response:', response)
-      }
-
       const { credential = '' } = response
 
       const parsedIdToken = parseGoogleIdToken(credential)
@@ -58,11 +54,6 @@ export default function GoogleSignInIsland() {
 
       window.google.accounts.id.renderButton(hiddenButtonContainer, {
         type: 'icon',
-        click_listener: () => {
-          if (process.env.NODE_ENV === 'development') {
-            console.log('Google sign in button clicked.')
-          }
-        },
       })
 
       setIsLoaded(true)
