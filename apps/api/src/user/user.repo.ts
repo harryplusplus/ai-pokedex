@@ -25,7 +25,7 @@ export class UserRepo {
     `
 
     if (result.length === 0) {
-      throw new Error('Invalid signIn query.')
+      throw new Error('Invalid result.')
     }
 
     return result.at(0)?.id as UserId

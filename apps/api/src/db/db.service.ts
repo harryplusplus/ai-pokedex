@@ -10,6 +10,7 @@ export class DbService implements OnApplicationShutdown {
     this.sql = postgres(configService.databaseUrl, {
       max: 15,
       debug: process.env.NODE_ENV === 'development',
+      transform: postgres.toCamel,
     })
   }
 

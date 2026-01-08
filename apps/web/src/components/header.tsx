@@ -1,4 +1,4 @@
-import UserSignOutIsland from '@/features/user/components/user-sign-out-island'
+import AuthStatus from '@/features/auth/components/auth-status'
 
 export default function Header() {
   return (
@@ -17,7 +17,7 @@ export default function Header() {
       >
         <div className="h-6 w-6" />
       </a>
-      <UserSignOutIsland />
+      <AuthStatus />
     </header>
   )
 }

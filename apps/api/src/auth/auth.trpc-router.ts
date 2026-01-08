@@ -39,7 +39,7 @@ export class AuthTrpcRouter {
           }
         }),
       signOut: trpcService.publicProcedure
-        .input(z.object({}))
+        .input(z.void())
         .output(z.void())
         .mutation(async ({ ctx }) => {
           const { req, res } = ctx
@@ -49,7 +49,7 @@ export class AuthTrpcRouter {
               ?.split(';')
               .map((x) => x.trim())
               .map((x) => x.split('='))
-              .find(([key]) => key === 'refreshToken') ?? []
+              .find(([name]) => name === REFRESH_TOKEN_COOKIE_INFO.name) ?? []
 
           if (refreshToken) {
             await authService.signOut(refreshToken)

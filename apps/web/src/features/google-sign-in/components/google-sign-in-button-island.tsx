@@ -1,6 +1,6 @@
 'use client'
 
-import { useUser } from '@/features/user/contexts/user-context'
+import { useAuth } from '@/features/auth/contexts/auth-context'
 import { GOOGLE_CLIENT_ID } from '@/lib/constants'
 import { setAccessToken, useTRPC } from '@/lib/trpc-query'
 import { toPrintable } from '@/lib/utils'
@@ -9,10 +9,28 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import GoogleSignInButton from './google-sign-in-button'
 
-export default function GoogleSignInIsland() {
+function parseGoogleIdToken(idToken: string) {
+  try {
+    const { name = '', picture = '' } = JSON.parse(
+      atob(idToken.split('.')[1]),
+    ) as {
+      name?: string
+      picture?: string
+    }
+
+    return {
+      name,
+      picture,
+    }
+  } catch (e) {
+    toast.error(`Invalid Google sign in response. error: ${toPrintable(e)}`)
+  }
+}
+
+export default function GoogleSignInButtonIsland() {
   const [isLoaded, setIsLoaded] = useState(false)
   const hiddenButtonContainerRef = useRef<HTMLDivElement>(null)
-  const { setName, setPicture } = useUser()
+  const { setProfile } = useAuth()
 
   const trpc = useTRPC()
   const { mutate: mutateAuthSignIn } = useMutation(
@@ -35,22 +53,18 @@ export default function GoogleSignInIsland() {
             idToken: credential,
           },
           {
+            onError: () => {
+              setProfile(undefined)
+            },
             onSuccess: () => {
               const { name, picture } = parsedIdToken
-
-              if (name) {
-                setName(name)
-              }
-
-              if (picture) {
-                setPicture(picture)
-              }
+              setProfile({ name, picture })
             },
           },
         )
       }
     },
-    [mutateAuthSignIn, setName, setPicture],
+    [mutateAuthSignIn, setProfile],
   )
 
   useEffect(() => {
@@ -106,22 +120,4 @@ export default function GoogleSignInIsland() {
       <GoogleSignInButton disabled={!isLoaded} onClick={onClick} />
     </>
   )
-}
-
-function parseGoogleIdToken(idToken: string) {
-  try {
-    const { name = '', picture = '' } = JSON.parse(
-      atob(idToken.split('.')[1]),
-    ) as {
-      name?: string
-      picture?: string
-    }
-
-    return {
-      name,
-      picture,
-    }
-  } catch (e) {
-    toast.error(`Invalid Google sign in response. error: ${toPrintable(e)}`)
-  }
 }

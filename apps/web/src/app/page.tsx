@@ -1,11 +1,11 @@
-import GoogleSignInIsland from '@/features/google-sign-in/components/google-sign-in-island'
+import GoogleSignInButtonIsland from '@/features/google-sign-in/components/google-sign-in-button-island'
 
 export default function Home() {
   return (
     <div className="flex h-full items-center">
       <div className="flex w-1/2 justify-center">
         <div className="rounded-full bg-black/20 p-1 backdrop-blur-sm">
-          <GoogleSignInIsland />
+          <GoogleSignInButtonIsland />
         </div>
       </div>
       <div className="flex w-1/2 justify-center">
