@@ -1,7 +1,7 @@
 'use client'
 
 import { GOOGLE_CLIENT_ID } from '@/lib/constants'
-import { useTRPC } from '@/lib/trpc-query'
+import { setAccessToken, useTRPC } from '@/lib/trpc-query'
 import { toPrintable } from '@/lib/utils'
 import { useMutation } from '@tanstack/react-query'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -15,8 +15,8 @@ export default function GoogleSignInIsland() {
   const trpc = useTRPC()
   const { mutate: mutateAuthSignIn } = useMutation(
     trpc.auth.signIn.mutationOptions({
-      onSuccess: (data) => {
-        const { accessToken } = data
+      onSuccess: ({ accessToken }) => {
+        setAccessToken(accessToken)
       },
     }),
   )
