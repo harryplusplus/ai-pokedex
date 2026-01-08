@@ -13,8 +13,7 @@ export class ApiKeyRepo {
         api_keys
       WHERE
         key = ${apiKey}
-        AND (is_revoked IS NULL
-          OR is_revoked = FALSE)
+        AND revoked_at IS NULL
     `
 
     return result.count === 1
