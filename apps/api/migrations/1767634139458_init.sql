@@ -2,8 +2,8 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 CREATE TABLE api_keys(
   id int GENERATED ALWAYS AS IDENTITY NOT NULL,
-  api_key text NOT NULL,
-  is_enabled boolean NOT NULL DEFAULT TRUE,
+  key text NOT NULL,
+  is_revoked boolean,
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now()
 );
@@ -11,7 +11,7 @@ CREATE TABLE api_keys(
 ALTER TABLE api_keys
   ADD CONSTRAINT api_keys_id_pkey PRIMARY KEY (id);
 
-CREATE UNIQUE INDEX api_keys_api_key_key ON api_keys(api_key);
+CREATE UNIQUE INDEX api_keys_key_key ON api_keys(key);
 
 CREATE TABLE users(
   id uuid DEFAULT gen_random_uuid() NOT NULL,
@@ -33,8 +33,8 @@ WHERE
 CREATE TABLE refresh_tokens(
   id int GENERATED ALWAYS AS IDENTITY NOT NULL,
   user_id uuid NOT NULL,
-  refresh_token text NOT NULL,
-  is_enabled boolean NOT NULL DEFAULT TRUE,
+  token text NOT NULL,
+  is_revoked boolean,
   expires_at timestamptz NOT NULL,
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now()
@@ -43,7 +43,7 @@ CREATE TABLE refresh_tokens(
 ALTER TABLE refresh_tokens
   ADD CONSTRAINT refresh_tokens_id_pkey PRIMARY KEY (id);
 
-CREATE UNIQUE INDEX refresh_tokens_refresh_token_key ON refresh_tokens(refresh_token);
+CREATE UNIQUE INDEX refresh_tokens_token_key ON refresh_tokens(token);
 
 CREATE INDEX refresh_tokens_user_id_idx ON refresh_tokens(user_id);
 
