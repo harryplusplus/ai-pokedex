@@ -29,7 +29,7 @@ export class AuthService {
 
     const providerUserId = await this.#parseProviderUserId(input)
 
-    const userRepo = this.userRepoFactory.newRepo(this.dbService.sql)
+    const userRepo = this.userRepoFactory.create(this.dbService.sql)
     const userId = await userRepo.createOrGetId({
       provider,
       providerUserId,
@@ -50,7 +50,7 @@ export class AuthService {
       expiresAt: refreshTokenExpiresAt,
     })
 
-    const refreshTokenRepo = this.refreshTokenRepoFactory.newRepo(
+    const refreshTokenRepo = this.refreshTokenRepoFactory.create(
       this.dbService.sql,
     )
     await refreshTokenRepo.create({

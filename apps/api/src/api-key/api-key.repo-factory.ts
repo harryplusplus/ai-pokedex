@@ -4,7 +4,7 @@ import { ApiKeyRepo } from './api-key.repo.js'
 
 @Injectable()
 export class ApiKeyRepoFactory {
-  newRepo(sql: Sql) {
+  create(sql: Sql) {
     return new ApiKeyRepo(sql)
   }
 }
