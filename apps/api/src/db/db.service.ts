@@ -9,6 +9,7 @@ export class DbService implements OnApplicationShutdown {
   constructor(configService: ConfigService) {
     this.sql = postgres(configService.databaseUrl, {
       max: 15,
+      debug: process.env.NODE_ENV === 'development',
     })
   }
 

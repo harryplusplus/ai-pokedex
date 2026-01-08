@@ -12,8 +12,9 @@ export class ApiKeyRepo {
       FROM
         api_keys
       WHERE
-        api_key = ${apiKey}
-        AND is_enabled = TRUE
+        key = ${apiKey}
+        AND (is_revoked IS NULL
+          OR is_revoked = FALSE)
     `
 
     return result.count === 1

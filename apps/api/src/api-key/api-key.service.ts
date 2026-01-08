@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common'
-import { Sql } from 'postgres'
 import { DbService } from '../db/db.service.js'
-import { ApiKeyRepo } from './api-key.repo.js'
+import { ApiKeyRepoFactory } from './api-key.repo-factory.js'
 import { ApiKey } from './api-key.schema.js'
 
 @Injectable()
 export class ApiKeyService {
-  constructor(private readonly dbService: DbService) {}
-
-  newRepo(sql: Sql): ApiKeyRepo {
-    return new ApiKeyRepo(sql)
-  }
+  constructor(
+    private readonly dbService: DbService,
+    private readonly apiKeyRepoFactory: ApiKeyRepoFactory,
+  ) {}
 
   async validate(apiKey: ApiKey): Promise<boolean> {
-    return await this.newRepo(this.dbService.sql).validate(apiKey)
+    return await this.apiKeyRepoFactory
+      .newRepo(this.dbService.sql)
+      .validate(apiKey)
   }
 }

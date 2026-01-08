@@ -1,14 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common'
-import { JwtService } from '@nestjs/jwt'
 import { v7 } from 'uuid'
-import { ConfigService } from '../config/config.service.js'
 import { DbService } from '../db/db.service.js'
 import { GoogleAuthService } from '../google-auth/google-auth.service.js'
-import { RefreshTokenService } from '../refresh-token/refresh-token.service.js'
-import { UserId } from '../user/user.schema.js'
-import { UserService } from '../user/user.service.js'
-import { toPrintable } from '../utils.js'
+import { RefreshTokenRepoFactory } from '../refresh-token/refresh-token.repo-factory.js'
+import { UserRepoFactory } from '../user/user.repo-factory.js'
+import { toPrintable, toStack } from '../utils.js'
 import { AuthSignIn } from './auth.schema.js'
+import { JwtService } from './jwt.service.js'
 
 @Injectable()
 export class AuthService {
@@ -16,28 +14,56 @@ export class AuthService {
 
   constructor(
     private readonly googleAuthService: GoogleAuthService,
-    private readonly userService: UserService,
+    private readonly userRepoFactory: UserRepoFactory,
     private readonly dbService: DbService,
-    private readonly refreshTokenService: RefreshTokenService,
+    private readonly refreshTokenRepoFactory: RefreshTokenRepoFactory,
     private readonly jwtService: JwtService,
-    private readonly configService: ConfigService,
   ) {}
 
-  async signIn(input: AuthSignIn): Promise<void> {
+  async signIn(input: AuthSignIn): Promise<{
+    accessToken: string
+    refreshToken: string
+    refreshTokenExpiresAt: Date
+  }> {
     const { provider } = input
 
     const providerUserId = await this.#parseProviderUserId(input)
-    const a = await this.jwtService.signAsync({}, {})
-    const result = await this.dbService.sql.begin(async (sql) => {
-      const userRepo = this.userService.newRepo(sql)
 
-      const user = await userRepo.signIn({
-        provider,
-        providerUserId,
-      })
-
-      const refreshTokenRepo = this.refreshTokenService.newRepo(sql)
+    const userRepo = this.userRepoFactory.newRepo(this.dbService.sql)
+    const userId = await userRepo.createOrGetId({
+      provider,
+      providerUserId,
     })
+
+    const now = new Date()
+    const accessToken = await this.jwtService.createToken({
+      userId,
+      now,
+      expiresAt: this.jwtService.createAccessTokenExpiresAt(now),
+    })
+
+    const refreshTokenExpiresAt =
+      this.jwtService.createRefreshTokenExpiresAt(now)
+    const refreshToken = await this.jwtService.createToken({
+      userId,
+      now,
+      expiresAt: refreshTokenExpiresAt,
+    })
+
+    const refreshTokenRepo = this.refreshTokenRepoFactory.newRepo(
+      this.dbService.sql,
+    )
+    await refreshTokenRepo.create({
+      userId,
+      token: refreshToken,
+      expiresAt: refreshTokenExpiresAt,
+    })
+
+    return {
+      accessToken,
+      refreshToken,
+      refreshTokenExpiresAt,
+    }
   }
 
   async #parseProviderUserId(input: AuthSignIn): Promise<string> {
@@ -58,35 +84,11 @@ export class AuthService {
       if (process.env.NODE_ENV === 'development') {
         this.#logger.error(
           `Failed to parse id token. logId: ${logId}, provider: ${provider}, idToken: ${idToken}, error: ${toPrintable(e)}.`,
+          toStack(e),
         )
       }
 
       throw new Error(`Invalid sign in input. logId: ${logId}.`)
     }
-  }
-
-  async #generateAccessToken(userId: UserId): Promise<string> {
-    return await this.jwtService.signAsync(
-      {},
-      {
-        secret: this.configService.jwtSecret,
-        algorithm: 'HS256',
-        expiresIn: '15m',
-        subject: userId,
-        audience: 'https://ai-pokedex.vercel.com',
-      },
-    )
-  }
-
-  async #generateRefreshToken(userId: UserId): Promise<string> {
-    return await this.jwtService.signAsync(
-      {},
-      {
-        secret: this.configService.jwtSecret,
-        algorithm: 'HS256',
-        expiresIn: '7d',
-        subject: userId,
-      },
-    )
   }
 }

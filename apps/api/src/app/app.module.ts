@@ -5,6 +5,7 @@ import { AuthModule } from '../auth/auth.module.js'
 import { ConfigModule } from '../config/config.module.js'
 import { DbModule } from '../db/db.module.js'
 import { GoogleAuthModule } from '../google-auth/google-auth.module.js'
+import { HealthModule } from '../health/health.module.js'
 import { RefreshTokenModule } from '../refresh-token/refresh-token.module.js'
 import { TrpcModule } from '../trpc/trpc.module.js'
 import { UserModule } from '../user/user.module.js'
@@ -21,6 +22,7 @@ import { AppTrpcRouter } from './app.trpc-router.js'
     GoogleAuthModule,
     AuthModule,
     RefreshTokenModule,
+    HealthModule,
   ],
   providers: [AppTrpcRouter],
 })

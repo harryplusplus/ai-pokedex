@@ -28,9 +28,20 @@ function createTrpcClient() {
         condition: (op) => op.type === 'subscription',
         true: httpSubscriptionLink({
           url: TRPC_API_URL,
+          eventSourceOptions: () => {
+            return {
+              withCredentials: true,
+            } satisfies EventSourceInit
+          },
         }),
         false: httpLink({
           url: TRPC_API_URL,
+          fetch: (url, options) => {
+            return fetch(url, {
+              ...options,
+              credentials: 'include',
+            })
+          },
         }),
       }),
     ],

@@ -5,3 +5,8 @@ export const AuthSignIn = z.object({
   idToken: z.string().min(1),
 })
 export type AuthSignIn = z.infer<typeof AuthSignIn>
+
+export const AuthSignInOutput = z.object({
+  accessToken: z.string().min(1),
+})
+export type AuthSignInOutput = z.infer<typeof AuthSignInOutput>

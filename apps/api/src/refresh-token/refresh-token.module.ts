@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common'
-import { RefreshTokenService } from './refresh-token.service.js'
+import { RefreshTokenRepoFactory } from './refresh-token.repo-factory.js'
 
 @Module({
-  providers: [RefreshTokenService],
-  exports: [RefreshTokenService],
+  providers: [RefreshTokenRepoFactory],
+  exports: [RefreshTokenRepoFactory],
 })
 export class RefreshTokenModule {}

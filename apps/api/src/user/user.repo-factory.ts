@@ -3,7 +3,7 @@ import { Sql } from 'postgres'
 import { UserRepo } from './user.repo.js'
 
 @Injectable()
-export class UserService {
+export class UserRepoFactory {
   newRepo(sql: Sql): UserRepo {
     return new UserRepo(sql)
   }

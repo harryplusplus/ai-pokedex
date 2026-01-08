@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common'
 import { TrpcModule } from '../trpc/trpc.module.js'
-import { UserService } from './user.service.js'
+import { UserRepoFactory } from './user.repo-factory.js'
 
 @Module({
   imports: [TrpcModule],
-  providers: [UserService],
-  exports: [UserService],
+  providers: [UserRepoFactory],
+  exports: [UserRepoFactory],
 })
 export class UserModule {}

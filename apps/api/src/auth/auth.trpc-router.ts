@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common'
-import z from 'zod'
 import { TrpcService } from '../trpc/trpc.service.js'
-import { AuthSignIn } from './auth.schema.js'
+import { AuthSignIn, AuthSignInOutput } from './auth.schema.js'
 import { AuthService } from './auth.service.js'
 
 @Injectable()
@@ -12,8 +11,28 @@ export class AuthTrpcRouter {
     this.router = trpcService.trpc.router({
       signIn: trpcService.publicProcedure
         .input(AuthSignIn)
-        .output(z.void())
-        .mutation(({ input }) => authService.signIn(input)),
+        .output(AuthSignInOutput)
+        .mutation(async ({ ctx, input }) => {
+          const { res } = ctx
+
+          const { accessToken, refreshToken, refreshTokenExpiresAt } =
+            await authService.signIn(input)
+
+          const isProd = process.env.NODE_ENV === 'production'
+          const prefix = isProd ? '__Secure-' : ''
+          res.cookie(`${prefix}refreshToken`, refreshToken, {
+            httpOnly: true,
+            secure: isProd,
+            sameSite: isProd ? 'none' : 'lax',
+            expires: refreshTokenExpiresAt,
+          })
+
+          return {
+            accessToken,
+          }
+        }),
+
+      ping: trpcService.publicProcedure.query(() => {}),
     })
   }
 }

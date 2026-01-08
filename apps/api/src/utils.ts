@@ -25,3 +25,11 @@ export function toPrintable(e: unknown): Error | string {
 
   return JSON.stringify(e)
 }
+
+export function toStack(e: unknown): string | undefined {
+  if (e instanceof Error) {
+    return e.stack
+  }
+
+  return undefined
+}

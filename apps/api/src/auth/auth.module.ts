@@ -7,6 +7,7 @@ import { TrpcModule } from '../trpc/trpc.module.js'
 import { UserModule } from '../user/user.module.js'
 import { AuthService } from './auth.service.js'
 import { AuthTrpcRouter } from './auth.trpc-router.js'
+import { JwtService } from './jwt.service.js'
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { AuthTrpcRouter } from './auth.trpc-router.js'
     DbModule,
     RefreshTokenModule,
   ],
-  providers: [AuthService, AuthTrpcRouter],
+  providers: [AuthService, AuthTrpcRouter, JwtService],
   exports: [AuthService, AuthTrpcRouter],
 })
 export class AuthModule {}
