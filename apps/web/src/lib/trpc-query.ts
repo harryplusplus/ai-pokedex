@@ -19,6 +19,12 @@ export const { TRPCProvider, useTRPC, useTRPCClient } =
 
 const TRPC_API_URL = `${process.env.NEXT_PUBLIC_API_URL}/trpc`
 
+let browserAccessToken: string | undefined
+
+export function setAccessToken(accessToken: string) {
+  browserAccessToken = accessToken
+}
+
 function createTrpcClient() {
   return createTRPCClient<AppRouter>({
     links: [
@@ -34,10 +40,13 @@ function createTrpcClient() {
           url: TRPC_API_URL,
           EventSource: EventSourcePolyfill,
           eventSourceOptions: () => {
+            const headers: Record<string, string> = {}
+            if (browserAccessToken) {
+              headers['Authorization'] = `Bearer ${browserAccessToken}`
+            }
+
             const init: EventSourcePolyfillInit = {
-              headers: {
-                Authorization: 'Bearer ABC',
-              },
+              headers,
             }
 
             return init
@@ -46,6 +55,39 @@ function createTrpcClient() {
         false: httpLink({
           url: TRPC_API_URL,
           fetch: (url, options) => {
+            options ??= {}
+
+            if (browserAccessToken) {
+              const authKey = 'Authorization'
+              const authValue = `Bearer ${browserAccessToken}`
+
+              if (options.headers) {
+                const { headers } = options
+
+                if (headers instanceof Headers) {
+                  headers.set(authKey, authValue)
+                } else if (Array.isArray(headers)) {
+                  let found = false
+                  headers.forEach(([key, _], i, xs) => {
+                    if (key.toLowerCase() === authKey.toLowerCase()) {
+                      found = true
+                      xs[i] = [authKey, authValue]
+                    }
+                  })
+
+                  if (!found) {
+                    headers.push([authKey, authValue])
+                  }
+                } else {
+                  headers[authKey] = authValue
+                }
+              } else {
+                options.headers = {
+                  [authKey]: authValue,
+                }
+              }
+            }
+
             return fetch(url, {
               ...options,
               credentials: 'include',
