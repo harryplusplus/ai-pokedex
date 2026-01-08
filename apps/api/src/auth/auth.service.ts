@@ -8,6 +8,12 @@ import { toPrintable, toStack } from '../utils.js'
 import { AuthSignIn } from './auth.schema.js'
 import { JwtService } from './jwt.service.js'
 
+export interface ParsedIdToken {
+  providerUserId: string
+  name?: string
+  image?: string
+}
+
 @Injectable()
 export class AuthService {
   readonly #logger = new Logger(AuthService.name)
@@ -27,7 +33,7 @@ export class AuthService {
   }> {
     const { provider } = input
 
-    const providerUserId = await this.#parseProviderUserId(input)
+    const { providerUserId, name, image } = await this.#parseIdToken(input)
 
     const userRepo = this.userRepoFactory.create(this.dbService.sql)
     const userId = await userRepo.createOrGetId({
@@ -40,6 +46,8 @@ export class AuthService {
       userId,
       now,
       expiresAt: this.jwtService.createAccessTokenExpiresAt(now),
+      name,
+      image,
     })
 
     const refreshTokenExpiresAt =
@@ -48,6 +56,8 @@ export class AuthService {
       userId,
       now,
       expiresAt: refreshTokenExpiresAt,
+      name,
+      image,
     })
 
     const refreshTokenRepo = this.refreshTokenRepoFactory.create(
@@ -66,15 +76,17 @@ export class AuthService {
     }
   }
 
-  async #parseProviderUserId(input: AuthSignIn): Promise<string> {
+  async #parseIdToken(input: AuthSignIn): Promise<ParsedIdToken> {
     const { provider, idToken } = input
 
     try {
       if (provider === 'google') {
-        const providerUserId =
-          await this.googleAuthService.verifyIdToken(idToken)
-        if (providerUserId) {
-          return providerUserId
+        const { sub, name, picture } =
+          await this.googleAuthService.parseIdToken(idToken)
+        return {
+          providerUserId: sub,
+          name,
+          image: picture,
         }
       }
 

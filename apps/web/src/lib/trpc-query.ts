@@ -21,7 +21,7 @@ const TRPC_API_URL = `${process.env.NEXT_PUBLIC_API_URL}/trpc`
 
 let browserAccessToken: string | undefined
 
-export function setAccessToken(accessToken: string) {
+export function setAccessToken(accessToken: string | undefined) {
   browserAccessToken = accessToken
 }
 

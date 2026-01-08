@@ -18,32 +18,41 @@ export class JwtService {
   }
 
   createRefreshTokenExpiresAt(now: Date): Date {
-    return addDays(now, 14)
+    return addDays(now, 1)
   }
 
   async createToken(input: {
     userId: UserId
     now: Date
     expiresAt: Date
+    name: string | undefined
+    image: string | undefined
   }): Promise<string> {
-    const { userId, now, expiresAt } = input
+    const { userId, now, expiresAt, name, image } = input
 
     const iat = Math.floor(now.getTime() / 1000)
     const exp = Math.floor(expiresAt.getTime() / 1000)
 
-    return await this.nestJwtService.signAsync(
-      {
-        iss: JWT_ISSUER,
-        aud: JWT_ISSUER,
-        sub: userId,
-        jti: v4(),
-        iat,
-        exp,
-      },
-      {
-        secret: this.configService.jwtSecret,
-        algorithm: 'HS256',
-      },
-    )
+    const payload: Record<string, unknown> = {
+      iss: JWT_ISSUER,
+      aud: JWT_ISSUER,
+      sub: userId,
+      jti: v4(),
+      iat,
+      exp,
+    }
+
+    if (name) {
+      payload['name'] = name
+    }
+
+    if (image) {
+      payload['image'] = image
+    }
+
+    return await this.nestJwtService.signAsync(payload, {
+      secret: this.configService.jwtSecret,
+      algorithm: 'HS256',
+    })
   }
 }

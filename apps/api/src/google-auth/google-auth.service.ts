@@ -12,11 +12,22 @@ export class GoogleAuthService {
     })
   }
 
-  async verifyIdToken(idToken: string): Promise<string | null> {
+  async parseIdToken(
+    idToken: string,
+  ): Promise<{ sub: string; name?: string; picture?: string }> {
     const loginTicket = await this.#client.verifyIdToken({
       idToken,
     })
 
-    return loginTicket.getPayload()?.sub ?? null
+    const { sub, name, picture } = loginTicket.getPayload() ?? {}
+    if (!sub) {
+      throw new Error('Invalid id token.')
+    }
+
+    return {
+      sub,
+      name,
+      picture,
+    }
   }
 }

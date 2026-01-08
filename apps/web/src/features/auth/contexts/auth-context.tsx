@@ -11,7 +11,7 @@ import {
 
 interface Profile {
   name?: string
-  picture?: string
+  image?: string
 }
 
 interface AuthContext {
