@@ -3,7 +3,7 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 CREATE TABLE api_keys(
   id int GENERATED ALWAYS AS IDENTITY NOT NULL,
   key text NOT NULL,
-  is_revoked boolean,
+  revoked_at timestamptz,
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now()
 );
@@ -34,8 +34,8 @@ CREATE TABLE refresh_tokens(
   id int GENERATED ALWAYS AS IDENTITY NOT NULL,
   user_id uuid NOT NULL,
   token text NOT NULL,
-  is_revoked boolean,
   expires_at timestamptz NOT NULL,
+  revoked_at timestamptz,
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now()
 );
