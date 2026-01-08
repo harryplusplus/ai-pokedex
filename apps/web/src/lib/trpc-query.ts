@@ -6,9 +6,13 @@ import {
   httpSubscriptionLink,
   loggerLink,
   splitLink,
-  TRPCClient,
+  type TRPCClient,
 } from '@trpc/client'
 import { createTRPCContext } from '@trpc/tanstack-react-query'
+import {
+  EventSourcePolyfill,
+  type EventSourcePolyfillInit,
+} from 'event-source-polyfill'
 
 export const { TRPCProvider, useTRPC, useTRPCClient } =
   createTRPCContext<AppRouter>()
@@ -28,10 +32,15 @@ function createTrpcClient() {
         condition: (op) => op.type === 'subscription',
         true: httpSubscriptionLink({
           url: TRPC_API_URL,
+          EventSource: EventSourcePolyfill,
           eventSourceOptions: () => {
-            return {
-              withCredentials: true,
-            } satisfies EventSourceInit
+            const init: EventSourcePolyfillInit = {
+              headers: {
+                Authorization: 'Bearer ABC',
+              },
+            }
+
+            return init
           },
         }),
         false: httpLink({

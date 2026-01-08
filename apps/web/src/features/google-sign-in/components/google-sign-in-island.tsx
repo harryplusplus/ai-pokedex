@@ -1,7 +1,7 @@
 'use client'
 
 import { GOOGLE_CLIENT_ID } from '@/lib/constants'
-import { useTRPC, useTRPCClient } from '@/lib/trpc-query'
+import { useTRPC } from '@/lib/trpc-query'
 import { toPrintable } from '@/lib/utils'
 import { useMutation } from '@tanstack/react-query'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -13,12 +13,10 @@ export default function GoogleSignInIsland() {
   const hiddenButtonContainerRef = useRef<HTMLDivElement>(null)
 
   const trpc = useTRPC()
-  const trpcClient = useTRPCClient()
   const { mutate: mutateAuthSignIn } = useMutation(
     trpc.auth.signIn.mutationOptions({
       onSuccess: (data) => {
-        console.log('data', data)
-        trpcClient.auth.ping.query().catch((e) => {})
+        const { accessToken } = data
       },
     }),
   )
