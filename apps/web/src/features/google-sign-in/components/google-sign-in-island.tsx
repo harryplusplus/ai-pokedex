@@ -1,5 +1,6 @@
 'use client'
 
+import { useUser } from '@/features/user/contexts/user-context'
 import { GOOGLE_CLIENT_ID } from '@/lib/constants'
 import { setAccessToken, useTRPC } from '@/lib/trpc-query'
 import { toPrintable } from '@/lib/utils'
@@ -11,6 +12,7 @@ import GoogleSignInButton from './google-sign-in-button'
 export default function GoogleSignInIsland() {
   const [isLoaded, setIsLoaded] = useState(false)
   const hiddenButtonContainerRef = useRef<HTMLDivElement>(null)
+  const { setName, setPicture } = useUser()
 
   const trpc = useTRPC()
   const { mutate: mutateAuthSignIn } = useMutation(
@@ -27,13 +29,28 @@ export default function GoogleSignInIsland() {
 
       const parsedIdToken = parseGoogleIdToken(credential)
       if (parsedIdToken) {
-        mutateAuthSignIn({
-          provider: 'google',
-          idToken: credential,
-        })
+        mutateAuthSignIn(
+          {
+            provider: 'google',
+            idToken: credential,
+          },
+          {
+            onSuccess: () => {
+              const { name, picture } = parsedIdToken
+
+              if (name) {
+                setName(name)
+              }
+
+              if (picture) {
+                setPicture(picture)
+              }
+            },
+          },
+        )
       }
     },
-    [mutateAuthSignIn],
+    [mutateAuthSignIn, setName, setPicture],
   )
 
   useEffect(() => {

@@ -1,3 +1,5 @@
+import UserSignOutIsland from '@/features/user/components/user-sign-out-island'
+
 export default function Header() {
   return (
     <header className="fixed top-0 right-0 left-0 z-20 flex h-16 items-center justify-end gap-6 bg-black/20 px-6 backdrop-blur-sm">
@@ -15,6 +17,7 @@ export default function Header() {
       >
         <div className="h-6 w-6" />
       </a>
+      <UserSignOutIsland />
     </header>
   )
 }

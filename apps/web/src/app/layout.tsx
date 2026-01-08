@@ -3,6 +3,7 @@ import Header from '@/components/header'
 import Main from '@/components/main'
 import TrpcQueryProviders from '@/components/trpc-query-providers'
 import { Toaster } from '@/components/ui/sonner'
+import { UserProvider } from '@/features/user/contexts/user-context'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import type { Metadata } from 'next'
 import './globals.css'
@@ -21,10 +22,12 @@ export default function RootLayout({
     <html lang="ko" className="bg-black">
       <body className="overflow-y-scroll antialiased">
         <TrpcQueryProviders>
-          <Background />
-          <Header />
-          <Main>{children}</Main>
-          <ReactQueryDevtools />
+          <UserProvider>
+            <Background />
+            <Header />
+            <Main>{children}</Main>
+            <ReactQueryDevtools />
+          </UserProvider>
         </TrpcQueryProviders>
         <Toaster />
       </body>
