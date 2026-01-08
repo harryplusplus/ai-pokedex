@@ -4,7 +4,6 @@ import { TRPC_ERROR_CODES_BY_KEY } from '@trpc/server/rpc'
 import { Request, Response } from 'express'
 // TODO
 // import { getCodeKeyFromPrismaError } from '../error.js'
-// import { PrismaClientKnownRequestError } from '../generated/prisma/internal/prismaNamespace.js'
 
 const _1_MINUTE_IN_MS = 60 * 1000
 
@@ -38,12 +37,6 @@ export class TrpcService {
     const errorShape: TRPCErrorShape = shape
 
     const { cause } = error
-    // TODO
-    // if (cause instanceof PrismaClientKnownRequestError) {
-    //   const codeKey = getCodeKeyFromPrismaError(cause)
-    //   errorShape.code = TRPC_ERROR_CODES_BY_KEY[codeKey]
-    //   return errorShape
-    // }
 
     if (cause instanceof Error) {
       errorShape.data = {
