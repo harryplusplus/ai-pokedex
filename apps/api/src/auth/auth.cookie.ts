@@ -1,5 +1,4 @@
-import type { Response } from 'express'
-import type { IncomingMessage } from 'node:http'
+import type { Request, Response } from 'express'
 
 const REFRESH_TOKEN_COOKIE_INFO = {
   name: `${process.env.NODE_ENV === 'production' ? '__Secure-' : ''}refreshToken`,
@@ -10,15 +9,11 @@ const REFRESH_TOKEN_COOKIE_INFO = {
   },
 } as const
 
-export function parseRefreshToken(req: IncomingMessage): string | undefined {
-  const [_, refreshToken] =
-    req.headers.cookie
-      ?.split(';')
-      .map((x) => x.trim())
-      .map((x) => x.split('='))
-      .find(([name]) => name === REFRESH_TOKEN_COOKIE_INFO.name) ?? []
-
-  return refreshToken
+export function parseRefreshToken(req: Request): string | null {
+  const value = req.cookies[REFRESH_TOKEN_COOKIE_INFO.name] as
+    | string
+    | undefined
+  return value ?? null
 }
 
 export function setRefreshTokenCookie(

@@ -1,6 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { createExpressMiddleware } from '@trpc/server/adapters/express'
-import { AuthTrpcRouter } from '../auth/auth.trpc-router.js'
 import { TrpcService } from '../trpc/trpc.service.js'
 import { toPrintable } from '../utils.js'
 
@@ -9,10 +8,8 @@ export class AppTrpcRouter {
   readonly #logger = new Logger(AppTrpcRouter.name)
   readonly router
 
-  constructor(trpcService: TrpcService, authTrpcRouter: AuthTrpcRouter) {
-    this.router = trpcService.trpc.router({
-      auth: authTrpcRouter.router,
-    })
+  constructor(trpcService: TrpcService) {
+    this.router = trpcService.trpc.router({})
   }
 
   createMiddleware() {
