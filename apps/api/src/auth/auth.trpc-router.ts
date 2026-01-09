@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { TRPCError } from '@trpc/server'
 import z from 'zod'
+import { EmptyInput } from '../schema.js'
 import { TrpcService } from '../trpc/trpc.service.js'
 import {
   clearRefreshTokenCookie,
@@ -36,7 +37,7 @@ export class AuthTrpcRouter {
         }),
 
       signOut: trpcService.publicProcedure
-        .input(z.object({}))
+        .input(EmptyInput)
         .output(z.void())
         .mutation(async ({ ctx }) => {
           const { req, res } = ctx
@@ -52,7 +53,7 @@ export class AuthTrpcRouter {
         }),
 
       refresh: trpcService.publicProcedure
-        .input(z.object({}))
+        .input(EmptyInput)
         .output(AuthRefreshOutput)
         .mutation(async ({ ctx }) => {
           const { req, res } = ctx

@@ -13,6 +13,8 @@ import {
   useState,
 } from 'react'
 
+const _12MinutesInMs = 12 * 60 * 1000
+
 interface Profile {
   name?: string
   image?: string
@@ -38,7 +40,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   )
 
   useEffect(() => {
-    mutateAuthRefresh({})
+    mutateAuthRefresh()
+
+    const interval = setInterval(() => {
+      mutateAuthRefresh()
+    }, _12MinutesInMs)
+
+    return () => clearInterval(interval)
   }, [mutateAuthRefresh])
 
   return (
