@@ -6,8 +6,7 @@ const REFRESH_TOKEN_COOKIE_INFO = {
   options: {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    // TODO: test strict, lax, none
-    // sameSite: 'none',
+    sameSite: 'none',
   },
 } as const
 
