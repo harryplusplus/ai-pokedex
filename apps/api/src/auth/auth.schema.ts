@@ -10,3 +10,8 @@ export const AuthSignInOutput = z.object({
   accessToken: z.string().min(1),
 })
 export type AuthSignInOutput = z.infer<typeof AuthSignInOutput>
+
+export const AuthRefreshOutput = z.object({
+  accessToken: z.string().min(1),
+})
+export type AuthRefreshOutput = z.infer<typeof AuthRefreshOutput>

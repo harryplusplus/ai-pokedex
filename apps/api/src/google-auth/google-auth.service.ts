@@ -12,7 +12,7 @@ export class GoogleAuthService {
     })
   }
 
-  async parseIdToken(
+  async externalParseIdToken(
     idToken: string,
   ): Promise<{ sub: string; name?: string; picture?: string }> {
     const loginTicket = await this.#client.verifyIdToken({

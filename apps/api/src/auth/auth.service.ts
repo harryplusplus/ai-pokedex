@@ -4,15 +4,10 @@ import { DbService } from '../db/db.service.js'
 import { GoogleAuthService } from '../google-auth/google-auth.service.js'
 import { RefreshTokenRepoFactory } from '../refresh-token/refresh-token.repo-factory.js'
 import { UserRepoFactory } from '../user/user.repo-factory.js'
+import { UserId } from '../user/user.schema.js'
 import { toPrintable, toStack } from '../utils.js'
 import { AuthSignIn } from './auth.schema.js'
-import { JwtService } from './jwt.service.js'
-
-export interface ParsedIdToken {
-  providerUserId: string
-  name?: string
-  image?: string
-}
+import { CreateAllOutput, JwtService } from './jwt.service.js'
 
 @Injectable()
 export class AuthService {
@@ -26,63 +21,48 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async signIn(input: AuthSignIn): Promise<{
-    accessToken: string
-    refreshToken: string
-    refreshTokenExpiresAt: Date
-  }> {
+  async signIn(input: AuthSignIn): Promise<CreateAllOutput> {
     const { provider } = input
 
-    const { providerUserId, name, image } = await this.#parseIdToken(input)
+    const { providerUserId, name, image } =
+      await this.#externalParseIdToken(input)
 
-    const userRepo = this.userRepoFactory.create(this.dbService.sql)
-    const userId = await userRepo.createOrGetId({
-      provider,
-      providerUserId,
+    return await this.dbService.sql.begin(async (sql) => {
+      const userRepo = this.userRepoFactory.create(sql)
+
+      const userId = await userRepo.createOrGetId({
+        provider,
+        providerUserId,
+      })
+
+      const output = await this.jwtService.createAll({
+        sub: userId,
+        name,
+        image,
+      })
+
+      const refreshTokenRepo = this.refreshTokenRepoFactory.create(sql)
+
+      await refreshTokenRepo.create({
+        userId,
+        token: output.refreshToken,
+        expiresAt: output.refreshTokenExpiresAt,
+      })
+
+      return output
     })
-
-    const now = new Date()
-    const accessToken = await this.jwtService.createToken({
-      userId,
-      now,
-      expiresAt: this.jwtService.createAccessTokenExpiresAt(now),
-      name,
-      image,
-    })
-
-    const refreshTokenExpiresAt =
-      this.jwtService.createRefreshTokenExpiresAt(now)
-    const refreshToken = await this.jwtService.createToken({
-      userId,
-      now,
-      expiresAt: refreshTokenExpiresAt,
-      name,
-      image,
-    })
-
-    const refreshTokenRepo = this.refreshTokenRepoFactory.create(
-      this.dbService.sql,
-    )
-    await refreshTokenRepo.create({
-      userId,
-      token: refreshToken,
-      expiresAt: refreshTokenExpiresAt,
-    })
-
-    return {
-      accessToken,
-      refreshToken,
-      refreshTokenExpiresAt,
-    }
   }
 
-  async #parseIdToken(input: AuthSignIn): Promise<ParsedIdToken> {
+  async #externalParseIdToken(
+    input: AuthSignIn,
+  ): Promise<{ providerUserId: string; name?: string; image?: string }> {
     const { provider, idToken } = input
 
     try {
       if (provider === 'google') {
         const { sub, name, picture } =
-          await this.googleAuthService.parseIdToken(idToken)
+          await this.googleAuthService.externalParseIdToken(idToken)
+
         return {
           providerUserId: sub,
           name,
@@ -108,6 +88,41 @@ export class AuthService {
     const refreshTokenRepo = this.refreshTokenRepoFactory.create(
       this.dbService.sql,
     )
+
     await refreshTokenRepo.revoke(refreshToken)
+  }
+
+  async refresh(refreshToken: string): Promise<CreateAllOutput | null> {
+    return await this.dbService.sql.begin(async (sql) => {
+      const refreshTokenRepo = this.refreshTokenRepoFactory.create(sql)
+
+      const entity = await refreshTokenRepo.lock(refreshToken)
+      if (!entity) {
+        return null
+      }
+
+      try {
+        if (new Date(entity.expiresAt) <= new Date()) {
+          return null
+        }
+
+        const payload = await this.jwtService.validate(refreshToken)
+        if (!payload) {
+          return null
+        }
+
+        const output = await this.jwtService.createAll(payload)
+
+        await refreshTokenRepo.create({
+          userId: UserId.parse(payload.sub),
+          token: output.refreshToken,
+          expiresAt: output.refreshTokenExpiresAt,
+        })
+
+        return output
+      } finally {
+        await refreshTokenRepo.revoke(refreshToken)
+      }
+    })
   }
 }

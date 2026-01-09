@@ -11,7 +11,7 @@ export class UserRepo {
     const { provider, providerUserId } = input
     const { sql } = this
 
-    const result = await sql`
+    const result = await sql<{ id: UserId }[]>`
       INSERT INTO users (provider, provider_user_id)
         VALUES (${provider}, ${providerUserId})
       ON CONFLICT (provider, provider_user_id)
@@ -28,6 +28,6 @@ export class UserRepo {
       throw new Error('Invalid result.')
     }
 
-    return result.at(0)?.id as UserId
+    return result[0].id
   }
 }

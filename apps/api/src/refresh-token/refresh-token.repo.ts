@@ -36,4 +36,25 @@ export class RefreshTokenRepo {
         AND revoked_at IS NULL
     `
   }
+
+  async lock(refreshToken: string): Promise<{ expiresAt: string } | null> {
+    const { sql } = this
+
+    const result = await sql<{ expiresAt: string }[]>`
+      SELECT
+        expires_at
+      FROM
+        refresh_tokens
+      WHERE
+        token = ${refreshToken}
+        AND revoked_at IS NULL
+      FOR UPDATE
+    `
+
+    if (result.length === 0) {
+      return null
+    }
+
+    return result[0]
+  }
 }
