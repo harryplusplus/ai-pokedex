@@ -1,6 +1,7 @@
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface.js'
 import { NestFactory } from '@nestjs/core'
 import { setupGracefulShutdown } from '@tygra/nestjs-graceful-shutdown'
+import cookieParser from 'cookie-parser'
 import helmet from 'helmet'
 import { AppModule } from './app/app.module.js'
 import { checkNodeEnv, checkTimeZone } from './utils.js'
@@ -13,15 +14,15 @@ async function bootstrap() {
   setupGracefulShutdown({ app })
 
   app.use(helmet())
-
   app.enableCors({
     origin:
       process.env.NODE_ENV === 'production'
-        ? 'https://ai-pokedex.vercel.app'
+        ? 'https://ai-pokedex-api.vercel.app'
         : true,
     methods: ['GET', 'POST'],
     credentials: true,
   } satisfies CorsOptions)
+  app.use(cookieParser())
 
   await app.listen(process.env.PORT ?? 3100)
 }
