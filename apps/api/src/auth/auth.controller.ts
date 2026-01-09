@@ -9,13 +9,9 @@ import {
   UseInterceptors,
 } from '@nestjs/common'
 import type { Request, Response } from 'express'
+import { RefreshTokenCookieHelper } from '../refresh-token/refresh-token-cookie.helper.js'
 import { ZodOutputInterceptor } from '../zod-output.interceptor.js'
 import { ZodPipe } from '../zod.pipe.js'
-import {
-  clearRefreshTokenCookie,
-  parseRefreshToken,
-  setRefreshTokenCookie,
-} from './auth.cookie.js'
 import {
   AuthRefreshOutput,
   AuthSignIn,
@@ -25,7 +21,10 @@ import { AuthService } from './auth.service.js'
 
 @Controller('/auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly refreshTokenCookieHelper: RefreshTokenCookieHelper,
+  ) {}
 
   @Post('/signIn')
   @UseInterceptors(new ZodOutputInterceptor(AuthSignInOutput))
@@ -34,7 +33,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ): Promise<AuthSignInOutput> {
     const output = await this.authService.signIn(input)
-    setRefreshTokenCookie(res, output)
+    this.refreshTokenCookieHelper.setCookie(res, output)
 
     return output
   }
@@ -46,12 +45,12 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ): Promise<void> {
     try {
-      const refreshToken = parseRefreshToken(req)
+      const refreshToken = this.refreshTokenCookieHelper.getCookie(req)
       if (refreshToken) {
         await this.authService.signOut(refreshToken)
       }
     } finally {
-      clearRefreshTokenCookie(res)
+      this.refreshTokenCookieHelper.clearCookie(res)
     }
   }
 
@@ -62,7 +61,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ): Promise<AuthRefreshOutput> {
     try {
-      const refreshToken = parseRefreshToken(req)
+      const refreshToken = this.refreshTokenCookieHelper.getCookie(req)
       if (!refreshToken) {
         throw new UnauthorizedException('Invalid token.')
       }
@@ -72,11 +71,11 @@ export class AuthController {
         throw new UnauthorizedException('Invalid token.')
       }
 
-      setRefreshTokenCookie(res, output)
+      this.refreshTokenCookieHelper.setCookie(res, output)
 
       return output
     } catch (e) {
-      clearRefreshTokenCookie(res)
+      this.refreshTokenCookieHelper.clearCookie(res)
 
       throw e
     }

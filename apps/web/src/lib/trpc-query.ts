@@ -13,16 +13,30 @@ import {
   EventSourcePolyfill,
   type EventSourcePolyfillInit,
 } from 'event-source-polyfill'
+import { fetchAuthRefresh, getAccessToken } from './auth'
+import { API_URL } from './constants'
+import { setHeaderToArrayHeaders } from './utils'
+
+const TRPC_API_URL = `${API_URL}/trpc`
 
 export const { TRPCProvider, useTRPC, useTRPCClient } =
   createTRPCContext<AppRouter>()
 
-const TRPC_API_URL = `${process.env.NEXT_PUBLIC_API_URL}/trpc`
+const AUTH_HEADER_NAME = 'Authorization'
 
-let browserAccessToken: string | undefined
+function updateAuthHeader(headers: HeadersInit): void {
+  const browserAccessToken = getAccessToken()
+  if (browserAccessToken) {
+    const value = `Bearer ${browserAccessToken}`
 
-export function setAccessToken(accessToken: string | undefined) {
-  browserAccessToken = accessToken
+    if (headers instanceof Headers) {
+      headers.set(AUTH_HEADER_NAME, value)
+    } else if (Array.isArray(headers)) {
+      setHeaderToArrayHeaders(headers, AUTH_HEADER_NAME, value)
+    } else {
+      headers[AUTH_HEADER_NAME] = value
+    }
+  }
 }
 
 function createTrpcClient() {
@@ -41,57 +55,34 @@ function createTrpcClient() {
           EventSource: EventSourcePolyfill,
           eventSourceOptions: () => {
             const headers: Record<string, string> = {}
-            if (browserAccessToken) {
-              headers['Authorization'] = `Bearer ${browserAccessToken}`
-            }
+            updateAuthHeader(headers)
 
-            const init: EventSourcePolyfillInit = {
+            const opts: EventSourcePolyfillInit = {
               headers,
             }
 
-            return init
+            return opts
           },
         }),
         false: httpLink({
           url: TRPC_API_URL,
-          fetch: (url, options) => {
+          fetch: async (url, options) => {
             options ??= {}
+            options.headers ??= {}
+            updateAuthHeader(options.headers)
 
-            if (browserAccessToken) {
-              const authKey = 'Authorization'
-              const authValue = `Bearer ${browserAccessToken}`
-
-              if (options.headers) {
-                const { headers } = options
-
-                if (headers instanceof Headers) {
-                  headers.set(authKey, authValue)
-                } else if (Array.isArray(headers)) {
-                  let found = false
-                  headers.forEach(([key, _], i, xs) => {
-                    if (key.toLowerCase() === authKey.toLowerCase()) {
-                      found = true
-                      xs[i] = [authKey, authValue]
-                    }
-                  })
-
-                  if (!found) {
-                    headers.push([authKey, authValue])
-                  }
-                } else {
-                  headers[authKey] = authValue
-                }
+            const res = await fetch(url, options)
+            if (res.status === 401) {
+              const isSuccess = await fetchAuthRefresh()
+              if (!isSuccess) {
+                window.location.href = '/'
               } else {
-                options.headers = {
-                  [authKey]: authValue,
-                }
+                updateAuthHeader(options.headers)
+                return await fetch(url, options)
               }
             }
 
-            return fetch(url, {
-              ...options,
-              credentials: 'include',
-            })
+            return res
           },
         }),
       }),

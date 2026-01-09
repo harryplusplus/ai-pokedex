@@ -1,8 +1,5 @@
 'use client'
 
-import { useTRPC } from '@/lib/trpc-query'
-import { useMutation } from '@tanstack/react-query'
-import { useRouter } from 'next/navigation'
 import {
   createContext,
   Dispatch,
@@ -12,6 +9,7 @@ import {
   useEffect,
   useState,
 } from 'react'
+import { useAuthRefresh } from '../hooks/useAuthRefresh'
 
 const _12MinutesInMs = 12 * 60 * 1000
 
@@ -29,15 +27,7 @@ const AuthContext = createContext<AuthContext | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile | undefined>(undefined)
-  const router = useRouter()
-  const trpc = useTRPC()
-  const { mutate: mutateAuthRefresh } = useMutation(
-    trpc.auth.refresh.mutationOptions({
-      onError: () => {
-        router.push('/')
-      },
-    }),
-  )
+  const { mutate: mutateAuthRefresh } = useAuthRefresh()
 
   useEffect(() => {
     mutateAuthRefresh()
