@@ -11,7 +11,7 @@ export class ZodPipe<T extends ZodType> implements PipeTransform<
     value: z.input<T>,
     metadata: ArgumentMetadata,
   ): Promise<z.infer<T>> {
-    if (metadata.type !== 'body' || metadata.data || metadata.metatype) {
+    if (metadata.type !== 'body' || metadata.data) {
       throw new Error('Invalid pipe metadata.')
     }
 
