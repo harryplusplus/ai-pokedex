@@ -75,7 +75,7 @@ function createTrpcClient() {
             if (res.status === 401) {
               const isSuccess = await fetchAuthRefresh()
               if (!isSuccess) {
-                window.location.href = '/'
+                window.location.replace('/')
               } else {
                 updateAuthHeader(options.headers)
                 return await fetch(url, options)

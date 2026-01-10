@@ -1,6 +1,6 @@
 'use client'
 
-import { useAuthSignIn } from '@/features/auth/hooks/useAuthSignIn'
+import { useAuthSignIn } from '@/features/auth/hooks/use-auth-sign-in'
 import { GOOGLE_CLIENT_ID } from '@/lib/constants'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'

@@ -29,7 +29,6 @@ async function fetchInternal(): Promise<boolean> {
     })
 
     if (!res.ok) {
-      window.location.replace('/')
       return false
     }
 

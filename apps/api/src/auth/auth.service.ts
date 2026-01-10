@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common'
+import { AuthSignIn } from '@repo/common'
 import { v7 } from 'uuid'
 import { Scannable } from '../component-scan/scannable.decorator.js'
 import { DbService } from '../db/db.service.js'
@@ -7,7 +8,6 @@ import { RefreshTokenRepoFactory } from '../refresh-token/refresh-token.repo-fac
 import { UserRepoFactory } from '../user/user.repo-factory.js'
 import { UserId } from '../user/user.schema.js'
 import { toPrintable, toStack } from '../utils.js'
-import { AuthSignIn } from './auth.schema.js'
 import { CreateAllOutput, JwtService } from './jwt.service.js'
 
 @Scannable()

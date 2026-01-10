@@ -9,7 +9,7 @@ import {
   useEffect,
   useState,
 } from 'react'
-import { useAuthRefresh } from '../hooks/useAuthRefresh'
+import { useAuthRefresh } from '../hooks/use-auth-refresh'
 
 const _12MinutesInMs = 12 * 60 * 1000
 
@@ -19,14 +19,14 @@ interface Profile {
 }
 
 interface AuthContext {
-  profile?: Profile
-  setProfile: Dispatch<SetStateAction<Profile | undefined>>
+  profile: Profile | null
+  setProfile: Dispatch<SetStateAction<Profile | null>>
 }
 
-const AuthContext = createContext<AuthContext | undefined>(undefined)
+const AuthContext = createContext<AuthContext | null>(null)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [profile, setProfile] = useState<Profile | undefined>(undefined)
+  const [profile, setProfile] = useState<Profile | null>(null)
   const { mutate: mutateAuthRefresh } = useAuthRefresh()
 
   useEffect(() => {

@@ -34,3 +34,15 @@ export function setHeaderToArrayHeaders(
 export interface ContentTypeJson {
   'Content-Type': 'application/json'
 }
+
+export async function parseErrorResponse(
+  res: Response,
+): Promise<{ message: string }> {
+  try {
+    return (await res.json()) as { message: string }
+  } catch (_e) {
+    return {
+      message: 'Unknown error',
+    }
+  }
+}
