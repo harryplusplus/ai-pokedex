@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common'
 import { v7 } from 'uuid'
 import { DbService } from '../db/db.service.js'
 import { GoogleAuthService } from '../google-auth/google-auth.service.js'
+import { ProvidedIn } from '../provided-in/provided-in.decorator.js'
 import { RefreshTokenRepoFactory } from '../refresh-token/refresh-token.repo-factory.js'
 import { UserRepoFactory } from '../user/user.repo-factory.js'
 import { UserId } from '../user/user.schema.js'
@@ -9,6 +10,7 @@ import { toPrintable, toStack } from '../utils.js'
 import { AuthSignIn } from './auth.schema.js'
 import { CreateAllOutput, JwtService } from './jwt.service.js'
 
+@ProvidedIn()
 @Injectable()
 export class AuthService {
   readonly #logger = new Logger(AuthService.name)

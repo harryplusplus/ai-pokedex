@@ -4,6 +4,7 @@ import { addDays, addMinutes } from 'date-fns'
 import { v4 } from 'uuid'
 import { ConfigService } from '../config/config.service.js'
 import { JWT_ISSUER } from '../constants.js'
+import { ProvidedIn } from '../provided-in/provided-in.decorator.js'
 
 interface JwtPayload {
   sub: string
@@ -17,6 +18,7 @@ export interface CreateAllOutput {
   refreshTokenExpiresAt: Date
 }
 
+@ProvidedIn()
 @Injectable()
 export class JwtService {
   readonly #secrets: string[]

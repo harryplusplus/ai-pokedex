@@ -9,6 +9,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common'
 import type { Request, Response } from 'express'
+import { ProvidedIn } from '../provided-in/provided-in.decorator.js'
 import { RefreshTokenCookieHelper } from '../refresh-token/refresh-token-cookie.helper.js'
 import { ZodOutputInterceptor } from '../zod-output.interceptor.js'
 import { ZodPipe } from '../zod.pipe.js'
@@ -19,6 +20,7 @@ import {
 } from './auth.schema.js'
 import { AuthService } from './auth.service.js'
 
+@ProvidedIn()
 @Controller('/auth')
 export class AuthController {
   constructor(
