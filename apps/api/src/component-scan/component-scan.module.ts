@@ -19,7 +19,9 @@ export interface ComponentScanModuleOptions {
 
 @Module({})
 export class ComponentScanModule {
-  private static logger = new Logger(ComponentScanModule.name)
+  private static logger = new Logger(ComponentScanModule.name, {
+    timestamp: true,
+  })
 
   static async forRoot(
     options: ComponentScanModuleOptions,
