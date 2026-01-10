@@ -1,5 +1,5 @@
 import { API_URL } from '@/lib/constants'
-import { setAccessToken, useTRPC } from '@/lib/trpc-query'
+import { useTRPC } from '@/lib/trpc-query'
 import { ContentTypeJson, toPrintable } from '@/lib/utils'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
@@ -19,6 +19,13 @@ export function useAuthSignIn() {
           'Content-Type': 'application/json',
         } satisfies ContentTypeJson,
       })
+
+      if (!res.ok) {
+        const { message } = (await res
+          .json()
+          .catch(() => ({ message: 'Unknown error' }))) as { message: string }
+        throw new Error(message)
+      }
 
       if (res.ok) {
         return await res.json()
