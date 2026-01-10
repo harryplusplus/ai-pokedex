@@ -9,26 +9,25 @@ export default function AuthStatus() {
   const { profile } = useAuth()
   const { mutate: mutateAuthSignOut } = useAuthSignOut()
 
-  if (!profile) {
-    return null
-  }
-
-  const { name } = profile
-
+  const { name } = profile ?? {}
   return (
-    <div className="flex items-center gap-3">
-      <div className="flex items-center gap-2">
+    <div className="flex w-60 items-center justify-between gap-8">
+      <div className="flex items-center justify-start gap-4">
         <ProfileImage />
-        {name && <span className="text-sm text-white">{name}</span>}
+        {name && <span className="truncate text-sm text-white">{name}</span>}
       </div>
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => mutateAuthSignOut()}
-        className="bg-white/10 text-white backdrop-blur-sm hover:bg-white/20"
-      >
-        로그아웃
-      </Button>
+      <div className="flex items-center justify-end">
+        {profile && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => mutateAuthSignOut()}
+            className="bg-white/10 text-white backdrop-blur-sm hover:bg-white/20"
+          >
+            로그아웃
+          </Button>
+        )}
+      </div>
     </div>
   )
 }

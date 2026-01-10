@@ -4,9 +4,16 @@ import Main from '@/components/main'
 import TrpcQueryProviders from '@/components/trpc-query-providers'
 import { Toaster } from '@/components/ui/sonner'
 import { AuthProvider } from '@/features/auth/contexts/auth-context'
+import { cn } from '@/lib/utils'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import type { Metadata } from 'next'
+import localFont from 'next/font/local'
 import './globals.css'
+
+const cookieRunFont = localFont({
+  src: '../../public/fonts/CookieRun_Regular.ttf',
+  display: 'block',
+})
 
 export const metadata: Metadata = {
   title: 'AI 포켓몬 도감',
@@ -20,7 +27,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" className="bg-black">
-      <body className="overflow-y-scroll antialiased">
+      <body
+        className={cn('overflow-y-scroll antialiased', cookieRunFont.className)}
+      >
         <TrpcQueryProviders>
           <AuthProvider>
             <Background />

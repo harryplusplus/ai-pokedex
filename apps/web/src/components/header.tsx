@@ -10,15 +10,18 @@ export default function Header() {
         target="_blank"
         rel="noopener noreferrer"
         className="transition-opacity hover:opacity-70"
-        aria-label="GitHub 프로젝트"
+        aria-label="GitHub"
       >
-        <Image
-          src="/github.svg"
-          alt="GitHub 로고"
-          width={24}
-          height={24}
-          className="h-8 w-8 invert"
-        />
+        <div className="flex items-center gap-4">
+          <Image
+            src="/github.svg"
+            alt="GitHub 로고"
+            width={24}
+            height={24}
+            className="h-8 w-8 invert"
+          />
+          <span className="text-sm text-white">GitHub</span>
+        </div>
       </Link>
       <AuthStatus />
     </header>

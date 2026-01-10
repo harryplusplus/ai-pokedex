@@ -21,3 +21,7 @@
 ### 백그라운드 이미지
 
 - [Pokémon Legends Z-A: Epic 4K Ultra HD Night Battle Wallpaper](https://wall.alphacoders.com/big.php?i=1396965)
+
+### 쿠키런 폰트
+
+- [CookieRun Typeface](https://www.cookierunfont.com/)
