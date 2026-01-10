@@ -10,6 +10,7 @@ export class RefreshTokenCookieHelper {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'none',
+    path: '/',
   }
 
   getCookie(req: Request): string | null {

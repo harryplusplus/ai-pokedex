@@ -1,12 +1,16 @@
+import { setAccessToken } from '@/lib/auth'
 import { API_URL } from '@/lib/constants'
 import { parseErrorResponse } from '@/lib/utils'
 import { useMutation } from '@tanstack/react-query'
+import { useAuth } from '../contexts/auth-context'
 
 export function useAuthSignOut() {
+  const { setProfile } = useAuth()
+
   return useMutation<void>({
     mutationKey: ['auth', 'sign-out'],
     mutationFn: async () => {
-      const res = await fetch(`${API_URL}/auth/sign-in`, {
+      const res = await fetch(`${API_URL}/auth/sign-out`, {
         method: 'POST',
         credentials: 'include',
       })
@@ -15,6 +19,10 @@ export function useAuthSignOut() {
         const { message } = await parseErrorResponse(res)
         throw new Error(message)
       }
+    },
+    onSuccess: () => {
+      setAccessToken(null)
+      setProfile(null)
     },
   })
 }
