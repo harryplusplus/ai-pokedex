@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common'
+import { Scannable } from '../component-scan/scannable.decorator.js'
 import { DbService } from '../db/db.service.js'
-import { ProvidedIn } from '../provided-in/provided-in.decorator.js'
 import { ApiKeyRepoFactory } from './api-key.repo-factory.js'
 import { ApiKey } from './api-key.schema.js'
 
-@ProvidedIn()
+@Scannable()
 @Injectable()
 export class ApiKeyService {
   constructor(

@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common'
 import { ConfigService as NestConfigService } from '@nestjs/config'
-import { ProvidedIn } from '../provided-in/provided-in.decorator.js'
+import { Scannable } from '../component-scan/scannable.decorator.js'
 import { EnvVars } from './config.schema.js'
 
-@ProvidedIn()
+@Scannable()
 @Injectable()
 export class ConfigService {
   constructor(

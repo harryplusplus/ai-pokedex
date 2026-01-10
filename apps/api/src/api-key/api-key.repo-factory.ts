@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common'
 import { Sql } from 'postgres'
-import { ProvidedIn } from '../provided-in/provided-in.decorator.js'
+import { Scannable } from '../component-scan/scannable.decorator.js'
 import { ApiKeyRepo } from './api-key.repo.js'
 
-@ProvidedIn()
+@Scannable()
 @Injectable()
 export class ApiKeyRepoFactory {
   create(sql: Sql) {

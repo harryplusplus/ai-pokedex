@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common'
-import { ProvidedIn } from '../provided-in/provided-in.decorator.js'
+import { Scannable } from '../component-scan/scannable.decorator.js'
 
-@ProvidedIn()
+@Scannable()
 @Controller('/health')
 export class HealthController {
   @Get('/')

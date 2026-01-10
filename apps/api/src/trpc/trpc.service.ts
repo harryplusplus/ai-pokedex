@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common'
 import { initTRPC, TRPCErrorFormatter, TRPCErrorShape } from '@trpc/server'
 import { TRPC_ERROR_CODES_BY_KEY } from '@trpc/server/rpc'
 import { Request, Response } from 'express'
-import { ProvidedIn } from '../provided-in/provided-in.decorator.js'
+import { Scannable } from '../component-scan/scannable.decorator.js'
+
 // TODO
 // import { getCodeKeyFromPrismaError } from '../error.js'
 
@@ -13,7 +14,7 @@ export interface Context {
   res: Response
 }
 
-@ProvidedIn()
+@Scannable()
 @Injectable()
 export class TrpcService {
   readonly trpc

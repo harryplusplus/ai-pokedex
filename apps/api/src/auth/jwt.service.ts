@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common'
 import { JwtService as NestJwtService } from '@nestjs/jwt'
 import { addDays, addMinutes } from 'date-fns'
 import { v4 } from 'uuid'
+import { Scannable } from '../component-scan/scannable.decorator.js'
 import { ConfigService } from '../config/config.service.js'
 import { JWT_ISSUER } from '../constants.js'
-import { ProvidedIn } from '../provided-in/provided-in.decorator.js'
 
 interface JwtPayload {
   sub: string
@@ -18,7 +18,7 @@ export interface CreateAllOutput {
   refreshTokenExpiresAt: Date
 }
 
-@ProvidedIn()
+@Scannable()
 @Injectable()
 export class JwtService {
   readonly #secrets: string[]

@@ -8,7 +8,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common'
 import type { Request, Response } from 'express'
-import { ProvidedIn } from '../provided-in/provided-in.decorator.js'
+import { Scannable } from '../component-scan/scannable.decorator.js'
 import { RefreshTokenCookieHelper } from '../refresh-token/refresh-token-cookie.helper.js'
 import { ZodOutputHandler } from '../zod/zod-output.handler.js'
 import { ZodPipe } from '../zod/zod.pipe.js'
@@ -19,7 +19,7 @@ import {
 } from './auth.schema.js'
 import { AuthService } from './auth.service.js'
 
-@ProvidedIn()
+@Scannable()
 @Controller('/auth')
 export class AuthController {
   constructor(

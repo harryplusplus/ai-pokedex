@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common'
 import { OAuth2Client } from 'google-auth-library'
+import { Scannable } from '../component-scan/scannable.decorator.js'
 import { GOOGLE_CLIENT_ID } from '../constants.js'
-import { ProvidedIn } from '../provided-in/provided-in.decorator.js'
 
-@ProvidedIn()
+@Scannable()
 @Injectable()
 export class GoogleAuthService {
   readonly #client: OAuth2Client

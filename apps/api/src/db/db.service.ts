@@ -1,9 +1,9 @@
 import { Injectable, OnApplicationShutdown } from '@nestjs/common'
 import postgres from 'postgres'
+import { Scannable } from '../component-scan/scannable.decorator.js'
 import { ConfigService } from '../config/config.service.js'
-import { ProvidedIn } from '../provided-in/provided-in.decorator.js'
 
-@ProvidedIn()
+@Scannable()
 @Injectable()
 export class DbService implements OnApplicationShutdown {
   readonly sql
