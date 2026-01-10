@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
+import { Scannable } from '@repo/nest-component-scan'
 import { Sql } from 'postgres'
-import { Scannable } from '../component-scan/scannable.decorator.js'
 import { UserRepo } from './user.repo.js'
 
 @Scannable()

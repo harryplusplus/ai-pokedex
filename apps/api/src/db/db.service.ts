@@ -1,6 +1,6 @@
 import { Injectable, OnApplicationShutdown } from '@nestjs/common'
+import { Scannable } from '@repo/nest-component-scan'
 import postgres from 'postgres'
-import { Scannable } from '../component-scan/scannable.decorator.js'
 import { ConfigService } from '../config/config.service.js'
 
 @Scannable()

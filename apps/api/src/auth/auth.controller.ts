@@ -8,8 +8,8 @@ import {
   UnauthorizedException,
 } from '@nestjs/common'
 import { AccessTokenDto, AuthSignIn } from '@repo/common'
+import { Scannable } from '@repo/nest-component-scan'
 import type { Request, Response } from 'express'
-import { Scannable } from '../component-scan/scannable.decorator.js'
 import { RefreshTokenCookieHelper } from '../refresh-token/refresh-token-cookie.helper.js'
 import { ZodOutputHandler } from '../zod/zod-output.handler.js'
 import { ZodPipe } from '../zod/zod.pipe.js'

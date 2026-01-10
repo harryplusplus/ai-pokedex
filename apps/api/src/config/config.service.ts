@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { ConfigService as NestConfigService } from '@nestjs/config'
-import { Scannable } from '../component-scan/scannable.decorator.js'
+import { Scannable } from '@repo/nest-component-scan'
 import { EnvVars } from './config.schema.js'
 
 @Scannable()

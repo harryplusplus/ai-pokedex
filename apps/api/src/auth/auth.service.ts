@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { AuthSignIn } from '@repo/common'
+import { Scannable } from '@repo/nest-component-scan'
 import { v7 } from 'uuid'
-import { Scannable } from '../component-scan/scannable.decorator.js'
 import { DbService } from '../db/db.service.js'
 import { GoogleAuthService } from '../google-auth/google-auth.service.js'
 import { RefreshTokenRepoFactory } from '../refresh-token/refresh-token.repo-factory.js'

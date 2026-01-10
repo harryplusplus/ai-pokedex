@@ -1,5 +1,5 @@
 import { Controller, Get } from '@nestjs/common'
-import { Scannable } from '../component-scan/scannable.decorator.js'
+import { Scannable } from '@repo/nest-component-scan'
 
 @Scannable()
 @Controller('/health')

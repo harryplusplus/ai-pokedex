@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common'
+import { Scannable } from '@repo/nest-component-scan'
 import { createExpressMiddleware } from '@trpc/server/adapters/express'
-import { Scannable } from '../component-scan/scannable.decorator.js'
 import { TrpcService } from '../trpc/trpc.service.js'
 import { toPrintable } from '../utils.js'
 

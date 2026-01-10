@@ -1,0 +1,20 @@
+{
+  "name": "@repo/nest-component-scan",
+  "private": true,
+  "type": "commonjs",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "@swc/core": "1.15.8",
+    "chokidar": "5.0.0",
+    "glob": "13.0.0"
+  }
+}
