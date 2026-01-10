@@ -1,7 +1,9 @@
 import { DynamicModule, Module } from '@nestjs/common'
-import { getGlobalRegistry } from './global.registry.js'
 import { isController, isInjectable } from './nest.helper.js'
-import { ConfigurableModuleClass } from './provided-in.module-definition.js'
+import {
+  ConfigurableModuleClass,
+  resolveProvidedInModuleOptions,
+} from './provided-in.module-definition.js'
 
 export type RegisterOptions = Parameters<
   (typeof ConfigurableModuleClass)['register']
@@ -10,7 +12,7 @@ export type RegisterOptions = Parameters<
 @Module({})
 export class ProvidedInModule extends ConfigurableModuleClass {
   static register(options: RegisterOptions = {}): DynamicModule {
-    const registry = options.registry ?? getGlobalRegistry()
+    const { registry } = resolveProvidedInModuleOptions(options)
 
     const controllers = []
     const providers = []
