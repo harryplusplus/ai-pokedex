@@ -1,4 +1,10 @@
-import { DynamicModule, Module, ModuleMetadata, Type } from '@nestjs/common'
+import {
+  DynamicModule,
+  Logger,
+  Module,
+  ModuleMetadata,
+  Type,
+} from '@nestjs/common'
 import { Glob, GlobOptions } from 'glob'
 import { pathToFileURL } from 'node:url'
 import { isController, isInjectable, isScannable } from './helpers.js'
@@ -13,6 +19,8 @@ export interface ComponentScanModuleOptions {
 
 @Module({})
 export class ComponentScanModule {
+  private static logger = new Logger(ComponentScanModule.name)
+
   static async forRoot(
     options: ComponentScanModuleOptions,
   ): Promise<DynamicModule> {
@@ -44,6 +52,13 @@ export class ComponentScanModule {
         }
       })
     })
+
+    const loadedComponents = [
+      ...controllers.map((x) => x.name),
+      ...providers.map((x) => x.name),
+    ]
+    loadedComponents.sort()
+    this.logger.log(`Loaded components: ${loadedComponents.join(', ')}.`)
 
     return {
       module: this,
