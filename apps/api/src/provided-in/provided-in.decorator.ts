@@ -15,11 +15,9 @@ function resolveProvidedInOptions(
 }
 
 export function ProvidedIn(options?: ProvidedInOptions): ClassDecorator {
-  const decorator: ClassDecorator = (target) => {
+  return (target) => {
     const { registry } = resolveProvidedInOptions(options)
 
     registry.add(target as unknown as Type)
   }
-
-  return decorator
 }

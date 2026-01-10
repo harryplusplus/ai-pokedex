@@ -30,3 +30,7 @@ export function setHeaderToArrayHeaders(
     headers.push([name, value])
   }
 }
+
+export interface ContentTypeJson {
+  'Content-Type': 'application/json'
+}

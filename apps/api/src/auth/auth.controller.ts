@@ -6,13 +6,12 @@ import {
   Req,
   Res,
   UnauthorizedException,
-  UseInterceptors,
 } from '@nestjs/common'
 import type { Request, Response } from 'express'
 import { ProvidedIn } from '../provided-in/provided-in.decorator.js'
 import { RefreshTokenCookieHelper } from '../refresh-token/refresh-token-cookie.helper.js'
-import { ZodOutputInterceptor } from '../zod-output.interceptor.js'
-import { ZodPipe } from '../zod.pipe.js'
+import { ZodOutputHandler } from '../zod/zod-output.handler.js'
+import { ZodPipe } from '../zod/zod.pipe.js'
 import {
   AuthRefreshOutput,
   AuthSignIn,
@@ -28,19 +27,21 @@ export class AuthController {
     private readonly refreshTokenCookieHelper: RefreshTokenCookieHelper,
   ) {}
 
-  @Post('/signIn')
-  @UseInterceptors(new ZodOutputInterceptor(AuthSignInOutput))
+  @Post('/sign-in')
+  @ZodOutputHandler(AuthSignInOutput)
   async signIn(
     @Body(new ZodPipe(AuthSignIn)) input: AuthSignIn,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<AuthSignInOutput> {
+  ) {
     const output = await this.authService.signIn(input)
     this.refreshTokenCookieHelper.setCookie(res, output)
 
-    return output
+    return {
+      accessToken: output.accessToken,
+    }
   }
 
-  @Post('/signOut')
+  @Post('/sign-out')
   @HttpCode(204)
   async signOut(
     @Req() req: Request,
@@ -57,11 +58,11 @@ export class AuthController {
   }
 
   @Post('/refresh')
-  @UseInterceptors(new ZodOutputInterceptor(AuthRefreshOutput))
+  @ZodOutputHandler(AuthRefreshOutput)
   async refresh(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<AuthRefreshOutput> {
+  ) {
     try {
       const refreshToken = this.refreshTokenCookieHelper.getCookie(req)
       if (!refreshToken) {
@@ -75,7 +76,9 @@ export class AuthController {
 
       this.refreshTokenCookieHelper.setCookie(res, output)
 
-      return output
+      return {
+        accessToken: output.accessToken,
+      }
     } catch (e) {
       this.refreshTokenCookieHelper.clearCookie(res)
 
