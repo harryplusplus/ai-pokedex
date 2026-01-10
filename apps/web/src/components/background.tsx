@@ -5,7 +5,7 @@ export default function Background() {
     <div className="fixed inset-0 z-0">
       <Image
         src="/background.png"
-        alt="background"
+        alt="배경"
         fill
         priority
         className="object-cover"
