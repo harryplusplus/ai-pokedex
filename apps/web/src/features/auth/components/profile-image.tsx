@@ -9,7 +9,7 @@ export default function ProfileImage() {
 
   return (
     <div className="relative h-8 w-8 flex-shrink-0 overflow-hidden rounded-full">
-      {image && <Image src={image} alt="profile-image" fill unoptimized />}
+      {image && <Image src={image} alt="profile-image" fill />}
     </div>
   )
 }
