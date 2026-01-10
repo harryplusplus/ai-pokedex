@@ -18,6 +18,7 @@ export function useAuthSignIn() {
         headers: {
           'Content-Type': 'application/json',
         } satisfies ContentTypeJson,
+        credentials: 'include',
       })
 
       if (!res.ok) {

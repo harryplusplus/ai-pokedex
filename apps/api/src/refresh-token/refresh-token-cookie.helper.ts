@@ -9,8 +9,7 @@ export class RefreshTokenCookieHelper {
   readonly cookieOptions: CookieOptions = {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'none',
-    path: '/',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
   }
 
   getCookie(req: Request): string | null {
