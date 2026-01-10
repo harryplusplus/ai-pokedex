@@ -71,6 +71,9 @@ importers:
       '@nestjs/platform-express':
         specifier: 11.1.11
         version: 11.1.11(@nestjs/common@11.1.11(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.11)
+      '@repo/common':
+        specifier: workspace:*
+        version: link:../../packages/common
       '@trpc/server':
         specifier: 11.8.1
         version: 11.8.1(typescript@5.9.3)
@@ -165,6 +168,9 @@ importers:
       '@radix-ui/react-slot':
         specifier: ^1.2.4
         version: 1.2.4(@types/react@19.2.7)(react@19.2.3)
+      '@repo/common':
+        specifier: workspace:*
+        version: link:../../packages/common
       '@tanstack/react-query':
         specifier: 5.90.16
         version: 5.90.16(react@19.2.3)
@@ -241,6 +247,12 @@ importers:
       tw-animate-css:
         specifier: 1.4.0
         version: 1.4.0
+
+  packages/common:
+    dependencies:
+      zod:
+        specifier: 4.3.5
+        version: 4.3.5
 
 packages:
 

@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.4",
+    "@repo/common": "workspace:*",
     "@tanstack/react-query": "5.90.16",
     "@trpc/client": "11.8.1",
     "@trpc/tanstack-react-query": "11.8.1",
