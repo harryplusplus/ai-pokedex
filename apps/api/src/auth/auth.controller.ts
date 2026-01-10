@@ -7,7 +7,7 @@ import {
   Res,
   UnauthorizedException,
 } from '@nestjs/common'
-import { AuthRefreshOutput, AuthSignIn, AuthSignInOutput } from '@repo/common'
+import { AccessTokenDto, AuthSignIn } from '@repo/common'
 import type { Request, Response } from 'express'
 import { Scannable } from '../component-scan/scannable.decorator.js'
 import { RefreshTokenCookieHelper } from '../refresh-token/refresh-token-cookie.helper.js'
@@ -24,7 +24,7 @@ export class AuthController {
   ) {}
 
   @Post('/sign-in')
-  @ZodOutputHandler(AuthSignInOutput)
+  @ZodOutputHandler(AccessTokenDto)
   async signIn(
     @Body(new ZodPipe(AuthSignIn)) input: AuthSignIn,
     @Res({ passthrough: true }) res: Response,
@@ -54,7 +54,7 @@ export class AuthController {
   }
 
   @Post('/refresh')
-  @ZodOutputHandler(AuthRefreshOutput)
+  @ZodOutputHandler(AccessTokenDto)
   async refresh(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,

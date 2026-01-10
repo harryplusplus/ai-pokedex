@@ -1,4 +1,5 @@
 import { API_URL } from './constants'
+import { parseErrorResponse } from './utils'
 
 let browserAccessToken: string | null = null
 
@@ -10,9 +11,9 @@ export function setAccessToken(accessToken: string | null) {
   browserAccessToken = accessToken
 }
 
-let fetchPromise: Promise<boolean> | null = null
+let fetchPromise: Promise<void> | null = null
 
-export function fetchAuthRefresh(): Promise<boolean> {
+export function fetchAuthRefresh(): Promise<void> {
   if (fetchPromise) {
     return fetchPromise
   }
@@ -21,7 +22,7 @@ export function fetchAuthRefresh(): Promise<boolean> {
   return fetchPromise
 }
 
-async function fetchInternal(): Promise<boolean> {
+async function fetchInternal(): Promise<void> {
   try {
     const res = await fetch(`${API_URL}/auth/refresh`, {
       method: 'POST',
@@ -29,7 +30,8 @@ async function fetchInternal(): Promise<boolean> {
     })
 
     if (!res.ok) {
-      return false
+      const { message } = await parseErrorResponse(res)
+      throw new Error(message)
     }
 
     const { accessToken } = (await res.json()) as {
@@ -41,13 +43,21 @@ async function fetchInternal(): Promise<boolean> {
     }
 
     browserAccessToken = accessToken
-
-    return true
-  } catch (_e) {
+  } catch (e) {
     browserAccessToken = null
 
-    return false
+    throw e
   } finally {
     fetchPromise = null
+  }
+}
+
+export function parseAccessToken(accessToken: string): {
+  name?: string
+  image?: string
+} {
+  return JSON.parse(atob(accessToken.split('.')[1])) as {
+    name?: string
+    image?: string
   }
 }

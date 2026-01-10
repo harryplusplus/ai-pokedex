@@ -1,7 +1,7 @@
-import { setAccessToken } from '@/lib/auth'
+import { parseAccessToken, setAccessToken } from '@/lib/auth'
 import { API_URL } from '@/lib/constants'
 import { ContentTypeJson, parseErrorResponse } from '@/lib/utils'
-import { AuthSignIn, AuthSignInOutput } from '@repo/common'
+import { AccessTokenDto, AuthSignIn } from '@repo/common'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { useAuth } from '../contexts/auth-context'
@@ -9,7 +9,7 @@ import { useAuth } from '../contexts/auth-context'
 export function useAuthSignIn() {
   const { setProfile } = useAuth()
 
-  return useMutation<AuthSignInOutput, Error, AuthSignIn>({
+  return useMutation<AccessTokenDto, Error, AuthSignIn>({
     mutationKey: ['auth', 'sign-in'],
     mutationFn: async (input) => {
       const res = await fetch(`${API_URL}/auth/sign-in`, {
@@ -25,7 +25,7 @@ export function useAuthSignIn() {
         throw new Error(message)
       }
 
-      return (await res.json()) as AuthSignInOutput
+      return (await res.json()) as AccessTokenDto
     },
     onError: () => {
       setAccessToken(null)
@@ -35,14 +35,7 @@ export function useAuthSignIn() {
       setAccessToken(accessToken)
 
       try {
-        const { name = '', image = '' } = JSON.parse(
-          atob(accessToken.split('.')[1]),
-        ) as {
-          name?: string
-          image?: string
-        }
-
-        setProfile({ name, image })
+        setProfile(parseAccessToken(accessToken))
       } catch (_e) {
         toast.error(`Failed to parse profile.`)
       }
