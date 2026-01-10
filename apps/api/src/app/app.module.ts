@@ -1,32 +1,23 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common'
+import { ConfigModule } from '@nestjs/config'
 import { JwtModule } from '@nestjs/jwt'
 import { GracefulShutdownModule } from '@tygra/nestjs-graceful-shutdown'
-import { ApiKeyModule } from '../api-key/api-key.module.js'
-import { ConfigModule } from '../config/config.module.js'
-import { DbModule } from '../db/db.module.js'
-import { GoogleAuthModule } from '../google-auth/google-auth.module.js'
-import { HealthModule } from '../health/health.module.js'
+import { EnvVars } from '../config/config.schema.js'
 import { ProvidedInModule } from '../provided-in/provided-in.module.js'
-import { RefreshTokenModule } from '../refresh-token/refresh-token.module.js'
-import { TrpcModule } from '../trpc/trpc.module.js'
-import { UserModule } from '../user/user.module.js'
 import { AppTrpcRouter } from './app.trpc-router.js'
 
 @Module({
   imports: [
     ConfigModule,
     GracefulShutdownModule.forRoot(),
-    TrpcModule,
-    UserModule,
-    ApiKeyModule,
-    DbModule,
-    GoogleAuthModule,
-    RefreshTokenModule,
-    HealthModule,
-    ProvidedInModule.register(),
     JwtModule.register({}),
+    ProvidedInModule.register(),
+    ConfigModule.forRoot({
+      validate: (config) => {
+        return EnvVars.parse(config)
+      },
+    }),
   ],
-  providers: [AppTrpcRouter],
 })
 export class AppModule implements NestModule {
   constructor(private readonly appTrpcRouter: AppTrpcRouter) {}

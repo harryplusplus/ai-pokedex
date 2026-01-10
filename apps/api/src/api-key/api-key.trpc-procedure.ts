@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common'
 import { TRPCError } from '@trpc/server'
+import { ProvidedIn } from '../provided-in/provided-in.decorator.js'
 import { TrpcService } from '../trpc/trpc.service.js'
 import { ApiKey } from './api-key.schema.js'
 import { ApiKeyService } from './api-key.service.js'
 
+@ProvidedIn()
 @Injectable()
 export class ApiKeyTrpcProcedure {
   readonly procedure

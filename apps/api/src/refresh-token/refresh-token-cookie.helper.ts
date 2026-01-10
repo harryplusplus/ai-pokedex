@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common'
 import { CookieOptions, Request, Response } from 'express'
+import { ProvidedIn } from '../provided-in/provided-in.decorator.js'
 
+@ProvidedIn()
 @Injectable()
 export class RefreshTokenCookieHelper {
   readonly cookieName = `${process.env.NODE_ENV === 'production' ? '__Secure-' : ''}refreshToken`

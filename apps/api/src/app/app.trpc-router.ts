@@ -1,8 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { createExpressMiddleware } from '@trpc/server/adapters/express'
+import { ProvidedIn } from '../provided-in/provided-in.decorator.js'
 import { TrpcService } from '../trpc/trpc.service.js'
 import { toPrintable } from '../utils.js'
 
+@ProvidedIn()
 @Injectable()
 export class AppTrpcRouter {
   readonly #logger = new Logger(AppTrpcRouter.name)

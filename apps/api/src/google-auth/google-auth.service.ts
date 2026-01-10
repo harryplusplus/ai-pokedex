@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common'
 import { OAuth2Client } from 'google-auth-library'
 import { GOOGLE_CLIENT_ID } from '../constants.js'
+import { ProvidedIn } from '../provided-in/provided-in.decorator.js'
 
+@ProvidedIn()
 @Injectable()
 export class GoogleAuthService {
   readonly #client: OAuth2Client
