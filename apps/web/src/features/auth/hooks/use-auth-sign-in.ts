@@ -10,9 +10,9 @@ export function useAuthSignIn() {
   const { setProfile } = useAuth()
 
   return useMutation<AccessTokenDto, Error, AuthSignIn>({
-    mutationKey: ['auth', 'sign-in'],
+    mutationKey: ['auth', 'signin'],
     mutationFn: async (input) => {
-      const res = await fetch(`${API_URL}/auth/sign-in`, {
+      const res = await fetch(`${API_URL}/auth/signin`, {
         method: 'POST',
         body: JSON.stringify(input),
         headers: {

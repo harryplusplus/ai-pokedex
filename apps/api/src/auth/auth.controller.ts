@@ -23,7 +23,7 @@ export class AuthController {
     private readonly refreshTokenCookieHelper: RefreshTokenCookieHelper,
   ) {}
 
-  @Post('/sign-in')
+  @Post('/signin')
   @ZodOutputHandler(AccessTokenDto)
   async signIn(
     @Body(new ZodPipe(AuthSignIn)) input: AuthSignIn,
@@ -37,7 +37,7 @@ export class AuthController {
     }
   }
 
-  @Post('/sign-out')
+  @Post('/signout')
   @HttpCode(204)
   async signOut(
     @Req() req: Request,

@@ -8,9 +8,9 @@ export function useAuthSignOut() {
   const { setProfile } = useAuth()
 
   return useMutation<void>({
-    mutationKey: ['auth', 'sign-out'],
+    mutationKey: ['auth', 'signout'],
     mutationFn: async () => {
-      const res = await fetch(`${API_URL}/auth/sign-out`, {
+      const res = await fetch(`${API_URL}/auth/signout`, {
         method: 'POST',
         credentials: 'include',
       })
