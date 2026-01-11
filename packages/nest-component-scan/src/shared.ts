@@ -1,53 +1,65 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import Piscina from 'piscina'
+import { Piscina } from 'piscina'
+
+export const DEFAULT_OUT_FILE_PATH = './src/generated/nest-component-scan.ts'
+export const DEFAULT_IMPORT_EXTENSION = '.js'
+
+const WORKER_MAIN_FILE_PATH = path.resolve(
+  import.meta.dirname,
+  './worker/main.js',
+)
 
 export type ImportExtension = string | null
 
-export const DEFAULT_OUT_FILE = './src/generated/nest-component-scan.ts'
-export const DEFAULT_IMPORT_EXTENSION = '.js'
+export async function ensureOutDirPath(outFilePath: string): Promise<string> {
+  const outDirPath = path.dirname(outFilePath)
+
+  await fs.promises.mkdir(outDirPath, { recursive: true })
+
+  return outDirPath
+}
 
 export interface WorkerInput {
-  sourceFile: string
-  outDir: string
+  sourceFilePath: string
+  outDirPath: string
   importExtension: ImportExtension
 }
 
 export type ComponentKind = 'controller' | 'injectable'
 
-export interface Component {
+export interface ComponentInfo {
   kind: ComponentKind
   name: string
   importLine: string
 }
 
-export interface WorkerOutput {
-  components: Component[]
-}
+export type WorkerOutput = ComponentInfo[]
 
 export function createWorkerPool(): Piscina<WorkerInput, WorkerOutput> {
   return new Piscina<WorkerInput, WorkerOutput>({
-    filename: path.resolve(__dirname, 'worker.js'),
+    filename: WORKER_MAIN_FILE_PATH,
   })
 }
 
 export async function generateFile(input: {
-  components: Component[]
-  outFile: string
+  componentInfos: ComponentInfo[]
+  outFilePath: string
 }): Promise<void> {
-  const { components, outFile } = input
+  const { componentInfos, outFilePath } = input
 
-  const importLines = components.map((x) => x.importLine).toSorted()
+  const importLines = componentInfos.map((x) => x.importLine)
+  importLines.sort()
 
-  const controllerLines = components
+  const controllerLines = componentInfos
     .filter((x) => x.kind === 'controller')
-    .toSorted((a, b) => a.name.localeCompare(b.name))
     .map((x) => `  ${x.name},`)
+  controllerLines.sort((a, b) => a.localeCompare(b))
 
-  const injectableLines = components
+  const injectableLines = componentInfos
     .filter((x) => x.kind === 'injectable')
-    .toSorted((a, b) => a.name.localeCompare(b.name))
     .map((x) => `  ${x.name},`)
+  injectableLines.sort((a, b) => a.localeCompare(b))
 
   const lines: string[] = [
     '/* eslint-disable */',
@@ -66,5 +78,7 @@ export async function generateFile(input: {
     '',
   ]
 
-  await fs.promises.writeFile(outFile, lines.join('\n'))
+  await fs.promises.writeFile(outFilePath, lines.join('\n'))
+
+  console.log(`${new Date().toISOString()} ${outFilePath} generated.`)
 }

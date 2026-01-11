@@ -1,7 +1,7 @@
 {
   "name": "@repo/nest-component-scan",
   "private": true,
-  "type": "commonjs",
+  "type": "module",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -9,8 +9,9 @@
     }
   },
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch"
+    "clean": "node --input-type=module -e \"import fs from 'fs'; fs.rmSync('dist', { recursive: true, force: true })\"",
+    "build": "pnpm run clean && tsc",
+    "dev": "pnpm run clean && tsc --watch"
   },
   "dependencies": {
     "@swc/core": "1.15.8",

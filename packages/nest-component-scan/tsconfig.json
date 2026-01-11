@@ -8,6 +8,7 @@
     "strict": true,
     "target": "esnext",
     "moduleResolution": "nodenext",
-    "module": "nodenext"
+    "module": "nodenext",
+    "removeComments": true
   }
 }

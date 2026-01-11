@@ -1,22 +1,26 @@
 import { Decorator, parseFile } from '@swc/core'
 import path from 'node:path'
 import {
-  Component,
+  ComponentInfo,
   ComponentKind,
   ImportExtension,
   WorkerInput,
   WorkerOutput,
-} from './shared.js'
+} from '../shared.js'
 
-module.exports = async (input: WorkerInput): Promise<WorkerOutput> => {
-  const { sourceFile, outDir, importExtension } = input
+const SCANNABLE_DECORATOR_NAME = 'Scannable'
+const CONTROLLER_DECORATOR_NAME = 'Controller'
+const INJECTABLE_DECORATOR_NAME = 'Injectable'
 
-  const module = await parseFile(sourceFile, {
+export default async function main(input: WorkerInput): Promise<WorkerOutput> {
+  const { sourceFilePath, outDirPath, importExtension } = input
+
+  const module = await parseFile(sourceFilePath, {
     syntax: 'typescript',
     decorators: true,
   })
 
-  const components: Component[] = []
+  const componentInfos: ComponentInfo[] = []
 
   for (const moduleItem of module.body) {
     if (moduleItem.type === 'ExportDeclaration') {
@@ -34,14 +38,14 @@ module.exports = async (input: WorkerInput): Promise<WorkerOutput> => {
 
         if (analyzeDecoratorsOutput) {
           const importPath = resolveImportPath({
-            sourceFile,
-            outDir,
+            sourceFilePath,
+            outDirPath,
             importExtension,
           })
 
           const importLine = `import { ${analyzeDecoratorsOutput.name} } from "${importPath}";`
 
-          components.push({
+          componentInfos.push({
             ...analyzeDecoratorsOutput,
             importLine,
           })
@@ -50,9 +54,7 @@ module.exports = async (input: WorkerInput): Promise<WorkerOutput> => {
     }
   }
 
-  return {
-    components,
-  }
+  return componentInfos
 }
 
 interface ParseDecoratorsOutput {
@@ -60,10 +62,6 @@ interface ParseDecoratorsOutput {
   hasController: boolean
   hasInjectable: boolean
 }
-
-const SCANNABLE_DECORATOR_NAME = 'Scannable'
-const CONTROLLER_DECORATOR_NAME = 'Controller'
-const INJECTABLE_DECORATOR_NAME = 'Injectable'
 
 function parseDecorators(decorators: Decorator[]): ParseDecoratorsOutput {
   let hasScannable = false
@@ -125,20 +123,20 @@ function analyzeDecorators(
 }
 
 function resolveImportPath(input: {
-  sourceFile: string
-  outDir: string
+  sourceFilePath: string
+  outDirPath: string
   importExtension: ImportExtension
 }): string {
-  const { sourceFile, outDir, importExtension } = input
+  const { sourceFilePath, outDirPath, importExtension } = input
 
-  const relPath = path.relative(outDir, sourceFile)
+  const relativePath = path.relative(outDirPath, sourceFilePath)
 
   if (importExtension == null) {
-    return relPath
+    return relativePath
   }
 
-  const ext = path.extname(relPath)
-  const withoutExt = relPath.slice(0, -ext.length)
+  const extension = path.extname(relativePath)
+  const withoutExtension = relativePath.slice(0, -extension.length)
 
-  return `${withoutExt}${importExtension}`
+  return `${withoutExtension}${importExtension}`
 }
