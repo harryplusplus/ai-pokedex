@@ -1,35 +1,38 @@
-import { ComponentInfo } from '../shared.js'
+import { ComponentInfo, createFileContents } from '../shared.js'
 
 type FilePath = string
 
 export class WatchContext {
-  #changed = false
   #map = new Map<FilePath, ComponentInfo[]>()
+  #componentChanged = false
+  #lastFileContents = ''
 
   set(sourceFilePath: FilePath, componentInfos: ComponentInfo[]): void {
     this.#map.set(sourceFilePath, componentInfos)
-
-    if (componentInfos.length > 0) {
-      this.#changed = true
-    }
+    this.#componentChanged = true
   }
 
   delete(sourceFilePath: FilePath): void {
     if (this.#map.delete(sourceFilePath)) {
-      this.#changed = true
+      this.#componentChanged = true
     }
   }
 
-  getIfChanged(): ComponentInfo[] | null {
-    if (this.#changed) {
-      this.#changed = false
+  getFileContentsIfChanged(): string | null {
+    if (this.#componentChanged) {
+      this.#componentChanged = false
 
       const componentInfos = this.#map
         .values()
         .flatMap((x) => x)
         .toArray()
 
-      return componentInfos
+      const fileContents = createFileContents({ componentInfos })
+      if (fileContents !== this.#lastFileContents) {
+        this.#lastFileContents = fileContents
+
+        return fileContents
+      }
     }
 
     return null

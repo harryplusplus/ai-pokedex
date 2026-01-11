@@ -1,5 +1,6 @@
 import fg from 'fast-glob'
 import {
+  createFileContents,
   createWorkerPool,
   DEFAULT_IMPORT_EXTENSION,
   DEFAULT_OUT_FILE_PATH,
@@ -68,5 +69,6 @@ export async function run(options: RunOptions): Promise<void> {
     .values()
     .toArray()
 
-  await generateFile({ componentInfos, outFilePath })
+  const fileContents = createFileContents({ componentInfos })
+  await generateFile({ fileContents, outFilePath })
 }

@@ -66,9 +66,9 @@ export async function watch(options: WatchOptions): Promise<void> {
       break
     }
 
-    const componentInfos = context.getIfChanged()
-    if (componentInfos) {
-      await generateFile({ componentInfos, outFilePath })
+    const fileContents = context.getFileContentsIfChanged()
+    if (fileContents) {
+      await generateFile({ fileContents, outFilePath })
 
       continue
     }

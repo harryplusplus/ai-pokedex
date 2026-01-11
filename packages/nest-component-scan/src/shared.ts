@@ -42,11 +42,10 @@ export function createWorkerPool(): Piscina<WorkerInput, WorkerOutput> {
   })
 }
 
-export async function generateFile(input: {
+export function createFileContents(input: {
   componentInfos: ComponentInfo[]
-  outFilePath: string
-}): Promise<void> {
-  const { componentInfos, outFilePath } = input
+}): string {
+  const { componentInfos } = input
 
   const importLines = componentInfos.map((x) => x.importLine)
   importLines.sort()
@@ -78,7 +77,16 @@ export async function generateFile(input: {
     '',
   ]
 
-  await fs.promises.writeFile(outFilePath, lines.join('\n'))
+  return lines.join('\n')
+}
+
+export async function generateFile(input: {
+  fileContents: string
+  outFilePath: string
+}): Promise<void> {
+  const { fileContents, outFilePath } = input
+
+  await fs.promises.writeFile(outFilePath, fileContents)
 
   console.log(`${new Date().toISOString()} ${outFilePath} generated.`)
 }
