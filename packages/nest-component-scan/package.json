@@ -15,6 +15,7 @@
   "dependencies": {
     "@swc/core": "1.15.8",
     "chokidar": "5.0.0",
-    "glob": "13.0.0"
+    "fast-glob": "3.3.3",
+    "piscina": "5.1.4"
   }
 }

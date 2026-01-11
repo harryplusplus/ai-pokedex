@@ -1,11 +1,19 @@
-import { run } from '@repo/nest-component-scan'
+import { watch } from '@repo/nest-component-scan'
 
-run({
-  glob: {
-    pattern: 'src/**/*.ts',
-    ignore: ['**/*.spec.ts'],
-  },
-}).catch((e) => {
+async function main() {
+  const abortController = new AbortController()
+
+  process.on('SIGINT', () => {
+    abortController.abort()
+  })
+
+  await watch({
+    paths: 'src',
+    signal: abortController.signal,
+  })
+}
+
+main().catch((e) => {
   console.error(e)
   process.exit(1)
 })
