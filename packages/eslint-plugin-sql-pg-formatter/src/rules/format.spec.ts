@@ -11,11 +11,26 @@ beforeAll(() => {
   run = (tests) => ruleTester.run('format', format, tests)
 })
 
-it('sql`${a}`', () => {
+it(`sql\`\``, () => {
   run({
     valid: [
       {
-        code: 'sql`${a}`',
+        code: `sql\`\``,
+      },
+    ],
+    invalid: [],
+  })
+})
+
+it(`sql\`select * from users\``, () => {
+  run({
+    valid: [
+      {
+        code: `sql\`
+select
+    *
+from
+    users\``,
       },
     ],
     invalid: [],

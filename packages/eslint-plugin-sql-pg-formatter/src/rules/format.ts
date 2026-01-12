@@ -64,12 +64,14 @@ const rule: Rule.RuleModule = {
               placeholder: '\\$\\{[^}]+\\}',
             })
 
-            if (sql !== formatted) {
+            const current = '`' + sql + '`'
+            const next = '`\n' + formatted + '`'
+            if (current !== next) {
               context.report({
                 node: quasi,
                 messageId: 'notFormatted',
                 fix: (fixer) => {
-                  return fixer.replaceText(quasi, '`' + formatted + '`')
+                  return fixer.replaceText(quasi, next)
                 },
               })
             }
