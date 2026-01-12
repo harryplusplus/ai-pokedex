@@ -11,12 +11,6 @@ importers:
       '@eslint/js':
         specifier: 9.39.2
         version: 9.39.2
-      '@repo/eslint-plugin-sql-pg-formatter':
-        specifier: workspace:*
-        version: link:packages/eslint-plugin-sql-pg-formatter
-      '@repo/prettier-plugin-sql-pg-formatter':
-        specifier: workspace:*
-        version: link:packages/prettier-plugin-sql-pg-formatter
       '@types/node':
         specifier: 25.0.3
         version: 25.0.3
@@ -50,6 +44,9 @@ importers:
       prettier-plugin-sql-exec:
         specifier: 1.1.3
         version: 1.1.3
+      prettier-plugin-sql-pg-formatter:
+        specifier: workspace:*
+        version: link:packages/prettier-plugin-sql-pg-formatter
       prettier-plugin-tailwindcss:
         specifier: 0.7.2
         version: 0.7.2(prettier@3.7.4)
@@ -266,22 +263,6 @@ importers:
         specifier: 4.3.5
         version: 4.3.5
 
-  packages/eslint-plugin-sql-pg-formatter:
-    dependencies:
-      psqlformat:
-        specifier: 1.30.0
-        version: 1.30.0
-    devDependencies:
-      '@types/eslint':
-        specifier: 9.6.1
-        version: 9.6.1
-      eslint:
-        specifier: 9.39.2
-        version: 9.39.2(jiti@2.6.1)
-      vitest:
-        specifier: 4.0.16
-        version: 4.0.16(@types/node@25.0.3)(jiti@2.6.1)(lightningcss@1.30.2)(msw@2.12.7(@types/node@25.0.3)(typescript@5.9.3))(terser@5.44.1)
-
   packages/nest-component-scan:
     dependencies:
       '@swc/core':
@@ -306,12 +287,6 @@ importers:
       prettier:
         specifier: 3.7.4
         version: 3.7.4
-      prettier-plugin-embed:
-        specifier: 0.5.1
-        version: 0.5.1
-      vitest:
-        specifier: 4.0.16
-        version: 4.0.16(@types/node@25.0.3)(jiti@2.6.1)(lightningcss@1.30.2)(msw@2.12.7(@types/node@25.0.3)(typescript@5.9.3))(terser@5.44.1)
 
 packages:
 

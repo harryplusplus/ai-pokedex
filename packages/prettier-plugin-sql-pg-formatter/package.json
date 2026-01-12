@@ -1,5 +1,5 @@
 {
-  "name": "@repo/prettier-plugin-sql-pg-formatter",
+  "name": "prettier-plugin-sql-pg-formatter",
   "private": true,
   "type": "module",
   "exports": {
@@ -17,8 +17,6 @@
     "psqlformat": "1.30.0"
   },
   "devDependencies": {
-    "prettier": "3.7.4",
-    "prettier-plugin-embed": "0.5.1",
-    "vitest": "4.0.16"
+    "prettier": "3.7.4"
   }
 }

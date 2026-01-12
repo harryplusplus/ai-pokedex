@@ -7,7 +7,7 @@ const sqlPgFormatterPrinter: Printer<string> = {
   print: (path, _options) => {
     const input = path.node
 
-    const output = psqlformat.formatSql(input)
+    const output = psqlformat.formatSql(input, {})
 
     return output
   },

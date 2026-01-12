@@ -1,13 +1,14 @@
 import type { SupportOption } from 'prettier'
 
 export interface SqlPgFormatterOptions {
-  a: string
+  sqlPgFormatterSpaces: number
 }
 
 export const options: Record<keyof SqlPgFormatterOptions, SupportOption> = {
-  a: {
-    category: 'Format',
-    type: 'string',
-    description: 'TODO',
+  sqlPgFormatterSpaces: {
+    category: 'SQL',
+    type: 'int',
+    default: 4,
+    description: 'Use spaces for indentation (default 4 spaces)',
   },
 }

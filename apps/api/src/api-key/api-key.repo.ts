@@ -7,14 +7,15 @@ export class ApiKeyRepo {
 
   async validate(apiKey: ApiKey): Promise<boolean> {
     const { sql } = this
-    const result = await sql`SELECT
-    *
-FROM
-    api_keys
-WHERE
-    key = ${apiKey}
-    AND revoked_at IS NULL
-`
+    const result = await sql`
+      SELECT
+          *
+      FROM
+          api_keys
+      WHERE
+          key = ${apiKey}
+          AND revoked_at IS NULL
+    `
 
     return result.count === 1
   }

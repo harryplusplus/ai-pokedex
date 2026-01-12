@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
 import eslint from '@eslint/js'
-import sqlPgFormatter from '@repo/eslint-plugin-sql-pg-formatter'
 import { defineConfig, globalIgnores } from 'eslint/config'
 import nextVitals from 'eslint-config-next/core-web-vitals'
 import nextTs from 'eslint-config-next/typescript'
@@ -71,7 +70,6 @@ const config = defineConfig([
     },
   },
   eslintPlugin.configs['all-type-checked'],
-  sqlPgFormatter.configs.recommended,
   prettierRecommended,
 ])
 
