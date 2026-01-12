@@ -16,7 +16,10 @@
   "dependencies": {
     "@swc/core": "1.15.8",
     "chokidar": "5.0.0",
-    "fast-glob": "3.3.3",
+    "micromatch": "4.0.8",
     "piscina": "5.1.4"
+  },
+  "devDependencies": {
+    "@types/micromatch": "4.0.10"
   }
 }

@@ -10,17 +10,16 @@ async function main() {
     abortController.abort()
   })
 
+  const opts = {
+    paths: 'src',
+    ignores: '**/*.spec.ts',
+    signal: abortController.signal,
+  }
+
   if (isRun) {
-    await run({
-      pattern: 'src/**/*.ts',
-      ignore: ['**/*.spec.ts'],
-    })
+    await run(opts)
   } else {
-    await watch({
-      paths: 'src',
-      ignored: /\.spec\.ts$/,
-      signal: abortController.signal,
-    })
+    await watch(opts)
   }
 }
 

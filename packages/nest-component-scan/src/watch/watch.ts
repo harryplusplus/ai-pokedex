@@ -1,36 +1,20 @@
-import chokidar, { ChokidarOptions } from 'chokidar'
+import chokidar from 'chokidar'
 
 import {
   createWorkerPool,
-  DEFAULT_IMPORT_EXTENSION,
-  DEFAULT_OUT_FILE_PATH,
   ensureOutDirPath,
+  fillScanOptions,
   generateFile,
-  ImportExtension,
+  isIgnored,
+  ScanOptions,
 } from '../shared.js'
 import { WatchContext } from './context.js'
 
 const POLL_INTERVAL_IN_MS = 200
 
-export type Paths = Parameters<typeof chokidar.watch>[0]
-export type Ignored = NonNullable<ChokidarOptions['ignored']>
-
-export interface WatchOptions {
-  paths: Paths
-  ignored?: Ignored
-  signal: AbortSignal
-  outFilePath?: string
-  importExtension?: ImportExtension
-}
-
-export async function watch(options: WatchOptions): Promise<void> {
-  const {
-    paths,
-    ignored = [],
-    signal,
-    outFilePath = DEFAULT_OUT_FILE_PATH,
-    importExtension = DEFAULT_IMPORT_EXTENSION,
-  } = options
+export async function watch(options: ScanOptions): Promise<void> {
+  const { paths, ignores, signal, outFilePath, importExtension } =
+    fillScanOptions(options)
 
   const outDirPath = await ensureOutDirPath(outFilePath)
 
@@ -38,10 +22,10 @@ export async function watch(options: WatchOptions): Promise<void> {
 
   const context = new WatchContext()
 
-  const resolvedIgnored = resolveIgnored(ignored, outFilePath)
+  const ignoreList = [...ignores, outFilePath]
 
   const watcher = chokidar.watch(paths, {
-    ignored: resolvedIgnored,
+    ignored: (currentPath) => isIgnored(currentPath, ignoreList),
     atomic: true,
   })
 
@@ -78,9 +62,4 @@ export async function watch(options: WatchOptions): Promise<void> {
   }
 
   await watcher.close()
-}
-
-function resolveIgnored(ignored: Ignored, outFilePath: string) {
-  const ignoredList = Array.isArray(ignored) ? ignored : [ignored]
-  return new Set([...ignoredList, outFilePath]).values().toArray()
 }

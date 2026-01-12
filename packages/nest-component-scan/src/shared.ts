@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
+import micromatch from 'micromatch'
 import { Piscina } from 'piscina'
 
 export const DEFAULT_OUT_FILE_PATH = './src/generated/nest-component-scan.ts'
@@ -11,7 +12,44 @@ const WORKER_MAIN_FILE_PATH = path.resolve(
   './worker/main.js',
 )
 
+export type Paths = string | string[]
+export type Ignores = string | string[]
+
+export function isIgnored(currentPath: string, ignores: Ignores): boolean {
+  return micromatch.isMatch(currentPath, ignores)
+}
+
 export type ImportExtension = string | null
+
+export interface ScanOptions {
+  signal: AbortSignal
+  paths: Paths
+  ignores?: Ignores
+  outFilePath?: string
+  importExtension?: ImportExtension
+}
+
+export interface FilledScanOptions {
+  signal: AbortSignal
+  paths: string[]
+  ignores: string[]
+  outFilePath: string
+  importExtension: ImportExtension
+}
+
+export function fillScanOptions(options: ScanOptions): FilledScanOptions {
+  return {
+    signal: options.signal,
+    paths: Array.isArray(options.paths) ? options.paths : [options.paths],
+    ignores: Array.isArray(options.ignores)
+      ? options.ignores
+      : options.ignores
+        ? [options.ignores]
+        : [],
+    outFilePath: options.outFilePath ?? DEFAULT_OUT_FILE_PATH,
+    importExtension: options.importExtension ?? DEFAULT_IMPORT_EXTENSION,
+  }
+}
 
 export async function ensureOutDirPath(outFilePath: string): Promise<string> {
   const outDirPath = path.dirname(outFilePath)

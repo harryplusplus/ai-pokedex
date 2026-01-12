@@ -1,66 +1,61 @@
-import fg from 'fast-glob'
+import fs from 'node:fs'
+import path from 'node:path'
 
 import {
   createFileContents,
   createWorkerPool,
-  DEFAULT_IMPORT_EXTENSION,
-  DEFAULT_OUT_FILE_PATH,
   ensureOutDirPath,
+  fillScanOptions,
   generateFile,
-  ImportExtension,
+  isIgnored,
+  ScanOptions,
   WorkerOutput,
 } from './shared.js'
 
-export type Pattern = Parameters<typeof fg.stream>[0]
-export type Ignore = NonNullable<
-  NonNullable<Parameters<typeof fg.stream>[1]>['ignore']
->
-
-export interface RunOptions {
-  pattern: Pattern
-  ignore?: Ignore
-  signal?: AbortSignal
-  outFilePath?: string
-  importExtension?: ImportExtension
-}
-
-export async function run(options: RunOptions): Promise<void> {
-  const {
-    pattern,
-    ignore = [],
-    signal,
-    outFilePath = DEFAULT_OUT_FILE_PATH,
-    importExtension = DEFAULT_IMPORT_EXTENSION,
-  } = options
+export async function run(options: ScanOptions): Promise<void> {
+  const { paths, ignores, signal, outFilePath, importExtension } =
+    fillScanOptions(options)
 
   const outDirPath = await ensureOutDirPath(outFilePath)
 
   await using pool = createWorkerPool()
 
-  const stream = fg.stream(pattern, {
-    ignore,
-  })
-
   const workerOutputPromises: Promise<WorkerOutput>[] = []
 
-  for await (const filePath of stream) {
-    if (signal?.aborted) {
-      break
-    }
+  const visitSet = new Set<string>()
+  const ignoreList = [...ignores, outFilePath]
 
-    const sourceFilePath = filePath.toString()
-    workerOutputPromises.push(
-      pool.run(
-        {
-          sourceFilePath,
-          outDirPath,
-          importExtension,
-        },
-        {
-          signal,
-        },
-      ),
-    )
+  for (const currentPath of paths) {
+    const stream = traverse(currentPath)
+
+    for await (const sourceFilePath of stream) {
+      if (signal.aborted) {
+        break
+      }
+
+      if (isIgnored(sourceFilePath, ignoreList)) {
+        continue
+      }
+
+      if (visitSet.has(sourceFilePath)) {
+        continue
+      }
+
+      visitSet.add(sourceFilePath)
+
+      workerOutputPromises.push(
+        pool.run(
+          {
+            sourceFilePath,
+            outDirPath,
+            importExtension,
+          },
+          {
+            signal,
+          },
+        ),
+      )
+    }
   }
 
   const workerOutputs = await Promise.all(workerOutputPromises)
@@ -72,4 +67,33 @@ export async function run(options: RunOptions): Promise<void> {
 
   const fileContents = createFileContents({ componentInfos })
   await generateFile({ fileContents, outFilePath })
+}
+
+async function* traverse(currentPath: string): AsyncGenerator<string> {
+  const stat = await fs.promises.stat(currentPath).catch(() => null)
+  if (!stat) {
+    return
+  }
+
+  if (stat.isFile()) {
+    yield currentPath
+    return
+  }
+
+  if (stat.isDirectory()) {
+    const pathInfos = await fs.promises.readdir(currentPath, {
+      withFileTypes: true,
+      encoding: 'utf8',
+    })
+
+    for (const pathInfo of pathInfos) {
+      const relativePath = path.join(pathInfo.parentPath, pathInfo.name)
+
+      if (pathInfo.isFile()) {
+        yield relativePath
+      } else if (pathInfo.isDirectory()) {
+        yield* traverse(relativePath)
+      }
+    }
+  }
 }
