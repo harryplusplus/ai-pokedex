@@ -1,4 +1,5 @@
 import { Sql } from 'postgres'
+
 import { UserId } from './user.schema.js'
 
 export class UserRepo {

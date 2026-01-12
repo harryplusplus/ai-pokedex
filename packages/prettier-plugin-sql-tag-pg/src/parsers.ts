@@ -1,10 +1,10 @@
 import type { Parser, Plugin } from 'prettier'
 
-import { SQL_PG_FORMATTER } from './constants.js'
+import { SQL_TAG_PG } from './constants.js'
 
 const sqlParser: Parser<string> = {
   parse: (text) => text,
-  astFormat: SQL_PG_FORMATTER,
+  astFormat: SQL_TAG_PG,
   locStart: () => -1,
   locEnd: () => -1,
 }

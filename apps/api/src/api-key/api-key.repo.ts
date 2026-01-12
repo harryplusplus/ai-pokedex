@@ -9,12 +9,12 @@ export class ApiKeyRepo {
     const { sql } = this
     const result = await sql`
       SELECT
-          *
+        *
       FROM
-          api_keys
+        api_keys
       WHERE
-          key = ${apiKey}
-          AND revoked_at IS NULL
+        key = ${apiKey}
+        AND revoked_at IS NULL
     `
 
     return result.count === 1
