@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
-import { Scannable } from '@repo/nest-component-scan'
+import { Scannable } from 'nest-component-scan'
 import { TRPCError } from '@trpc/server'
+
 import { TrpcService } from '../trpc/trpc.service.js'
 import { ApiKey } from './api-key.schema.js'
 import { ApiKeyService } from './api-key.service.js'

@@ -1,6 +1,5 @@
 'use client'
 
-import { getAccessToken, parseAccessToken } from '@/lib/auth'
 import {
   createContext,
   Dispatch,
@@ -12,6 +11,9 @@ import {
   useState,
 } from 'react'
 import { toast } from 'sonner'
+
+import { getAccessToken, parseAccessToken } from '@/lib/auth'
+
 import { useAuthRefresh } from '../hooks/use-auth-refresh'
 
 const _12MinutesInMs = 12 * 60 * 1000

@@ -1,7 +1,9 @@
+import { useMutation } from '@tanstack/react-query'
+
 import { setAccessToken } from '@/lib/auth'
 import { API_URL } from '@/lib/constants'
 import { parseErrorResponse } from '@/lib/utils'
-import { useMutation } from '@tanstack/react-query'
+
 import { useAuth } from '../contexts/auth-context'
 
 export function useAuthSignOut() {

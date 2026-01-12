@@ -2,6 +2,7 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
 import { JwtModule } from '@nestjs/jwt'
 import { GracefulShutdownModule } from '@tygra/nestjs-graceful-shutdown'
+
 import { EnvVars } from '../config/config.schema.js'
 import {
   SCANNED_CONTROLLERS,

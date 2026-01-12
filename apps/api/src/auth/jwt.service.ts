@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common'
 import { JwtService as NestJwtService } from '@nestjs/jwt'
-import { Scannable } from '@repo/nest-component-scan'
+import { Scannable } from 'nest-component-scan'
 import { addDays, addMinutes } from 'date-fns'
 import { v4 } from 'uuid'
+
 import { ConfigService } from '../config/config.service.js'
 import { JWT_ISSUER } from '../constants.js'
 

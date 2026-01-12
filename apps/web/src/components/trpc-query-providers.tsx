@@ -1,12 +1,13 @@
 'use client'
 
-import { getQueryClient, getTrpcClient, TRPCProvider } from '@/lib/trpc-query'
 import {
   QueryClientProvider,
   QueryErrorResetBoundary,
 } from '@tanstack/react-query'
 import { ReactNode } from 'react'
 import { ErrorBoundary } from 'react-error-boundary'
+
+import { getQueryClient, getTrpcClient, TRPCProvider } from '@/lib/trpc-query'
 
 export default function TrpcQueryProviders({
   children,

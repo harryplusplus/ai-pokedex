@@ -13,6 +13,7 @@ import {
   EventSourcePolyfill,
   type EventSourcePolyfillInit,
 } from 'event-source-polyfill'
+
 import { fetchAuthRefresh, getAccessToken } from './auth'
 import { API_URL } from './constants'
 import { setHeaderToArrayHeaders } from './utils'

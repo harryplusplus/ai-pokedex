@@ -9,9 +9,9 @@
     }
   },
   "scripts": {
-    "build": "pnpm run clean && tsc",
+    "build": "tsc",
     "clean": "node --input-type=module -e \"import fs from 'fs'; fs.rmSync('dist', { recursive: true, force: true })\"",
-    "dev": "pnpm run clean && tsc --watch"
+    "dev": "tsc --watch"
   },
   "dependencies": {
     "psqlformat": "1.30.0"

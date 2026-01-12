@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+
 import { useAuth } from '../contexts/auth-context'
 
 export default function ProfileImage() {

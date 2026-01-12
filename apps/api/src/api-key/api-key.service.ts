@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common'
-import { Scannable } from '@repo/nest-component-scan'
+import { Scannable } from 'nest-component-scan'
+
 import { DbService } from '../db/db.service.js'
 import { ApiKeyRepoFactory } from './api-key.repo-factory.js'
 import { ApiKey } from './api-key.schema.js'

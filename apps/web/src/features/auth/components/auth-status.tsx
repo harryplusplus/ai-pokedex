@@ -1,6 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
+
 import { useAuth } from '../contexts/auth-context'
 import { useAuthSignOut } from '../hooks/use-auth-sign-out'
 import ProfileImage from './profile-image'

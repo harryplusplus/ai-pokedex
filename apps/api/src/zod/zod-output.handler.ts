@@ -1,5 +1,6 @@
 import { UseInterceptors } from '@nestjs/common'
 import z, { ZodType } from 'zod'
+
 import { ZodOutputInterceptor } from './zod-output.interceptor.js'
 
 type ZodOutputHandler<F, T extends ZodType> = F extends (

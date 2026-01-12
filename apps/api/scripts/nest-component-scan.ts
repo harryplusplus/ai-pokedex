@@ -1,4 +1,4 @@
-import { run, watch } from '@repo/nest-component-scan'
+import { run, watch } from 'nest-component-scan'
 
 async function main() {
   const args = process.argv.slice(2)

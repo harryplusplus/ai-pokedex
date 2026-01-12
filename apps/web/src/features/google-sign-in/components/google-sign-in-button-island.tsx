@@ -1,9 +1,11 @@
 'use client'
 
-import { useAuthSignIn } from '@/features/auth/hooks/use-auth-sign-in'
-import { GOOGLE_CLIENT_ID } from '@/lib/constants'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
+
+import { useAuthSignIn } from '@/features/auth/hooks/use-auth-sign-in'
+import { GOOGLE_CLIENT_ID } from '@/lib/constants'
+
 import GoogleSignInButton from './google-sign-in-button'
 
 export default function GoogleSignInButtonIsland() {

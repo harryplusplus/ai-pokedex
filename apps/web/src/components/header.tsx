@@ -1,6 +1,7 @@
-import AuthStatus from '@/features/auth/components/auth-status'
 import Image from 'next/image'
 import Link from 'next/link'
+
+import AuthStatus from '@/features/auth/components/auth-status'
 
 export default function Header() {
   return (

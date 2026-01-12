@@ -38,7 +38,7 @@
     "@nestjs/cli": "11.0.14",
     "@nestjs/schematics": "11.0.9",
     "@nestjs/testing": "11.1.11",
-    "@repo/nest-component-scan": "workspace:*",
+    "nest-component-scan": "workspace:*",
     "@types/cookie-parser": "1.4.10",
     "@types/express": "5.0.6",
     "@types/express-serve-static-core": "5.1.0",
