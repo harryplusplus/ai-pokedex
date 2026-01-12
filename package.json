@@ -2,7 +2,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev:api": "turbo dev --filter=@repo/api --filter=@repo/common",
+    "dev:api": "turbo dev --filter=@repo/common --filter=@repo/api",
     "dev:web": "turbo dev --filter=@repo/web",
     "sort-package-json": "sort-package-json package.json apps/*/package.json packages/*/package.json"
   },

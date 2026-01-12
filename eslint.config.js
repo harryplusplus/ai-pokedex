@@ -62,13 +62,6 @@ const config = defineConfig([
       },
     },
   },
-  {
-    files: ['apps/api/src/**/*.ts'],
-    rules: {
-      '@typescript-eslint/no-floating-promises': 'error',
-      '@typescript-eslint/await-thenable': 'error',
-    },
-  },
   eslintPlugin.configs['all-type-checked'],
   prettierRecommended,
 ])
