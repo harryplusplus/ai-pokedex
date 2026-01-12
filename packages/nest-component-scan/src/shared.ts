@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
+
 import { Piscina } from 'piscina'
 
 export const DEFAULT_OUT_FILE_PATH = './src/generated/nest-component-scan.ts'

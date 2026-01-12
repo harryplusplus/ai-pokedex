@@ -1,3 +1,3 @@
 export function Scannable(): ClassDecorator {
-  return (_target) => {}
+  return (_) => {}
 }

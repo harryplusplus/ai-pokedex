@@ -1,5 +1,7 @@
-import { Decorator, parseFile } from '@swc/core'
 import path from 'node:path'
+
+import { Decorator, parseFile } from '@swc/core'
+
 import {
   ComponentInfo,
   ComponentKind,
