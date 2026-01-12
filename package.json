@@ -14,6 +14,7 @@
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-prettier": "5.5.4",
     "eslint-plugin-react-hooks": "7.0.1",
+    "eslint-plugin-simple-import-sort": "12.1.1",
     "prettier": "3.7.4",
     "prettier-plugin-embed": "0.5.1",
     "prettier-plugin-sql-exec": "1.1.3",

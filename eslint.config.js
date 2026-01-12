@@ -1,10 +1,13 @@
-//@ts-check
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+
 import eslint from '@eslint/js'
+import { defineConfig, globalIgnores } from 'eslint/config'
 import nextVitals from 'eslint-config-next/core-web-vitals'
 import nextTs from 'eslint-config-next/typescript'
 import prettierRecommended from 'eslint-plugin-prettier/recommended'
 import reactHooks from 'eslint-plugin-react-hooks'
-import { defineConfig, globalIgnores } from 'eslint/config'
+import simpleImportSort from 'eslint-plugin-simple-import-sort'
 import tseslint from 'typescript-eslint'
 
 const config = defineConfig([
@@ -13,7 +16,6 @@ const config = defineConfig([
     '**/dist/**',
     '**/.turbo/**',
     '**/.next/**',
-    'eslint.config.js',
     'apps/web/next-env.d.ts',
   ]),
   {
@@ -26,6 +28,7 @@ const config = defineConfig([
       parserOptions: {
         projectService: {
           allowDefaultProject: [
+            'eslint.config.js',
             'prettier.config.js',
             'apps/web/postcss.config.mjs',
           ],
@@ -33,8 +36,9 @@ const config = defineConfig([
         tsconfigRootDir: import.meta.dirname,
       },
     },
-  },
-  {
+    plugins: {
+      'simple-import-sort': simpleImportSort,
+    },
     rules: {
       '@typescript-eslint/no-unused-vars': [
         'warn',
@@ -44,6 +48,8 @@ const config = defineConfig([
           caughtErrorsIgnorePattern: '^_',
         },
       ],
+      'simple-import-sort/imports': 'error',
+      'simple-import-sort/exports': 'error',
     },
   },
   {
