@@ -11,6 +11,9 @@ importers:
       '@eslint/js':
         specifier: 9.39.2
         version: 9.39.2
+      '@repo/eslint-plugin-sql-pg-formatter':
+        specifier: workspace:*
+        version: link:packages/eslint-plugin-sql-pg-formatter
       '@types/node':
         specifier: 25.0.3
         version: 25.0.3
