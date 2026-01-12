@@ -8,12 +8,14 @@ import {
   UnauthorizedException,
 } from '@nestjs/common'
 import { AccessTokenDto, AuthSignIn } from '@repo/common'
-import { Scannable } from 'nest-component-scan'
 import type { Request, Response } from 'express'
+import { Scannable } from 'nest-component-scan'
+import {
+  StandardSchemaPipe,
+  UseStandardSchemaInterceptor,
+} from 'nest-standard-schema'
 
 import { RefreshTokenCookieHelper } from '../refresh-token/refresh-token-cookie.helper.js'
-import { ZodPipe } from '../zod/zod.pipe.js'
-import { ZodOutputHandler } from '../zod/zod-output.handler.js'
 import { AuthService } from './auth.service.js'
 
 @Scannable()
@@ -25,9 +27,10 @@ export class AuthController {
   ) {}
 
   @Post('/signin')
-  @ZodOutputHandler(AccessTokenDto)
+  @HttpCode(200)
+  @UseStandardSchemaInterceptor(AccessTokenDto)
   async signIn(
-    @Body(new ZodPipe(AuthSignIn)) input: AuthSignIn,
+    @Body(new StandardSchemaPipe(AuthSignIn)) input: AuthSignIn,
     @Res({ passthrough: true }) res: Response,
   ) {
     const output = await this.authService.signIn(input)
@@ -55,7 +58,8 @@ export class AuthController {
   }
 
   @Post('/refresh')
-  @ZodOutputHandler(AccessTokenDto)
+  @HttpCode(200)
+  @UseStandardSchemaInterceptor(AccessTokenDto)
   async refresh(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
