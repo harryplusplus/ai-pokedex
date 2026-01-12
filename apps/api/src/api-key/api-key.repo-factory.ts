@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { Scannable } from '@repo/nest-component-scan'
 import { Sql } from 'postgres'
+
 import { ApiKeyRepo } from './api-key.repo.js'
 
 @Scannable()

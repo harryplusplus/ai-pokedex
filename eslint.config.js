@@ -5,6 +5,7 @@ import eslint from '@eslint/js'
 import { defineConfig, globalIgnores } from 'eslint/config'
 import nextVitals from 'eslint-config-next/core-web-vitals'
 import nextTs from 'eslint-config-next/typescript'
+import eslintPlugin from 'eslint-plugin-eslint-plugin'
 import prettierRecommended from 'eslint-plugin-prettier/recommended'
 import reactHooks from 'eslint-plugin-react-hooks'
 import simpleImportSort from 'eslint-plugin-simple-import-sort'
@@ -68,6 +69,7 @@ const config = defineConfig([
       '@typescript-eslint/await-thenable': 'error',
     },
   },
+  eslintPlugin.configs['all-type-checked'],
   prettierRecommended,
 ])
 
