@@ -44,7 +44,7 @@ export class AuthService {
         image,
       })
 
-      const refreshTokenRepo = this.refreshTokenRepoFactory.create(client)
+      const refreshTokenRepo = this.refreshTokenRepoFactory.create(sql)
 
       await refreshTokenRepo.create({
         userId,

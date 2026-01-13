@@ -15,7 +15,7 @@ beforeAll(async () => {
 
   const dbService = app.get(DbService)
   const userRepoFactory = app.get(UserRepoFactory)
-  userRepo = userRepoFactory.create(dbService.query)
+  userRepo = userRepoFactory.create(dbService.sql)
 })
 
 afterAll(async () => {
