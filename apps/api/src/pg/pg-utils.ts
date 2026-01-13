@@ -1,47 +1,8 @@
-import { type QueryResult, types } from 'pg'
+import { type Pool, types } from 'pg'
 
-import type { QueryConfig } from './pg-sql-tag.js'
+import { createSql, type Sql } from './pg-sql.js'
 
-export interface Result<Row extends Record<string, unknown>> {
-  rows: Row[]
-  rowCount: number
-}
-
-export interface Queryable<Name extends string> {
-  <Row extends Record<string, unknown>>(
-    queryConfig: QueryConfig,
-    name?: Name,
-  ): Promise<Result<Row>>
-}
-
-interface Client {
-  query(queryConfig: QueryConfig & { name?: string }): Promise<QueryResult>
-}
-
-export function getQueryable<Name extends string>(
-  client: Client,
-): Queryable<Name> {
-  const queryable: Queryable<Name> = async <
-    Row extends Record<string, unknown>,
-  >(
-    queryConfig: QueryConfig,
-    name?: Name,
-  ): Promise<Result<Row>> => {
-    const result = await client.query.bind(client)({
-      ...queryConfig,
-      name,
-    })
-
-    return {
-      rows: result.rows as Row[],
-      rowCount: result.rowCount ?? 0,
-    }
-  }
-
-  return queryable
-}
-
-export function resetDateParsers(): void {
+export function resetDateTypeParsers(): void {
   const oidsForParserReset = [
     /* date */ 1082, /* timestamp */ 1114, /* timestamptz */ 1184,
     /* date[] */ 1182, /* timestamp[] */ 1115, /* timestamptz[] */ 1185,
@@ -50,4 +11,36 @@ export function resetDateParsers(): void {
   oidsForParserReset.forEach((oid) => {
     types.setTypeParser(oid, (x) => x)
   })
+}
+
+export type IsolationLevel = 'READ COMMITTED' | 'SERIALIZABLE'
+
+export async function transaction<T>(
+  context: {
+    pool: Pool
+    isolationLevel?: IsolationLevel
+  },
+  onTransaction: (sql: Sql) => Promise<T>,
+): Promise<T> {
+  const { pool, isolationLevel } = context
+
+  const client = await pool.connect()
+
+  try {
+    await client.query(
+      `BEGIN${isolationLevel ? ` ISOLATION LEVEL ${isolationLevel}` : ''}`,
+    )
+
+    const result = await onTransaction(createSql(client))
+
+    await client.query('COMMIT')
+
+    return result
+  } catch (e) {
+    await client.query('ROLLBACK')
+
+    throw e
+  } finally {
+    client.release()
+  }
 }

@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common'
 import { Scannable } from 'nest-component-scan'
 
-import { Query } from '../db/db.types.js'
+import { Sql } from '../pg/pg-sql.js'
 import { RefreshTokenRepo } from './refresh-token.repo.js'
 
 @Scannable()
 @Injectable()
 export class RefreshTokenRepoFactory {
-  create(query: Query): RefreshTokenRepo {
-    return new RefreshTokenRepo(query)
+  create(sql: Sql): RefreshTokenRepo {
+    return new RefreshTokenRepo(sql)
   }
 }

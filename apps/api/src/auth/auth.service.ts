@@ -89,7 +89,7 @@ export class AuthService {
 
   async signOut(refreshToken: string) {
     const refreshTokenRepo = this.refreshTokenRepoFactory.create(
-      this.dbService.query,
+      this.dbService.sql,
     )
 
     await refreshTokenRepo.revoke(refreshToken)

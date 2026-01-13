@@ -3,8 +3,8 @@ import { Scannable } from 'nest-component-scan'
 import { Pool } from 'pg'
 
 import { ConfigService } from '../config/config.service.js'
-import { getQueryable, resetDateParsers } from '../pg/pg-utils.js'
-import { Query } from './db.types.js'
+import { createSql, Sql } from '../pg/pg-sql.js'
+import { resetDateTypeParsers } from '../pg/pg-utils.js'
 
 @Scannable()
 @Injectable()
@@ -12,7 +12,7 @@ export class DbService implements OnApplicationShutdown {
   #pool: Pool
 
   constructor(configService: ConfigService) {
-    resetDateParsers()
+    resetDateTypeParsers()
 
     this.#pool = new Pool({
       connectionString: configService.databaseUrl,
@@ -24,12 +24,12 @@ export class DbService implements OnApplicationShutdown {
     await this.#pool.end()
   }
 
-  get query(): Query {
-    return getQueryable(this.#pool)
+  get sql(): Sql {
+    return createSql(this.#pool)
   }
 
   async transaction<T>(
-    onTransaction: (query: Query) => Promise<T>,
+    onTransaction: (sql: Sql) => Promise<T>,
     options?: { isolationLevel?: 'READ COMMITTED' | 'SERIALIZABLE' },
   ): Promise<T> {
     const { isolationLevel } = options ?? {}
@@ -41,7 +41,7 @@ export class DbService implements OnApplicationShutdown {
         `BEGIN${isolationLevel ? ` ISOLATION LEVEL ${isolationLevel}` : ''}`,
       )
 
-      const result = await onTransaction(getQueryable(client))
+      const result = await onTransaction(createSql(client))
 
       await client.query('COMMIT')
 

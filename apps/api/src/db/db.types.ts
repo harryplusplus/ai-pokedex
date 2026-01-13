@@ -1,5 +1,3 @@
-import { Queryable } from '../pg/pg-utils.js'
-
 const Name = [
   'refresh_token_create',
   'refresh_token_revoke',
@@ -7,4 +5,6 @@ const Name = [
 ] as const
 type Name = (typeof Name)[number]
 
-export type Query = Queryable<Name>
+export function prepare<T extends Name>(name: T): T {
+  return name
+}

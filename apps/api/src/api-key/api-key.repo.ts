@@ -1,12 +1,13 @@
-import { Query } from '../db/db.types.js'
-import { sql } from '../pg/pg-sql-tag.js'
+import { Sql } from '../pg/pg-sql.js'
 import { ApiKey } from './api-key.schema.js'
 
 export class ApiKeyRepo {
-  constructor(private readonly query: Query) {}
+  constructor(private readonly sql: Sql) {}
 
   async validate(apiKey: ApiKey): Promise<boolean> {
-    const result = await this.query<{ id: number }>(sql`
+    const { sql } = this
+
+    const result = await sql<{ id: number }>`
       SELECT
         id
       FROM
@@ -14,7 +15,7 @@ export class ApiKeyRepo {
       WHERE
         key = ${apiKey}
         AND revoked_at IS NULL
-    `)
+    `
 
     return result.rowCount === 1
   }
