@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser'
 import helmet from 'helmet'
 
 import { AppModule } from './app/app.module.js'
+import { initOpenApi } from './open-api.js'
 import { checkNodeEnv, checkTimeZone } from './utils.js'
 
 async function bootstrap() {
@@ -24,6 +25,8 @@ async function bootstrap() {
     credentials: true,
   } satisfies CorsOptions)
   app.use(cookieParser())
+
+  initOpenApi(app)
 
   await app.listen(process.env.PORT ?? 3100)
 }

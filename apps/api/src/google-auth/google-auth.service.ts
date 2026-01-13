@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
-import { Scannable } from 'nest-component-scan'
 import { OAuth2Client } from 'google-auth-library'
+import { Scannable } from 'nest-component-scan'
 
 import { GOOGLE_CLIENT_ID } from '../constants.js'
 

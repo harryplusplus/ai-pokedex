@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common'
-import { Scannable } from 'nest-component-scan'
 import { initTRPC, TRPCErrorFormatter, TRPCErrorShape } from '@trpc/server'
 // import { TRPC_ERROR_CODES_BY_KEY } from '@trpc/server/rpc'
 import { Request, Response } from 'express'
+import { Scannable } from 'nest-component-scan'
 
 // TODO
 // import { getCodeKeyFromPrismaError } from '../error.js'

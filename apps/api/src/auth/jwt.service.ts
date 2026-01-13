@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { JwtService as NestJwtService } from '@nestjs/jwt'
-import { Scannable } from 'nest-component-scan'
 import { addDays, addMinutes } from 'date-fns'
+import { Scannable } from 'nest-component-scan'
 import { v4 } from 'uuid'
 
 import { ConfigService } from '../config/config.service.js'

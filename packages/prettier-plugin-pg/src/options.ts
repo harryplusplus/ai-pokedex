@@ -1,11 +1,11 @@
 import type { ParserOptions, SupportOption } from 'prettier'
 
-export interface SqlTagPgOptions {
-  sqlTagPgSpaces: number
+export interface PgOptions {
+  pgSpaces: number
 }
 
-export const options: Record<keyof SqlTagPgOptions, SupportOption> = {
-  sqlTagPgSpaces: {
+export const options: Record<keyof PgOptions, SupportOption> = {
+  pgSpaces: {
     category: 'SQL',
     type: 'int',
     default: 4,
@@ -15,9 +15,9 @@ export const options: Record<keyof SqlTagPgOptions, SupportOption> = {
 
 export function resolveOptions(
   options: ParserOptions<string>,
-): ParserOptions<string> & SqlTagPgOptions {
+): ParserOptions<string> & PgOptions {
   return {
     ...options,
-    sqlTagPgSpaces: Number(options.sqlTagPgSpaces ?? 4),
+    pgSpaces: Number(options.pgSpaces ?? 4),
   }
 }

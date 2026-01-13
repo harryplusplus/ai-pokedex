@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist",
+    "declarationMap": true,
+    "declaration": true,
+    "sourceMap": true,
+    "strict": true,
+    "target": "esnext",
+    "moduleResolution": "nodenext",
+    "module": "nodenext",
+    "removeComments": true
+  }
+}

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
-import { Scannable } from 'nest-component-scan'
 import { CookieOptions, Request, Response } from 'express'
+import { Scannable } from 'nest-component-scan'
 
 @Scannable()
 @Injectable()

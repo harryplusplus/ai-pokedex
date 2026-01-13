@@ -15,7 +15,7 @@ export class ApiKeyService {
 
   async validate(apiKey: ApiKey): Promise<boolean> {
     return await this.apiKeyRepoFactory
-      .create(this.dbService.sql)
+      .create(this.dbService.client)
       .validate(apiKey)
   }
 }

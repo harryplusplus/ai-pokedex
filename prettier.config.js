@@ -6,17 +6,17 @@ const config = {
   singleQuote: true,
   plugins: [
     'prettier-plugin-embed',
-    'prettier-plugin-sql-tag-pg',
+    'prettier-plugin-pg',
     'prettier-plugin-tailwindcss',
   ],
 }
 
-/** @type {import('prettier-plugin-sql-tag-pg').SqlTagPgOptions} */
-const sqlTagPgOptions = {
-  sqlTagPgSpaces: 2,
+/** @type {import('prettier-plugin-pg').PgOptions} */
+const pgOptions = {
+  pgSpaces: 2,
 }
 
 export default {
   ...config,
-  ...sqlTagPgOptions,
+  ...pgOptions,
 }

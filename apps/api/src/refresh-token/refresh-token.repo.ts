@@ -1,9 +1,11 @@
-import { Sql } from 'postgres'
+import camelcaseKeys from 'camelcase-keys'
+import { sql } from 'pg-sql-tag'
 
+import { Client } from '../db/db.types.js'
 import { UserId } from '../user/user.schema.js'
 
 export class RefreshTokenRepo {
-  constructor(private readonly sql: Sql) {}
+  constructor(private readonly client: Client) {}
 
   async create(input: {
     userId: UserId
@@ -11,22 +13,19 @@ export class RefreshTokenRepo {
     expiresAt: Date
   }): Promise<void> {
     const { userId, token, expiresAt } = input
-    const { sql } = this
 
-    const result = await sql`
+    const result = await this.client.query(sql`
       INSERT INTO refresh_tokens (user_id, token, expires_at)
         VALUES (${userId}, ${token}, ${expiresAt})
-    `
+    `)
 
-    if (result.count !== 1) {
+    if (result.rowCount !== 1) {
       throw new Error('Invalid refresh token creation.')
     }
   }
 
   async revoke(refreshToken: string): Promise<void> {
-    const { sql } = this
-
-    await sql`
+    await this.client.query(sql`
       UPDATE
         refresh_tokens
       SET
@@ -35,13 +34,11 @@ export class RefreshTokenRepo {
       WHERE
         token = ${refreshToken}
         AND revoked_at IS NULL
-    `
+    `)
   }
 
   async lock(refreshToken: string): Promise<{ expiresAt: string } | null> {
-    const { sql } = this
-
-    const result = await sql<{ expiresAt: string }[]>`
+    const result = await this.client.query<{ expires_at: string }>(sql`
       SELECT
         expires_at
       FROM
@@ -50,12 +47,12 @@ export class RefreshTokenRepo {
         token = ${refreshToken}
         AND revoked_at IS NULL
       FOR UPDATE
-    `
+    `)
 
-    if (result.length === 0) {
+    if (result.rows.length !== 1) {
       return null
     }
 
-    return result[0]
+    return camelcaseKeys(result.rows[0])
   }
 }
