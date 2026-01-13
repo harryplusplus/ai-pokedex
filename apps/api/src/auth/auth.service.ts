@@ -89,15 +89,15 @@ export class AuthService {
 
   async signOut(refreshToken: string) {
     const refreshTokenRepo = this.refreshTokenRepoFactory.create(
-      this.dbService.client,
+      this.dbService.query,
     )
 
     await refreshTokenRepo.revoke(refreshToken)
   }
 
   async refresh(refreshToken: string): Promise<CreateAllOutput | null> {
-    return await this.dbService.transaction(async (client) => {
-      const refreshTokenRepo = this.refreshTokenRepoFactory.create(client)
+    return await this.dbService.transaction(async (query) => {
+      const refreshTokenRepo = this.refreshTokenRepoFactory.create(query)
 
       const entity = await refreshTokenRepo.lock(refreshToken)
       if (!entity) {

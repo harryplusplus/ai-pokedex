@@ -1,9 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Queryable } from '../pg/pg-utils.js'
 
-import { QueryConfig, QueryResult, QueryResultRow } from 'pg'
+const Name = [
+  'refresh_token_create',
+  'refresh_token_revoke',
+  'refresh_token_lock',
+] as const
+type Name = (typeof Name)[number]
 
-export interface Client {
-  query<R extends QueryResultRow = any, I = any>(
-    queryConfig: QueryConfig<I>,
-  ): Promise<QueryResult<R>>
-}
+export type Query = Queryable<Name>

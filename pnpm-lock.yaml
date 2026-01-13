@@ -110,9 +110,6 @@ importers:
       pg:
         specifier: 8.16.3
         version: 8.16.3
-      pg-sql-tag:
-        specifier: workspace:*
-        version: link:../../packages/pg-sql-tag
       reflect-metadata:
         specifier: 0.2.2
         version: 0.2.2
@@ -303,8 +300,6 @@ importers:
       zod:
         specifier: 4.3.5
         version: 4.3.5
-
-  packages/pg-sql-tag: {}
 
   packages/prettier-plugin-pg:
     dependencies:

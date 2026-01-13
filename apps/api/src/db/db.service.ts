@@ -1,9 +1,10 @@
 import { Injectable, OnApplicationShutdown } from '@nestjs/common'
 import { Scannable } from 'nest-component-scan'
-import { Pool, types } from 'pg'
+import { Pool } from 'pg'
 
 import { ConfigService } from '../config/config.service.js'
-import { Client } from './db.types.js'
+import { getQueryable, resetDateParsers } from '../pg/pg-utils.js'
+import { Query } from './db.types.js'
 
 @Scannable()
 @Injectable()
@@ -11,14 +12,7 @@ export class DbService implements OnApplicationShutdown {
   #pool: Pool
 
   constructor(configService: ConfigService) {
-    const oidsForParserReset = [
-      /* date */ 1082, /* timestamp */ 1114, /* timestamptz */ 1184,
-      /* date[] */ 1182, /* timestamp[] */ 1115, /* timestamptz[] */ 1185,
-    ]
-
-    oidsForParserReset.forEach((oid) => {
-      types.setTypeParser(oid, (x) => x)
-    })
+    resetDateParsers()
 
     this.#pool = new Pool({
       connectionString: configService.databaseUrl,
@@ -30,12 +24,12 @@ export class DbService implements OnApplicationShutdown {
     await this.#pool.end()
   }
 
-  get client(): Client {
-    return this.#pool
+  get query(): Query {
+    return getQueryable(this.#pool)
   }
 
   async transaction<T>(
-    onTransaction: (client: Client) => Promise<T>,
+    onTransaction: (query: Query) => Promise<T>,
     options?: { isolationLevel?: 'READ COMMITTED' | 'SERIALIZABLE' },
   ): Promise<T> {
     const { isolationLevel } = options ?? {}
@@ -47,7 +41,7 @@ export class DbService implements OnApplicationShutdown {
         `BEGIN${isolationLevel ? ` ISOLATION LEVEL ${isolationLevel}` : ''}`,
       )
 
-      const result = await onTransaction(client)
+      const result = await onTransaction(getQueryable(client))
 
       await client.query('COMMIT')
 

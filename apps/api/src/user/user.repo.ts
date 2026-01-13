@@ -1,10 +1,9 @@
-import { sql } from 'pg-sql-tag'
-
-import { Client } from '../db/db.types.js'
+import { Query } from '../db/db.types.js'
+import { sql } from '../pg/pg-sql-tag.js'
 import { UserId } from './user.schema.js'
 
 export class UserRepo {
-  constructor(private readonly client: Client) {}
+  constructor(private readonly query: Query) {}
 
   async createOrGetId(input: {
     provider: string
@@ -12,7 +11,7 @@ export class UserRepo {
   }): Promise<UserId> {
     const { provider, providerUserId } = input
 
-    const result = await this.client.query<{ id: UserId }>(sql`
+    const result = await this.query<{ id: UserId }>(sql`
       INSERT INTO users (provider, provider_user_id)
         VALUES (${provider}, ${providerUserId})
       ON CONFLICT (provider, provider_user_id)

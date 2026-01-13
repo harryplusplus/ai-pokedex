@@ -1,13 +1,12 @@
-import { sql } from 'pg-sql-tag'
-
-import { Client } from '../db/db.types.js'
+import { Query } from '../db/db.types.js'
+import { sql } from '../pg/pg-sql-tag.js'
 import { ApiKey } from './api-key.schema.js'
 
 export class ApiKeyRepo {
-  constructor(private readonly client: Client) {}
+  constructor(private readonly query: Query) {}
 
   async validate(apiKey: ApiKey): Promise<boolean> {
-    const result = await this.client.query<{ id: number }>(sql`
+    const result = await this.query<{ id: number }>(sql`
       SELECT
         id
       FROM

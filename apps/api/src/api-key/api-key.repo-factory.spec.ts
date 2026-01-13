@@ -16,7 +16,7 @@ beforeAll(async () => {
 
   const dbService = app.get(DbService)
   const apiKeyRepoFactory = app.get(ApiKeyRepoFactory)
-  apiKeyRepo = apiKeyRepoFactory.create(dbService.client)
+  apiKeyRepo = apiKeyRepoFactory.create(dbService.query)
 })
 
 afterAll(async () => {
