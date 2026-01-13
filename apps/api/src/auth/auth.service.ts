@@ -30,8 +30,8 @@ export class AuthService {
     const { providerUserId, name, image } =
       await this.#externalParseIdToken(input)
 
-    return await this.dbService.transaction(async (client) => {
-      const userRepo = this.userRepoFactory.create(client)
+    return await this.dbService.transaction(async (sql) => {
+      const userRepo = this.userRepoFactory.create(sql)
 
       const userId = await userRepo.createOrGetId({
         provider,
@@ -96,8 +96,8 @@ export class AuthService {
   }
 
   async refresh(refreshToken: string): Promise<CreateAllOutput | null> {
-    return await this.dbService.transaction(async (query) => {
-      const refreshTokenRepo = this.refreshTokenRepoFactory.create(query)
+    return await this.dbService.transaction(async (sql) => {
+      const refreshTokenRepo = this.refreshTokenRepoFactory.create(sql)
 
       const entity = await refreshTokenRepo.lock(refreshToken)
       if (!entity) {
