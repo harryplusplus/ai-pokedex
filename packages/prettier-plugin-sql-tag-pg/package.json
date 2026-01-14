@@ -11,9 +11,9 @@
   },
   "scripts": {
     "build": "tsc",
+    "check-ts": "node src/index.ts",
     "clean": "rimraf dist tsconfig.tsbuildinfo .turbo",
-    "dev": "tsc --watch",
-    "check-ts": "node src/index.ts"
+    "dev": "tsc --watch"
   },
   "dependencies": {
     "psqlformat": "1.30.0"
