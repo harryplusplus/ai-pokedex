@@ -16,7 +16,7 @@ export class RefreshTokenRepo {
     const { sql } = this
 
     const result = await sql(prepare('refresh_token_create'))`
-      INSERT INTO refresh_tokens (user_id, token, expires_at)
+      INSERT INTO tokens (user_id, token, expires_at)
         VALUES (${userId}, ${token}, ${expiresAt})
     `
 

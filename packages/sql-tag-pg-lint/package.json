@@ -1,5 +1,5 @@
 {
-  "name": "pg-lint",
+  "name": "sql-tag-pg-lint",
   "private": true,
   "type": "module",
   "exports": {
@@ -20,6 +20,11 @@
     "piscina": "5.1.4"
   },
   "devDependencies": {
-    "@types/micromatch": "4.0.10"
+    "@types/micromatch": "4.0.10",
+    "@types/pg": "8.16.0",
+    "pg": "8.16.3"
+  },
+  "peerDependencies": {
+    "pg": "^8.0.0"
   }
 }

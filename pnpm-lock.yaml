@@ -306,7 +306,17 @@ importers:
         specifier: 4.3.5
         version: 4.3.5
 
-  packages/pg-lint:
+  packages/prettier-plugin-sql-tag-pg:
+    dependencies:
+      psqlformat:
+        specifier: 1.30.0
+        version: 1.30.0
+    devDependencies:
+      prettier:
+        specifier: 3.7.4
+        version: 3.7.4
+
+  packages/sql-tag-pg-lint:
     dependencies:
       '@swc/core':
         specifier: 1.15.8
@@ -321,16 +331,12 @@ importers:
       '@types/micromatch':
         specifier: 4.0.10
         version: 4.0.10
-
-  packages/prettier-plugin-sql-tag-pg:
-    dependencies:
-      psqlformat:
-        specifier: 1.30.0
-        version: 1.30.0
-    devDependencies:
-      prettier:
-        specifier: 3.7.4
-        version: 3.7.4
+      '@types/pg':
+        specifier: 8.16.0
+        version: 8.16.0
+      pg:
+        specifier: 8.16.3
+        version: 8.16.3
 
 packages:
 
