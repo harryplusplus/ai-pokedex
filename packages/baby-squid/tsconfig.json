@@ -1,19 +1,24 @@
 {
   "compilerOptions": {
+    // Languages
     "target": "esnext",
     "module": "esnext",
     "moduleResolution": "bundler",
-    "skipLibCheck": true,
     "erasableSyntaxOnly": true,
-    "strict": true,
     "rewriteRelativeImportExtensions": true,
+
+    // Types
+    "skipLibCheck": true,
+    "strict": true,
+
+    // Builds
     "outDir": "dist",
     "incremental": true,
     "removeComments": true,
     "tsBuildInfoFile": "tsconfig.tsbuildinfo",
     "declaration": true,
-    "sourceMap": true,
-    "declarationMap": true
+    "declarationMap": true,
+    "sourceMap": true
   },
   "include": ["src/**/*.ts"]
 }
