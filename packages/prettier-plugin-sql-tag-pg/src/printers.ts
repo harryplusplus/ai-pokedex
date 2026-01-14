@@ -1,17 +1,17 @@
 import type { Plugin, Printer } from 'prettier'
 import psqlformat from 'psqlformat'
 
-import { PG } from './constants.js'
-import { resolveOptions } from './options.js'
+import { SQL_TAG_PG } from './constants.ts'
+import { resolveOptions } from './options.ts'
 
-const pgPrinter: Printer<string> = {
+const sqlTagPgPrinter: Printer<string> = {
   print: (path, options) => {
     const input = path.node
 
-    const { pgSpaces } = resolveOptions(options)
+    const { sqlTagPgSpaces } = resolveOptions(options)
 
     const output = psqlformat.formatSql(input, {
-      spaces: pgSpaces,
+      spaces: sqlTagPgSpaces,
     })
 
     return output
@@ -19,5 +19,5 @@ const pgPrinter: Printer<string> = {
 }
 
 export const printers: Plugin<string>['printers'] = {
-  [PG]: pgPrinter,
+  [SQL_TAG_PG]: sqlTagPgPrinter,
 }

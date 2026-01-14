@@ -41,9 +41,9 @@ importers:
       prettier-plugin-embed:
         specifier: 0.5.1
         version: 0.5.1
-      prettier-plugin-pg:
+      prettier-plugin-sql-tag-pg:
         specifier: workspace:*
-        version: link:packages/prettier-plugin-pg
+        version: link:packages/prettier-plugin-sql-tag-pg
       prettier-plugin-tailwindcss:
         specifier: 0.7.2
         version: 0.7.2(prettier@3.7.4)
@@ -322,7 +322,7 @@ importers:
         specifier: 4.0.10
         version: 4.0.10
 
-  packages/prettier-plugin-pg:
+  packages/prettier-plugin-sql-tag-pg:
     dependencies:
       psqlformat:
         specifier: 1.30.0

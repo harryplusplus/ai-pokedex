@@ -3,14 +3,14 @@
   "type": "module",
   "exports": {
     ".": {
-      "typescript": "./src/index.ts",
       "types": "./dist/index.d.ts",
+      "typescript": "./src/index.ts",
       "default": "./dist/index.js"
     }
   },
   "scripts": {
-    "clean": "rimraf dist tsconfig.tsbuildinfo .turbo",
     "build": "tsc",
+    "clean": "rimraf dist tsconfig.tsbuildinfo .turbo",
     "dev": "tsc --watch"
   }
 }

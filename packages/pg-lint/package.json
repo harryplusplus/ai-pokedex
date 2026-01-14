@@ -4,8 +4,8 @@
   "type": "module",
   "exports": {
     ".": {
-      "typescript": "./src/index.ts",
       "types": "./dist/index.d.ts",
+      "typescript": "./src/index.ts",
       "default": "./dist/index.js"
     }
   },
