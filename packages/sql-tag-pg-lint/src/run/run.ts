@@ -14,17 +14,15 @@ const workerMainFilePath = path.resolve(
 )
 
 export interface LintInfo {
-  error: string
   path: string
-  span: {
-    start: number
-    end: number
-  }
+  line: number
+  column: number
+  error: string | null
 }
 
 export type RunOutput = LintInfo
 
-type LintInfoPromiseSet = Set<Promise<LintInfo | null>>
+type LintInfoPromiseSet = Set<Promise<LintInfo>>
 
 export async function* run(options: RunOptions): AsyncGenerator<RunOutput> {
   const { signal, pool, paths, ignores } = fillRunOptions(options)
@@ -36,9 +34,7 @@ export async function* run(options: RunOptions): AsyncGenerator<RunOutput> {
   const isProductionDone = {
     flag: false,
   }
-  const lintInfoPromiseSet: LintInfoPromiseSet = new Set<
-    Promise<LintInfo | null>
-  >()
+  const lintInfoPromiseSet: LintInfoPromiseSet = new Set<Promise<LintInfo>>()
 
   void produce({
     signal,
@@ -163,36 +159,30 @@ async function parse(input: {
     })
 
     lintInfoPromiseSet.add(lintInfoPromise)
+
     void lintInfoPromise.finally(() =>
       lintInfoPromiseSet.delete(lintInfoPromise),
     )
   }
-
-  console.log(`parse done. path: ${sourceFilePath}`)
 }
 
 async function doPrepare(input: {
   pool: Pool
   sourceFilePath: string
   queryInfo: QueryInfo
-}): Promise<LintInfo | null> {
+}): Promise<LintInfo> {
   const { queryInfo, sourceFilePath, pool } = input
-  const { query, span } = queryInfo
+  const { query, line, column } = queryInfo
 
   const name = `sql_tag_pg_lint_${crypto.randomUUID()}`.replaceAll('-', '_')
 
   let isSuccess = false
+  let error: string | null = null
   try {
     await pool.query(`PREPARE ${name} AS ${query}`)
     isSuccess = true
   } catch (e) {
-    const error = toErrorString(e)
-
-    return {
-      path: sourceFilePath,
-      error: error,
-      span,
-    }
+    error = toErrorString(e)
   }
 
   if (isSuccess) {
@@ -203,5 +193,10 @@ async function doPrepare(input: {
     }
   }
 
-  return null
+  return {
+    path: sourceFilePath,
+    line,
+    column,
+    error,
+  }
 }

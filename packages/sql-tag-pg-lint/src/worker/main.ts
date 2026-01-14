@@ -1,7 +1,9 @@
+import fs from 'node:fs'
+
 import type { TaggedTemplateExpression } from '@swc/core'
 import { parseFile } from '@swc/core'
 
-import type { QueryInfo, WorkerInput, WorkerOutput } from '../shared.ts'
+import type { WorkerInput, WorkerOutput } from '../shared.ts'
 
 export default async function main(input: WorkerInput): Promise<WorkerOutput> {
   const module = await parseFile(input, {
@@ -9,7 +11,13 @@ export default async function main(input: WorkerInput): Promise<WorkerOutput> {
     decorators: true,
   })
 
-  const queryInfos: QueryInfo[] = []
+  const queryDataList: {
+    query: string
+    span: {
+      start: number
+      end: number
+    }
+  }[] = []
 
   walk(module, (node) => {
     const { template, tag } = node
@@ -46,10 +54,26 @@ export default async function main(input: WorkerInput): Promise<WorkerOutput> {
       }
     }
 
-    queryInfos.push({
+    queryDataList.push({
       query,
       span,
     })
+  })
+
+  if (queryDataList.length === 0) {
+    return []
+  }
+
+  const fileContents = await fs.promises.readFile(input, 'utf8')
+
+  const queryInfos = queryDataList.map(({ query, span }) => {
+    const { line, column } = calculateLineColumn(fileContents, span.start)
+
+    return {
+      query,
+      line,
+      column,
+    }
   })
 
   return queryInfos
@@ -78,5 +102,17 @@ function walk(node: unknown, visitor: Visitor): void {
     } else {
       walk(property, visitor)
     }
+  }
+}
+
+function calculateLineColumn(
+  fileContents: string,
+  spanStart: number,
+): { line: number; column: number } {
+  const lines = fileContents.slice(0, spanStart).split('\n')
+
+  return {
+    line: lines.length,
+    column: lines[lines.length - 1].length + 1,
   }
 }

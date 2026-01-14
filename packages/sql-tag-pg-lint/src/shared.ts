@@ -2,10 +2,8 @@ export type WorkerInput = string
 
 export interface QueryInfo {
   query: string
-  span: {
-    start: number
-    end: number
-  }
+  line: number
+  column: number
 }
 
 export type WorkerOutput = QueryInfo[]
