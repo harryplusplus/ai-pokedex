@@ -52,7 +52,8 @@ async function main() {
   const stream = run({
     signal,
     dataSource: pool,
-    paths: '/Users/harry/repo/ai-pokedex/apps/api/src',
+    paths: 'src',
+    ignores: '**/*.d.ts',
   })
 
   for await (const lintItem of stream) {
