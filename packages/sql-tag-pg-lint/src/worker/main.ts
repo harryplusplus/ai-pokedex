@@ -11,12 +11,11 @@ export default async function main(input: WorkerInput): Promise<WorkerOutput> {
     decorators: true,
   })
 
+  const moduleStart = module.span.start
+
   const queryDataList: {
     query: string
-    span: {
-      start: number
-      end: number
-    }
+    start: number
   }[] = []
 
   walk(module, (node) => {
@@ -54,9 +53,11 @@ export default async function main(input: WorkerInput): Promise<WorkerOutput> {
       }
     }
 
+    const start = span.start - moduleStart
+
     queryDataList.push({
       query,
-      span,
+      start,
     })
   })
 
@@ -66,8 +67,8 @@ export default async function main(input: WorkerInput): Promise<WorkerOutput> {
 
   const fileContents = await fs.promises.readFile(input, 'utf8')
 
-  const queryInfos = queryDataList.map(({ query, span }) => {
-    const { line, column } = calculateLineColumn(fileContents, span.start)
+  const queryInfos = queryDataList.map(({ query, start }) => {
+    const { line, column } = calculateLineColumn(fileContents, start)
 
     return {
       query,
