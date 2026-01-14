@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 
-import type { TaggedTemplateExpression } from '@swc/core'
+import type { Expression, TaggedTemplateExpression } from '@swc/core'
 import { parseFile } from '@swc/core'
 
 import type { WorkerInput, WorkerOutput } from '../shared.ts'
@@ -21,19 +21,23 @@ export default async function main(input: WorkerInput): Promise<WorkerOutput> {
   walk(module, (node) => {
     const { template, tag } = node
 
-    let isSqlTag = false
+    let idNode: Expression | null = null
 
-    if (tag.type === 'CallExpression') {
+    if (tag.type === 'Identifier') {
+      idNode = tag
+    } else if (tag.type === 'CallExpression') {
       const { callee } = tag
 
       if (callee.type === 'Identifier') {
-        if (callee.value.toLowerCase() === 'sql') {
-          isSqlTag = true
-        }
+        idNode = callee
       }
     }
 
-    if (!isSqlTag) {
+    if (!idNode) {
+      return
+    }
+
+    if (idNode.value.toLowerCase() !== 'sql') {
       return
     }
 
