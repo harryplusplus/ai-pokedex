@@ -2,62 +2,33 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 import {
-  createFileContents,
   createWorkerPool,
-  ensureOutDirPath,
   fillScanOptions,
-  generateFile,
   isIgnored,
   ScanOptions,
-  WorkerOutput,
 } from './shared.js'
 
 export async function run(options: ScanOptions): Promise<void> {
-  const { paths, ignores, signal, outFilePath, importExtension } =
-    fillScanOptions(options)
-
-  const outDirPath = await ensureOutDirPath(outFilePath)
+  const { paths, ignores, signal } = fillScanOptions(options)
 
   await using pool = createWorkerPool()
 
-  const workerOutputPromises: Promise<WorkerOutput>[] = []
+  const errors: Promise<string[]>[] = []
 
-  const ignoreList = [...ignores, outFilePath]
-
-  const stream = traverse({
-    signal,
-    paths,
-    ignores: ignoreList,
-  })
+  const stream = traverse({ signal, paths, ignores })
 
   for await (const sourceFilePath of stream) {
     if (signal.aborted) {
       break
     }
 
-    workerOutputPromises.push(
-      pool.run(
-        {
-          sourceFilePath,
-          outDirPath,
-          importExtension,
-        },
-        {
-          signal,
-        },
-      ),
+    errors.push(
+      pool.run(sourceFilePath).then((queries) => {
+        // check queries
+        return []
+      }),
     )
   }
-
-  const workerOutputs = await Promise.all(workerOutputPromises)
-
-  const componentInfos = workerOutputs
-    .flatMap((x) => x)
-    .values()
-    .toArray()
-
-  const fileContents = createFileContents({ componentInfos })
-  await generateFile({ fileContents, outFilePath })
 }
 
 async function* traverseInternal(currentPath: string): AsyncGenerator<string> {

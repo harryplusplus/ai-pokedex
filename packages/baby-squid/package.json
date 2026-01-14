@@ -1,22 +1,16 @@
 {
-  "name": "prettier-plugin-pg",
-  "private": true,
+  "name": "baby-squid",
   "type": "module",
   "exports": {
     ".": {
+      "typescript": "./src/index.ts",
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     }
   },
   "scripts": {
+    "clean": "rimraf dist tsconfig.tsbuildinfo .turbo",
     "build": "tsc",
-    "clean": "rimraf dist",
     "dev": "tsc --watch"
-  },
-  "dependencies": {
-    "psqlformat": "1.30.0"
-  },
-  "devDependencies": {
-    "prettier": "3.7.4"
   }
 }
