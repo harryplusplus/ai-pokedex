@@ -13,7 +13,8 @@
     "dev": "nest start --watch --env-file .env",
     "migrate:create": "dotenv run -- node-pg-migrate create -j=sql",
     "migrate:up": "dotenv run -- node-pg-migrate up",
-    "start": "node dist/main"
+    "start": "node dist/main",
+    "lint:sql": "node --conditions=typescript scripts/sql-tag-pg-lint.ts"
   },
   "dependencies": {
     "@nestjs/common": "11.1.11",
