@@ -68,13 +68,7 @@ async function* consume(input: {
     }
 
     if (lintInfoPromiseSet.size > 0) {
-      const lintInfo = await Promise.race(lintInfoPromiseSet)
-
-      if (lintInfo) {
-        yield lintInfo
-      }
-
-      continue
+      yield await Promise.race(lintInfoPromiseSet)
     }
 
     if (isProductionDone.flag) {
