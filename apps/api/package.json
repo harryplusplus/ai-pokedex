@@ -14,7 +14,7 @@
     "migrate:create": "dotenv run -- node-pg-migrate create -j=sql",
     "migrate:up": "dotenv run -- node-pg-migrate up",
     "start": "node dist/main",
-    "lint:sql": "node --conditions=typescript scripts/sql-tag-pg-lint.ts"
+    "tsqlint": "node --conditions=typescript scripts/tsqlint.ts"
   },
   "dependencies": {
     "@nestjs/common": "11.1.11",
@@ -52,7 +52,7 @@
     "nest-component-scan": "workspace:*",
     "node-pg-migrate": "8.0.4",
     "source-map-support": "0.5.21",
-    "sql-tag-pg-lint": "workspace:*",
+    "tsqlint": "workspace:*",
     "supertest": "7.1.4",
     "tsconfig-paths": "4.2.0",
     "unplugin-swc": "1.5.9",

@@ -15,7 +15,8 @@ export class RefreshTokenRepo {
     const { userId, token, expiresAt } = input
     const { sql } = this
 
-    const result = await sql(prepare('refresh_token_create'))`
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const result = await sql<any>(prepare('refresh_token_create'))`
       INSERT INTO refresh_tokens (user_id, token, expires_at)
         VALUES (${userId}, ${token}, ${expiresAt})
     `
