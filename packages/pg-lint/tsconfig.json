@@ -1,13 +1,23 @@
 {
   "compilerOptions": {
-    "outDir": "./dist",
-    "declarationMap": true,
-    "declaration": true,
-    "sourceMap": true,
-    "strict": true,
+    // Languages
     "target": "esnext",
     "moduleResolution": "nodenext",
     "module": "nodenext",
-    "removeComments": true
+    "rewriteRelativeImportExtensions": true,
+    "erasableSyntaxOnly": true,
+
+    // Types
+    "strict": true,
+    "skipLibCheck": true,
+
+    // Builds
+    "outDir": "dist",
+    "tsBuildInfoFile": "tsconfig.tsbuildinfo",
+    "incremental": true,
+    "removeComments": true,
+    "declarationMap": true,
+    "declaration": true,
+    "sourceMap": true
   }
 }

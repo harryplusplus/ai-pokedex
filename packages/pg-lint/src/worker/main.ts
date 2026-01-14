@@ -1,16 +1,19 @@
-import { parseFile, TaggedTemplateExpression } from '@swc/core'
+import type { TaggedTemplateExpression } from '@swc/core'
+import { parseFile } from '@swc/core'
 
-import { WorkerInput, WorkerOutput } from '../shared.js'
+import type { WorkerInput, WorkerOutput } from '../shared.ts'
 
 export default async function main(input: WorkerInput): Promise<WorkerOutput> {
   const module = await parseFile(input, {
     syntax: 'typescript',
   })
 
-  walk(module, {
-    onTaggedTemplateExpression: (node) => {
-      console.log(node.span)
-    },
+  walk(module, (node) => {
+    const { template } = node
+    const { quasis } = template
+
+    const sql = ''
+    for (let i = 0; i < quasis.length; ++i) {}
   })
 
   return []
@@ -23,18 +26,18 @@ main(
   process.exit(1)
 })
 
-interface Visitor {
-  onTaggedTemplateExpression: (node: TaggedTemplateExpression) => void
+interface OnTaggedTemplateExpression {
+  (node: TaggedTemplateExpression): void
 }
 
-function walk(node: unknown, visitor: Visitor): void {
+function walk(node: unknown, visitor: OnTaggedTemplateExpression): void {
   if (!(node && typeof node === 'object')) {
     return
   }
 
   if ('type' in node) {
     if (node.type === 'TaggedTemplateExpression') {
-      visitor.onTaggedTemplateExpression(node as TaggedTemplateExpression)
+      visitor(node as TaggedTemplateExpression)
     }
   }
 
