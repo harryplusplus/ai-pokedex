@@ -39,12 +39,16 @@ export type LintItem = ValidLintItem | InvalidLintItem | SkippedLintItem
 export async function* run(options: RunOptions): AsyncGenerator<LintItem> {
   const { signal, dataSource, paths, ignores } = fillRunOptions(options)
 
+  await using workerPool = new Piscina<WorkerInput, WorkerOutput>({
+    filename: workerMainFilePath,
+  })
+
   const waitGroup = new WaitGroup()
   const spawn: Spawn = waitGroup.spawn.bind(waitGroup)
 
   const queue: LintItem[] = []
 
-  spawn(() =>
+  spawn('doProduce', () =>
     doProduce({
       signal,
       spawn,
@@ -52,6 +56,7 @@ export async function* run(options: RunOptions): AsyncGenerator<LintItem> {
       paths,
       ignores,
       dataSource,
+      workerPool,
     }),
   )
 
@@ -82,8 +87,9 @@ async function doProduce(input: {
   paths: string[]
   ignores: string[]
   dataSource: DataSource
+  workerPool: Piscina<WorkerInput, WorkerOutput>
 }): Promise<void> {
-  const { signal, paths, ignores, spawn, dataSource, queue } = input
+  const { signal, paths, ignores, spawn, dataSource, queue, workerPool } = input
 
   const stream = traverse({
     signal,
@@ -91,16 +97,12 @@ async function doProduce(input: {
     ignores,
   })
 
-  await using workerPool = new Piscina<WorkerInput, WorkerOutput>({
-    filename: workerMainFilePath,
-  })
-
   for await (const sourceFilePath of stream) {
     if (signal.aborted) {
       break
     }
 
-    spawn(() =>
+    spawn(`doParse ${sourceFilePath}`, () =>
       doParse({
         signal,
         queue,
@@ -111,8 +113,6 @@ async function doProduce(input: {
       }),
     )
   }
-
-  console.log('doProduce end')
 }
 
 async function doParse(input: {
@@ -124,9 +124,9 @@ async function doParse(input: {
   sourceFilePath: string
 }): Promise<void> {
   const { signal, spawn, dataSource, workerPool, sourceFilePath, queue } = input
-  console.log('doParse start', sourceFilePath)
+
   const parsedItems = await workerPool.run(sourceFilePath)
-  console.log('parsedItems', parsedItems)
+
   for (const parsedItem of parsedItems) {
     if (signal.aborted) {
       break
@@ -138,16 +138,16 @@ async function doParse(input: {
       continue
     }
 
-    spawn(() =>
-      doPrepare({
-        queue,
-        dataSource,
-        parsedItem,
-      }),
+    spawn(
+      `doPrepare ${parsedItem.location.path}:${parsedItem.location.line}`,
+      () =>
+        doPrepare({
+          queue,
+          dataSource,
+          parsedItem,
+        }),
     )
   }
-
-  console.log('doParse end', sourceFilePath)
 }
 
 async function doPrepare(input: {
@@ -182,6 +182,4 @@ async function doPrepare(input: {
     kind: 'valid',
     location,
   })
-
-  console.log('doPrepare', location.path)
 }

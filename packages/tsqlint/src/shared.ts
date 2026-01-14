@@ -1,3 +1,5 @@
+import debug from 'debug'
+
 export type WorkerInput = string
 
 export interface Location {
@@ -20,3 +22,7 @@ export interface SkippedParsedItem {
 export type ParsedItem = QueryParsedItem | SkippedParsedItem
 
 export type WorkerOutput = ParsedItem[]
+
+export function createDebug(namespace: string): debug.Debugger {
+  return debug(`TSQLint:${namespace}`)
+}

@@ -16,10 +16,12 @@
   },
   "dependencies": {
     "@typescript-eslint/typescript-estree": "8.53.0",
+    "debug": "4.4.3",
     "micromatch": "4.0.8",
     "piscina": "5.1.4"
   },
   "devDependencies": {
+    "@types/debug": "4.1.12",
     "@types/micromatch": "4.0.10"
   }
 }

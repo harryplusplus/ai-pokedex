@@ -11,8 +11,8 @@ import type { ParsedItem, WorkerInput, WorkerOutput } from '../shared.ts'
 const ALLOWED_TAGS = ['sql']
 
 export default async function main(input: WorkerInput): Promise<WorkerOutput> {
-  console.log('worker.main start', input)
   const source = await fs.promises.readFile(input, 'utf8')
+
   const program = parse(source, {
     loc: true,
     comment: true,
@@ -65,7 +65,6 @@ export default async function main(input: WorkerInput): Promise<WorkerOutput> {
     })
   })
 
-  console.log('worker.main end', input)
   return parsedItems
 }
 
@@ -96,6 +95,4 @@ function walk(
       walk(value, visitor)
     }
   }
-
-  console.log('walk end')
 }

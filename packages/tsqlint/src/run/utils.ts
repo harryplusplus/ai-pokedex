@@ -1,3 +1,7 @@
+import { createDebug } from '../shared.ts'
+
+const debugWaitGroup = createDebug('waitGroup')
+
 export function toErrorString(e: unknown): string {
   if (e instanceof Error) {
     return e.message
@@ -11,7 +15,7 @@ export function toErrorString(e: unknown): string {
 }
 
 export interface Spawn {
-  (fn: () => Promise<void>): void
+  (name: string, fn: () => Promise<void>): void
 }
 
 export class WaitGroup {
@@ -28,13 +32,18 @@ export class WaitGroup {
     }
   }
 
-  spawn(fn: () => Promise<void>): void {
+  spawn(name: string, fn: () => Promise<void>): void {
+    debugWaitGroup(`${name} promise spawned.`)
+
     const promise = fn()
     this.#set.add(promise)
     promise
       .catch((e) => {
         console.error(e)
       })
-      .finally(() => this.#set.delete(promise))
+      .finally(() => {
+        this.#set.delete(promise)
+        debugWaitGroup(`${name} promise deleted.`)
+      })
   }
 }
