@@ -1,4 +1,4 @@
-import { inject, type Injected } from 'es-di'
+import { type Context, inject } from 'es-di'
 
 import { Db } from '../db/db.ts'
 
@@ -7,13 +7,13 @@ export class RefreshTokenRepo {
     db: Db,
   }
 
-  #db: Db
+  #c: Context<typeof RefreshTokenRepo>
 
-  constructor({ db }: Injected<typeof RefreshTokenRepo>) {
-    this.#db = db
+  constructor(c: Context<typeof RefreshTokenRepo>) {
+    this.#c = c
   }
 
   async check() {
-    await this.#db.client.query('select 1')
+    await this.#c.db.client.query('select 1')
   }
 }

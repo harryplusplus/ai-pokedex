@@ -1,4 +1,4 @@
-import { inject, type Injected } from 'es-di'
+import { type Context, inject } from 'es-di'
 
 import { DbPool } from './db/pool.ts'
 import { RefreshTokenRepo } from './refresh-token/repo.ts'
@@ -9,17 +9,15 @@ export class App {
     refreshTokenRepo: RefreshTokenRepo,
   }
 
-  #dbPool: DbPool
-  #refreshTokenRepo: RefreshTokenRepo
+  readonly #c: Context<typeof App>
 
-  constructor({ dbPool, refreshTokenRepo }: Injected<typeof App>) {
-    this.#dbPool = dbPool
-    this.#refreshTokenRepo = refreshTokenRepo
+  constructor(c: Context<typeof App>) {
+    this.#c = c
   }
 
   async check() {
-    await this.#dbPool.withClient(async () => {
-      await this.#refreshTokenRepo.check()
+    await this.#c.dbPool.withClient(async () => {
+      await this.#c.refreshTokenRepo.check()
     })
   }
 }

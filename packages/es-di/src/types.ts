@@ -43,7 +43,7 @@ export interface Injectable<T> extends Constructor<T> {
   [inject]: Dependencies
 }
 
-export type Injected<T extends Injectable<Any>> = T extends {
+export type Context<T extends Injectable<Any>> = T extends {
   [inject]: infer I
 }
   ? {
