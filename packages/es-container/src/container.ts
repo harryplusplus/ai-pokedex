@@ -73,7 +73,7 @@ export class Container {
           continue
         }
       } else if (isDependencyDefinition(definition)) {
-        //
+        definition.
       } else {
         throw new Error()
       }
