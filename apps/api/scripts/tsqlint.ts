@@ -1,6 +1,6 @@
 import { Pool, type PoolClient } from 'pg'
 import type { Connection, DataSource } from 'tsqlint'
-import { run } from 'tsqlint'
+import { formatLocation, run } from 'tsqlint'
 
 class PgConnection implements Connection {
   #client: PoolClient
@@ -13,9 +13,8 @@ class PgConnection implements Connection {
     await this.#client.query(query)
   }
 
-  async [Symbol.asyncDispose](): Promise<void> {
-    this.#client.release()
-    await Promise.resolve()
+  [Symbol.asyncDispose](): Promise<void> {
+    return Promise.resolve(this.#client.release())
   }
 }
 
@@ -62,18 +61,18 @@ async function main() {
     }
 
     const { kind, location } = lintItem
-    const fileLink = `${location.path}:${location.line}:${location.column}`
+    const locationString = formatLocation(location)
 
     if (kind === 'valid') {
-      console.log(`[TSQLint] Valid query at ${fileLink}.`)
+      console.log(`[TSQLint] Valid query at [${locationString}]`)
     } else if (kind === 'invalid') {
       console.log(
-        `[TSQLint] Invalid query with error ${lintItem.error} at ${fileLink}.`,
+        `[TSQLint] Invalid query with error ${lintItem.error} at [${locationString}]`,
       )
     } else if (kind === 'skipped') {
-      console.log(`[TSQLint] Validation skipped query at ${fileLink}.`)
+      console.log(`[TSQLint] Validation skipped query at [${locationString}]`)
     } else {
-      console.log(`[TSQLint] Unknown kind query at ${fileLink}.`)
+      console.log(`[TSQLint] Unknown kind query at [${locationString}]`)
     }
   }
 }

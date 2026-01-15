@@ -1,11 +1,31 @@
 import debug from 'debug'
 
-export type WorkerInput = string
+export interface WorkerInput {
+  sourcePath: string
+}
 
 export interface Location {
   path: string
+
+  /** 1-based line number. */
   line: number
+
+  /** 0-based column number. */
   column: number
+}
+
+export function formatLocation(
+  location: Location,
+  options?: {
+    readable?: boolean
+  },
+): string {
+  const { path, line } = location
+  const { readable = true } = options ?? {}
+
+  const column = readable ? location.column + 1 : location.column
+
+  return `${path}:${line}:${column}`
 }
 
 export interface QueryParsedItem {

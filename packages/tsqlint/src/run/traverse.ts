@@ -20,22 +20,22 @@ export async function* traverse(input: {
       currentPath,
     })
 
-    for await (const sourceFilePath of stream) {
+    for await (const sourcePath of stream) {
       if (signal.aborted) {
         break
       }
 
-      if (isIgnored(sourceFilePath, ignores)) {
+      if (isIgnored(sourcePath, ignores)) {
         continue
       }
 
-      if (visitSet.has(sourceFilePath)) {
+      if (visitSet.has(sourcePath)) {
         continue
       }
 
-      visitSet.add(sourceFilePath)
+      visitSet.add(sourcePath)
 
-      yield sourceFilePath
+      yield sourcePath
     }
   }
 }
@@ -68,10 +68,10 @@ async function* traverseRecursive(input: {
         return
       }
 
-      const relativePath = path.join(pathInfo.parentPath, pathInfo.name)
+      const joinedPath = path.join(pathInfo.parentPath, pathInfo.name)
 
       if (pathInfo.isFile()) {
-        yield relativePath
+        yield joinedPath
 
         continue
       }
@@ -79,7 +79,7 @@ async function* traverseRecursive(input: {
       if (pathInfo.isDirectory()) {
         yield* traverseRecursive({
           signal,
-          currentPath: relativePath,
+          currentPath: joinedPath,
         })
       }
     }

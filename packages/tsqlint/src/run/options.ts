@@ -1,10 +1,8 @@
 export type Paths = string | string[]
 export type Ignores = string | string[]
 
-export interface Connection {
+export interface Connection extends AsyncDisposable {
   query(query: string): Promise<void>
-
-  [Symbol.asyncDispose]: () => Promise<void>
 }
 
 export interface DataSource {

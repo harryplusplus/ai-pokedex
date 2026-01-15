@@ -8,58 +8,35 @@ import {
 
 import type { ParsedItem, WorkerInput, WorkerOutput } from '../shared.ts'
 
-const ALLOWED_TAGS = ['sql']
-
 export default async function main(input: WorkerInput): Promise<WorkerOutput> {
-  const source = await fs.promises.readFile(input, 'utf8')
+  const { sourcePath } = input
+
+  const source = await fs.promises.readFile(sourcePath, 'utf8')
 
   const program = parse(source, {
     loc: true,
-    comment: true,
   })
 
   const parsedItems: ParsedItem[] = []
 
   walk(program, (node) => {
-    const { tag, quasi } = node
-
-    let identifierNode: TSESTree.Expression | null = null
-    if (tag.type === AST_NODE_TYPES.Identifier) {
-      identifierNode = tag
-    } else if (tag.type === AST_NODE_TYPES.CallExpression) {
-      const { callee } = tag
-
-      if (callee.type === AST_NODE_TYPES.Identifier) {
-        identifierNode = callee
-      }
-    }
-
-    if (!identifierNode) {
+    const tagName = findTagName(node)
+    if (!tagName) {
       return
     }
 
-    if (!ALLOWED_TAGS.includes(identifierNode.name.toLowerCase())) {
+    if (!isAllowedTagName(tagName)) {
       return
     }
 
-    const { quasis } = quasi
-    let query = ''
-    const lastIdx = quasis.length - 1
-    for (let i = 0; i < quasis.length; ++i) {
-      const quasi = quasis[i]
-      query += quasi.value.cooked
-
-      if (i < lastIdx) {
-        query += `$${i + 1}`
-      }
-    }
+    const query = buildQuery(node)
 
     parsedItems.push({
       kind: 'query',
       location: {
-        path: input,
-        line: quasi.loc.start.line,
-        column: quasi.loc.start.column,
+        path: sourcePath,
+        line: node.loc.start.line,
+        column: node.loc.start.column,
       },
       query,
     })
@@ -68,7 +45,7 @@ export default async function main(input: WorkerInput): Promise<WorkerOutput> {
   return parsedItems
 }
 
-const TO_SKIP_PROPERTY_KEYS = ['loc', 'comments']
+const SKIP_PROPERTY_KEYS = ['loc', 'comments']
 
 function walk(
   node: unknown,
@@ -83,7 +60,7 @@ function walk(
   }
 
   for (const [key, value] of Object.entries(node)) {
-    if (TO_SKIP_PROPERTY_KEYS.includes(key)) {
+    if (SKIP_PROPERTY_KEYS.includes(key)) {
       continue
     }
 
@@ -95,4 +72,45 @@ function walk(
       walk(value, visitor)
     }
   }
+}
+
+function findTagName(node: TSESTree.TaggedTemplateExpression): string | null {
+  const { tag } = node
+
+  if (tag.type === AST_NODE_TYPES.Identifier) {
+    return tag.name
+  }
+
+  if (tag.type === AST_NODE_TYPES.CallExpression) {
+    const { callee } = tag
+
+    if (callee.type === AST_NODE_TYPES.Identifier) {
+      return callee.name
+    }
+  }
+
+  return null
+}
+
+const ALLOWED_TAG_NAMES = ['sql']
+
+function isAllowedTagName(tagName: string): boolean {
+  return ALLOWED_TAG_NAMES.includes(tagName.toLowerCase())
+}
+
+function buildQuery(node: TSESTree.TaggedTemplateExpression): string {
+  const { quasis } = node.quasi
+
+  let query = ''
+  const lastIdx = quasis.length - 1
+  for (let i = 0; i < quasis.length; ++i) {
+    const quasi = quasis[i]
+    query += quasi.value.cooked
+
+    if (i < lastIdx) {
+      query += `$${i + 1}`
+    }
+  }
+
+  return query
 }

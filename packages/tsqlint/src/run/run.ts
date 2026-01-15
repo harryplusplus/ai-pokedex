@@ -1,22 +1,14 @@
-import path from 'node:path'
-
-import { Piscina } from 'piscina'
-
-import type {
-  Location,
-  QueryParsedItem,
-  WorkerInput,
-  WorkerOutput,
+import {
+  formatLocation,
+  type Location,
+  type QueryParsedItem,
 } from '../shared.ts'
 import type { DataSource, RunOptions } from './options.ts'
 import { fillRunOptions } from './options.ts'
 import { traverse } from './traverse.ts'
-import { type Spawn, toErrorString, WaitGroup } from './utils.ts'
-
-const workerMainFilePath = path.resolve(
-  import.meta.dirname,
-  '../worker/main' + path.extname(import.meta.filename),
-)
+import { parseErrorMessage } from './utils.ts'
+import { type Spawn, WaitGroup } from './wait-group.ts'
+import { createWorkerPool, type WorkerPool } from './worker-pool.ts'
 
 export interface ValidLintItem {
   kind: 'valid'
@@ -39,12 +31,10 @@ export type LintItem = ValidLintItem | InvalidLintItem | SkippedLintItem
 export async function* run(options: RunOptions): AsyncGenerator<LintItem> {
   const { signal, dataSource, paths, ignores } = fillRunOptions(options)
 
-  await using workerPool = new Piscina<WorkerInput, WorkerOutput>({
-    filename: workerMainFilePath,
-  })
+  await using workerPool = createWorkerPool()
 
   const waitGroup = new WaitGroup()
-  const spawn: Spawn = waitGroup.spawn.bind(waitGroup)
+  const spawn = waitGroup.createSpawn()
 
   const queue: LintItem[] = []
 
@@ -69,9 +59,9 @@ export async function* run(options: RunOptions): AsyncGenerator<LintItem> {
       break
     }
 
-    const runItem = queue.shift()
-    if (runItem) {
-      yield runItem
+    const lintItem = queue.shift()
+    if (lintItem) {
+      yield lintItem
 
       continue
     }
@@ -87,7 +77,7 @@ async function doProduce(input: {
   paths: string[]
   ignores: string[]
   dataSource: DataSource
-  workerPool: Piscina<WorkerInput, WorkerOutput>
+  workerPool: WorkerPool
 }): Promise<void> {
   const { signal, paths, ignores, spawn, dataSource, queue, workerPool } = input
 
@@ -97,19 +87,19 @@ async function doProduce(input: {
     ignores,
   })
 
-  for await (const sourceFilePath of stream) {
+  for await (const sourcePath of stream) {
     if (signal.aborted) {
       break
     }
 
-    spawn(`doParse ${sourceFilePath}`, () =>
+    spawn(`doParse ${sourcePath}`, () =>
       doParse({
         signal,
         queue,
         spawn,
         dataSource,
         workerPool,
-        sourceFilePath,
+        sourcePath,
       }),
     )
   }
@@ -120,12 +110,14 @@ async function doParse(input: {
   queue: LintItem[]
   spawn: Spawn
   dataSource: DataSource
-  workerPool: Piscina<WorkerInput, WorkerOutput>
-  sourceFilePath: string
+  workerPool: WorkerPool
+  sourcePath: string
 }): Promise<void> {
-  const { signal, spawn, dataSource, workerPool, sourceFilePath, queue } = input
+  const { signal, spawn, dataSource, workerPool, sourcePath, queue } = input
 
-  const parsedItems = await workerPool.run(sourceFilePath)
+  const parsedItems = await workerPool.run({
+    sourcePath,
+  })
 
   for (const parsedItem of parsedItems) {
     if (signal.aborted) {
@@ -138,14 +130,14 @@ async function doParse(input: {
       continue
     }
 
-    spawn(
-      `doPrepare ${parsedItem.location.path}:${parsedItem.location.line}`,
-      () =>
-        doPrepare({
-          queue,
-          dataSource,
-          parsedItem,
-        }),
+    const locationString = formatLocation(parsedItem.location)
+
+    spawn(`doPrepare ${locationString}`, () =>
+      doPrepare({
+        queue,
+        dataSource,
+        parsedItem,
+      }),
     )
   }
 }
@@ -164,7 +156,7 @@ async function doPrepare(input: {
 
   const error = await connection
     .query(`PREPARE ${name} AS ${query}`)
-    .catch((e) => toErrorString(e))
+    .catch((e) => parseErrorMessage(e))
 
   if (typeof error === 'string') {
     queue.push({
