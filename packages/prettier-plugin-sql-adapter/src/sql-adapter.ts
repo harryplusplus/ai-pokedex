@@ -1,3 +1,4 @@
+import createDebug from 'debug'
 import fg from 'fast-glob'
 import { createJiti } from 'jiti'
 import type { Parser, Plugin, Printer } from 'prettier'
@@ -6,20 +7,22 @@ import { fillOptions, type SqlAdapterConfig } from './options.ts'
 
 const jiti = createJiti(import.meta.url)
 
-const SQL_ADAPTER = 'sql-adapter'
+const debug = createDebug('sql-adapter')
 
-const sqlParser: Parser<string> = {
+const AST_FORMAT = 'sql-adapter'
+
+const parser: Parser<string> = {
   parse: (text) => text,
-  astFormat: SQL_ADAPTER,
+  astFormat: AST_FORMAT,
   locStart: () => -1,
   locEnd: () => -1,
 }
 
 export const parsers: Plugin<string>['parsers'] = {
-  sql: sqlParser,
+  sql: parser,
 }
 
-const sqlAdapterPrinter: Printer<string> = {
+const printer: Printer<string> = {
   preprocess: async (text, options) => {
     const { sqlAdapterConfig } = fillOptions(options)
 
@@ -32,20 +35,24 @@ const sqlAdapterPrinter: Printer<string> = {
     }
 
     if (!configPath) {
-      throw new Error()
+      throw new Error(
+        `SQL adapter config not found. sqlAdapterConfig: ${sqlAdapterConfig}`,
+      )
     }
+
+    debug(`configPath: ${configPath}`)
 
     const config: SqlAdapterConfig = await jiti.import(configPath, {
       default: true,
     })
 
-    const output = config.format(text)
+    const formatted = await config.format(text)
 
-    return output
+    return formatted
   },
   print: (path) => path.node,
 }
 
 export const printers: Plugin<string>['printers'] = {
-  [SQL_ADAPTER]: sqlAdapterPrinter,
+  [AST_FORMAT]: printer,
 }

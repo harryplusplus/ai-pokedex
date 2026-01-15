@@ -314,6 +314,9 @@ importers:
 
   packages/prettier-plugin-sql-adapter:
     dependencies:
+      debug:
+        specifier: 4.4.3
+        version: 4.4.3
       fast-glob:
         specifier: 3.3.3
         version: 3.3.3
@@ -321,6 +324,9 @@ importers:
         specifier: 2.6.1
         version: 2.6.1
     devDependencies:
+      '@types/debug':
+        specifier: 4.1.12
+        version: 4.1.12
       prettier:
         specifier: 3.7.4
         version: 3.7.4

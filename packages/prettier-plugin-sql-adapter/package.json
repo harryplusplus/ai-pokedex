@@ -16,10 +16,12 @@
     "dev": "tsc --watch"
   },
   "dependencies": {
+    "debug": "4.4.3",
     "fast-glob": "3.3.3",
     "jiti": "2.6.1"
   },
   "devDependencies": {
+    "@types/debug": "4.1.12",
     "prettier": "3.7.4"
   }
 }
