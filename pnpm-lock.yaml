@@ -135,6 +135,9 @@ importers:
       '@nestjs/testing':
         specifier: 11.1.11
         version: 11.1.11(@nestjs/common@11.1.11(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.11)(@nestjs/platform-express@11.1.11)
+      '@tsqlint/core':
+        specifier: workspace:*
+        version: link:../../packages/tsqlint/core
       '@types/cookie-parser':
         specifier: 1.4.10
         version: 1.4.10(@types/express@5.0.6)
@@ -171,9 +174,6 @@ importers:
       tsconfig-paths:
         specifier: 4.2.0
         version: 4.2.0
-      tsqlint:
-        specifier: workspace:*
-        version: link:../../packages/tsqlint
       unplugin-swc:
         specifier: 1.5.9
         version: 1.5.9(@swc/core@1.15.8)(rollup@4.55.1)
@@ -319,7 +319,13 @@ importers:
         specifier: 3.7.4
         version: 3.7.4
 
-  packages/tsqlint:
+  packages/tsqlint/cli:
+    dependencies:
+      '@tsqlint/core':
+        specifier: workspace:*
+        version: link:../core
+
+  packages/tsqlint/core:
     dependencies:
       '@typescript-eslint/typescript-estree':
         specifier: 8.53.0

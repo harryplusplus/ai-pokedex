@@ -1,6 +1,6 @@
+import type { Connection, DataSource } from '@tsqlint/core'
+import { formatLocation, run } from '@tsqlint/core'
 import { Pool, type PoolClient } from 'pg'
-import type { Connection, DataSource } from 'tsqlint'
-import { formatLocation, run } from 'tsqlint'
 
 class PgConnection implements Connection {
   #client: PoolClient

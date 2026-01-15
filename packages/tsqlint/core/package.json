@@ -1,5 +1,5 @@
 {
-  "name": "tsqlint",
+  "name": "@tsqlint/core",
   "private": true,
   "type": "module",
   "exports": {

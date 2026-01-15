@@ -1,5 +1,6 @@
 packages:
   - packages/*
+  - packages/tsqlint/*
   - apps/*
 ignoredBuiltDependencies:
   - sharp
