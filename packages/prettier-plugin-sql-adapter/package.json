@@ -1,5 +1,5 @@
 {
-  "name": "prettier-plugin-sql-tag-pg",
+  "name": "prettier-plugin-sql-adapter",
   "private": true,
   "type": "module",
   "exports": {
@@ -16,7 +16,8 @@
     "dev": "tsc --watch"
   },
   "dependencies": {
-    "psqlformat": "1.30.0"
+    "fast-glob": "3.3.3",
+    "jiti": "2.6.1"
   },
   "devDependencies": {
     "prettier": "3.7.4"

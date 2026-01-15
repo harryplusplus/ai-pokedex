@@ -41,12 +41,15 @@ importers:
       prettier-plugin-embed:
         specifier: 0.5.1
         version: 0.5.1
-      prettier-plugin-sql-tag-pg:
+      prettier-plugin-sql-adapter:
         specifier: workspace:*
-        version: link:packages/prettier-plugin-sql-tag-pg
+        version: link:packages/prettier-plugin-sql-adapter
       prettier-plugin-tailwindcss:
         specifier: 0.7.2
         version: 0.7.2(prettier@3.7.4)
+      psqlformat:
+        specifier: 1.30.0
+        version: 1.30.0
       rimraf:
         specifier: 6.1.2
         version: 6.1.2
@@ -309,11 +312,14 @@ importers:
         specifier: 4.3.5
         version: 4.3.5
 
-  packages/prettier-plugin-sql-tag-pg:
+  packages/prettier-plugin-sql-adapter:
     dependencies:
-      psqlformat:
-        specifier: 1.30.0
-        version: 1.30.0
+      fast-glob:
+        specifier: 3.3.3
+        version: 3.3.3
+      jiti:
+        specifier: 2.6.1
+        version: 2.6.1
     devDependencies:
       prettier:
         specifier: 3.7.4
