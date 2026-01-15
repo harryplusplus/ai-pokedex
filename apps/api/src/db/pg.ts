@@ -13,6 +13,6 @@ export function resetDateTypeParsers(): void {
   })
 }
 
-export type PgClient = Pick<pg.ClientBase, 'query'>
+export type QueryClient = Pick<pg.ClientBase, 'query'>
 
-export const pgClientStorage = new AsyncLocalStorage<PgClient>()
+export const queryClientStorage = new AsyncLocalStorage<QueryClient>()

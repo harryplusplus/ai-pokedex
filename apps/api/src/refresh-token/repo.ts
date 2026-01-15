@@ -7,7 +7,7 @@ export class RefreshTokenRepo {
     db: Db,
   }
 
-  #c: Context<typeof RefreshTokenRepo>
+  readonly #c: Context<typeof RefreshTokenRepo>
 
   constructor(c: Context<typeof RefreshTokenRepo>) {
     this.#c = c

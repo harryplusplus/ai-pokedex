@@ -1,16 +1,16 @@
 import { inject } from 'es-di'
 
-import { type PgClient, pgClientStorage } from './pg.ts'
+import { type QueryClient, queryClientStorage } from './pg.ts'
 
 export class Db {
   static [inject] = {}
 
-  get client(): PgClient {
-    const pgClient = pgClientStorage.getStore()
-    if (!pgClient) {
-      throw new Error('Invalid pg client context.')
+  get client(): QueryClient {
+    const client = queryClientStorage.getStore()
+    if (!client) {
+      throw new Error('Invalid query client context.')
     }
 
-    return pgClient
+    return client
   }
 }

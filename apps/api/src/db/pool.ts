@@ -1,7 +1,7 @@
 import { inject, onDestroy, type OnDestroyable } from 'es-di'
 import pg from 'pg'
 
-import { pgClientStorage, resetDateTypeParsers } from './pg.ts'
+import { queryClientStorage, resetDateTypeParsers } from './pg.ts'
 
 export type IsolationLevel = 'READ COMMITTED' | 'SERIALIZABLE'
 
@@ -25,7 +25,7 @@ export class DbPool implements OnDestroyable {
   async withClient<R>(fn: () => Promise<R>): Promise<R> {
     const client = await this.#pool.connect()
     try {
-      return await pgClientStorage.run(client, fn)
+      return await queryClientStorage.run(client, fn)
     } finally {
       client.release()
     }
@@ -45,7 +45,7 @@ export class DbPool implements OnDestroyable {
         `BEGIN${isolationLevel ? ` ISOLATION LEVEL ${isolationLevel}` : ''}`,
       )
 
-      const result = await pgClientStorage.run(client, fn)
+      const result = await queryClientStorage.run(client, fn)
 
       await client.query('COMMIT')
 
