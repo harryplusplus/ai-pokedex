@@ -33,3 +33,9 @@ export function toStack(e: unknown): string | undefined {
 
   return undefined
 }
+
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+export type Class = Function & {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  new (...args: any[]): any
+}

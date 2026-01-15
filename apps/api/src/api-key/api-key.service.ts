@@ -1,21 +1,15 @@
 import { Injectable } from '@nestjs/common'
 import { Scannable } from 'nest-component-scan'
 
-import { DbService } from '../db/db.service.js'
-import { ApiKeyRepoFactory } from './api-key.repo-factory.js'
-import { ApiKey } from './api-key.schema.js'
+import { DbService } from '../db/db.service.ts'
+import { ApiKey } from './api-key.schema.ts'
 
 @Scannable()
 @Injectable()
 export class ApiKeyService {
-  constructor(
-    private readonly dbService: DbService,
-    private readonly apiKeyRepoFactory: ApiKeyRepoFactory,
-  ) {}
+  constructor(private readonly dbService: DbService) {}
 
   async validate(apiKey: ApiKey): Promise<boolean> {
-    return await this.apiKeyRepoFactory
-      .create(this.dbService.sql)
-      .validate(apiKey)
+    return await this.dbService.client.apiKey.validate(apiKey)
   }
 }

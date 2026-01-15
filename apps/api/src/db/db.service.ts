@@ -1,14 +1,14 @@
 import { Injectable, OnApplicationShutdown } from '@nestjs/common'
 import { Scannable } from 'nest-component-scan'
-import { Pool } from 'pg'
+import { Pool, PoolClient } from 'pg'
 
-import { ConfigService } from '../config/config.service.js'
-import { createSql, Sql } from '../pg/pg-sql.js'
+import { ConfigService } from '../config/config.service.ts'
 import {
   IsolationLevel,
   resetDateTypeParsers,
   transaction,
-} from '../pg/pg-utils.js'
+} from './db.utils.ts'
+import { RepositoryClient } from './repository.client.ts'
 
 @Scannable()
 @Injectable()
@@ -28,12 +28,12 @@ export class DbService implements OnApplicationShutdown {
     await this.#pool.end()
   }
 
-  get sql(): Sql {
-    return createSql(this.#pool)
+  get client(): RepositoryClient<Pool> {
+    return new RepositoryClient(this.#pool)
   }
 
   async transaction<T>(
-    onTransaction: (sql: Sql) => Promise<T>,
+    onTransaction: (client: RepositoryClient<PoolClient>) => Promise<T>,
     options?: { isolationLevel?: IsolationLevel },
   ): Promise<T> {
     return await transaction(

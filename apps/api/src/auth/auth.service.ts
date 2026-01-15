@@ -5,8 +5,6 @@ import { v7 } from 'uuid'
 
 import { DbService } from '../db/db.service.js'
 import { GoogleAuthService } from '../google-auth/google-auth.service.js'
-import { RefreshTokenRepoFactory } from '../refresh-token/refresh-token.repo-factory.js'
-import { UserRepoFactory } from '../user/user.repo-factory.js'
 import { UserId } from '../user/user.schema.js'
 import { toPrintable, toStack } from '../utils.js'
 import { CreateAllOutput, JwtService } from './jwt.service.js'
@@ -18,9 +16,7 @@ export class AuthService {
 
   constructor(
     private readonly googleAuthService: GoogleAuthService,
-    private readonly userRepoFactory: UserRepoFactory,
     private readonly dbService: DbService,
-    private readonly refreshTokenRepoFactory: RefreshTokenRepoFactory,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -30,10 +26,8 @@ export class AuthService {
     const { providerUserId, name, image } =
       await this.#externalParseIdToken(input)
 
-    return await this.dbService.transaction(async (sql) => {
-      const userRepo = this.userRepoFactory.create(sql)
-
-      const userId = await userRepo.createOrGetId({
+    return await this.dbService.transaction(async (client) => {
+      const userId = await client.user.createOrGetId({
         provider,
         providerUserId,
       })
@@ -44,9 +38,7 @@ export class AuthService {
         image,
       })
 
-      const refreshTokenRepo = this.refreshTokenRepoFactory.create(sql)
-
-      await refreshTokenRepo.create({
+      await client.refreshToken.create({
         userId,
         token: output.refreshToken,
         expiresAt: output.refreshTokenExpiresAt,
@@ -88,18 +80,12 @@ export class AuthService {
   }
 
   async signOut(refreshToken: string) {
-    const refreshTokenRepo = this.refreshTokenRepoFactory.create(
-      this.dbService.sql,
-    )
-
-    await refreshTokenRepo.revoke(refreshToken)
+    await this.dbService.client.refreshToken.revoke(refreshToken)
   }
 
   async refresh(refreshToken: string): Promise<CreateAllOutput | null> {
-    return await this.dbService.transaction(async (sql) => {
-      const refreshTokenRepo = this.refreshTokenRepoFactory.create(sql)
-
-      const entity = await refreshTokenRepo.lock(refreshToken)
+    return await this.dbService.transaction(async (client) => {
+      const entity = await client.refreshToken.lock(refreshToken)
       if (!entity) {
         return null
       }
@@ -116,7 +102,7 @@ export class AuthService {
 
         const output = await this.jwtService.createAll(payload)
 
-        await refreshTokenRepo.create({
+        await client.refreshToken.create({
           userId: UserId.parse(payload.sub),
           token: output.refreshToken,
           expiresAt: output.refreshTokenExpiresAt,
@@ -124,7 +110,7 @@ export class AuthService {
 
         return output
       } finally {
-        await refreshTokenRepo.revoke(refreshToken)
+        await client.refreshToken.revoke(refreshToken)
       }
     })
   }

@@ -24,6 +24,8 @@ export const parsers: Plugin<string>['parsers'] = {
 
 const printer: Printer<string> = {
   preprocess: async (text, options) => {
+    const startedAtInMs = performance.now()
+
     const { sqlAdapterConfig } = fillOptions(options)
 
     const stream = fg.stream(sqlAdapterConfig, { absolute: true })
@@ -40,13 +42,16 @@ const printer: Printer<string> = {
       )
     }
 
-    debug(`configPath: ${configPath}`)
+    debug(`config path: ${configPath}`)
 
     const config: SqlAdapterConfig = await jiti.import(configPath, {
       default: true,
     })
 
     const formatted = await config.format(text)
+
+    const completedAtInMs = performance.now()
+    debug(`execution time: ${completedAtInMs - startedAtInMs}ms`)
 
     return formatted
   },

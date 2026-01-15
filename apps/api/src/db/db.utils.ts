@@ -1,6 +1,19 @@
-import { type Pool, types } from 'pg'
+import { Pool, PoolClient, types } from 'pg'
 
-import { createSql, type Sql } from './pg-sql.js'
+import { QueryConfig, Value } from './db.types.ts'
+import { RepositoryClient } from './repository.client.ts'
+
+export function sql(
+  strings: TemplateStringsArray,
+  ...values: Value[]
+): QueryConfig {
+  const text = strings.reduce((prev, curr, i) => prev + '$' + i + curr)
+
+  return {
+    text,
+    values,
+  }
+}
 
 export function resetDateTypeParsers(): void {
   const oidsForParserReset = [
@@ -20,7 +33,7 @@ export async function transaction<T>(
     pool: Pool
     isolationLevel?: IsolationLevel
   },
-  onTransaction: (sql: Sql) => Promise<T>,
+  onTransaction: (client: RepositoryClient<PoolClient>) => Promise<T>,
 ): Promise<T> {
   const { pool, isolationLevel } = context
 
@@ -31,7 +44,7 @@ export async function transaction<T>(
       `BEGIN${isolationLevel ? ` ISOLATION LEVEL ${isolationLevel}` : ''}`,
     )
 
-    const result = await onTransaction(createSql(client))
+    const result = await onTransaction(new RepositoryClient(client))
 
     await client.query('COMMIT')
 

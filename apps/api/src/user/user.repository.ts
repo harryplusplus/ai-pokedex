@@ -1,17 +1,17 @@
-import { Sql } from '../pg/pg-sql.js'
+import { sql } from '../db/db.utils.ts'
+import { QueryClient } from '../db/query.client.ts'
 import { UserId } from './user.schema.js'
 
-export class UserRepo {
-  constructor(private readonly sql: Sql) {}
+export class UserRepository {
+  constructor(private readonly queryClient: QueryClient) {}
 
   async createOrGetId(input: {
     provider: string
     providerUserId: string
   }): Promise<UserId> {
     const { provider, providerUserId } = input
-    const { sql } = this
 
-    const result = await sql<{ id: UserId }>`
+    const result = await this.queryClient.query<{ id: UserId }>(sql`
       INSERT INTO users (provider, provider_user_id)
         VALUES (${provider}, ${providerUserId})
       ON CONFLICT (provider, provider_user_id)
@@ -22,7 +22,7 @@ export class UserRepo {
             updated_at = now()
           RETURNING
             id
-    `
+    `)
 
     if (result.rows.length === 0) {
       throw new Error('Invalid result.')
