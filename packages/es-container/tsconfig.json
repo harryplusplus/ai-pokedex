@@ -6,6 +6,7 @@
     "moduleResolution": "bundler",
     "erasableSyntaxOnly": true,
     "rewriteRelativeImportExtensions": true,
+    "verbatimModuleSyntax": true,
 
     // Types
     "skipLibCheck": true,

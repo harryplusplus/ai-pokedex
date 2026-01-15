@@ -1,5 +1,5 @@
 {
-  "name": "kusa",
+  "name": "es-container",
   "type": "module",
   "exports": {
     ".": {

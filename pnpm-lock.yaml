@@ -275,7 +275,7 @@ importers:
         specifier: 4.3.5
         version: 4.3.5
 
-  packages/kusa: {}
+  packages/es-container: {}
 
   packages/nest-component-scan:
     dependencies:
