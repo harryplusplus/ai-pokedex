@@ -1,6 +1,11 @@
 import { AsyncLocalStorage } from 'node:async_hooks'
 
-import pg, { types } from 'pg'
+import type { Any } from 'es-di'
+import pg, { type QueryConfig, types } from 'pg'
+
+export type QueryClient = Pick<pg.ClientBase, 'query'>
+
+export const queryClientStorage = new AsyncLocalStorage<QueryClient>()
 
 export function resetDateTypeParsers(): void {
   const oidsForParserReset = [
@@ -13,6 +18,14 @@ export function resetDateTypeParsers(): void {
   })
 }
 
-export type QueryClient = Pick<pg.ClientBase, 'query'>
+export function sql(
+  strings: TemplateStringsArray,
+  ...values: Any[]
+): QueryConfig {
+  const text = strings.reduce((prev, curr, i) => prev + '$' + i + curr)
 
-export const queryClientStorage = new AsyncLocalStorage<QueryClient>()
+  return {
+    text,
+    values,
+  }
+}
