@@ -26,3 +26,11 @@ export function isIndirectToken(
 ): token is IndirectToken<Any> {
   return typeof token === 'string' || typeof token === 'symbol'
 }
+
+export function tokenToString(token: InjectionToken<Any>): string {
+  if (isClassToken(token)) {
+    return token.name
+  }
+
+  return token.toString()
+}

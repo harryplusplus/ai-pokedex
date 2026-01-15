@@ -1,41 +1,24 @@
 import { inject, onCreate, onDestroy, type } from './symbols.ts'
-import {
-  type ClassToken,
-  type InjectionToken,
-  isClassToken,
-  isIndirectToken,
-} from './token.ts'
+import { type ClassToken, type IndirectToken } from './token.ts'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Any = any
 
-export interface DependencyDefinition<T> {
-  kind: 'class' | 'indirect'
-  token: InjectionToken<Any>
+export interface IndirectDependency<T> {
+  token: IndirectToken<T>
   [type]?: T
 }
 
-export function dependency<T extends object>(
-  token: InjectionToken<Any>,
-): DependencyDefinition<T> {
-  if (isClassToken(token)) {
-    return {
-      kind: 'class',
-      token,
-      [type]: undefined,
-    }
-  } else if (isIndirectToken(token)) {
-    return {
-      kind: 'indirect',
-      token,
-      [type]: undefined,
-    }
-  } else {
-    throw new Error()
+export function indirect<T extends object>(
+  token: IndirectToken<T>,
+): IndirectDependency<T> {
+  return {
+    token,
+    [type]: undefined,
   }
 }
 
-export type Dependency<T> = ClassToken<T> | DependencyDefinition<T>
+export type Dependency<T> = ClassToken<T> | IndirectDependency<T>
 
 export function isClassTokenDependency(
   dependency: Dependency<Any>,
@@ -43,21 +26,21 @@ export function isClassTokenDependency(
   return typeof dependency === 'function'
 }
 
-export function isDependencyDefinition(
+export function isIndirectDependency(
   dependency: Dependency<Any>,
-): dependency is DependencyDefinition<Any> {
+): dependency is IndirectDependency<Any> {
   return typeof dependency !== 'function' && typeof dependency === 'object'
 }
 
-export type DependencyDefinitions = Record<
+export type Dependencies = Record<
   string,
-  ClassToken<Any> | DependencyDefinition<Any>
+  ClassToken<Any> | IndirectDependency<Any>
 >
 
-export type Constructor<T> = abstract new (...args: Any[]) => T
+export type Constructor<T> = new (...args: Any[]) => T
 
 export interface Injectable<T> extends Constructor<T> {
-  [inject]: DependencyDefinitions
+  [inject]: Dependencies
 }
 
 export type Injected<T extends Injectable<Any>> = T extends {
@@ -72,10 +55,12 @@ export type Injected<T extends Injectable<Any>> = T extends {
     }
   : never
 
+export type MaybePromise<T> = T | Promise<T>
+
 export interface OnCreatable {
-  [onCreate](): void
+  [onCreate](): MaybePromise<void>
 }
 
 export interface OnDestroyable {
-  [onDestroy](): void
+  [onDestroy](): MaybePromise<void>
 }
