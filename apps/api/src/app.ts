@@ -1,4 +1,4 @@
-import { type Context, inject } from 'es-di'
+import { type Context, inject } from 'esdi'
 
 import { DbPool } from './db/pool.ts'
 import { RefreshTokenRepo } from './refresh-token/repo.ts'

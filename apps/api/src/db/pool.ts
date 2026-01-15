@@ -1,4 +1,4 @@
-import { inject, onDestroy, type OnDestroyable } from 'es-di'
+import { inject, onDestroy, type OnDestroyable } from 'esdi'
 import pg from 'pg'
 
 import { queryClientStorage, resetDateTypeParsers } from './pg.ts'

@@ -1,6 +1,6 @@
 import { AsyncLocalStorage } from 'node:async_hooks'
 
-import type { Any } from 'es-di'
+import type { Any } from 'esdi'
 import pg, { type QueryConfig, types } from 'pg'
 
 export type QueryClient = Pick<pg.ClientBase, 'query'>

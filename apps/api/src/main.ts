@@ -1,4 +1,4 @@
-import { Container } from 'es-di'
+import { Container } from 'esdi'
 
 import { App } from './app.ts'
 

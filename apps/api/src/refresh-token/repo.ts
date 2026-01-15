@@ -1,4 +1,4 @@
-import { type Context, inject } from 'es-di'
+import { type Context, inject } from 'esdi'
 
 import { Db } from '../db/db.ts'
 

@@ -1,4 +1,4 @@
-import { inject } from 'es-di'
+import { inject } from 'esdi'
 
 import { type QueryClient, queryClientStorage } from './pg.ts'
 

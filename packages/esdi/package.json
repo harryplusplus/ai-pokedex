@@ -1,5 +1,5 @@
 {
-  "name": "es-di",
+  "name": "esdi",
   "type": "module",
   "exports": {
     ".": {
