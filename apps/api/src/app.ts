@@ -1,7 +1,7 @@
 import { inject, type Injected } from 'es-di'
 
 import { DbPool } from './db/pool.ts'
-import { RefreshTokenRepo } from './refresh-token-repo.ts'
+import { RefreshTokenRepo } from './refresh-token/repo.ts'
 
 export class App {
   static [inject] = {

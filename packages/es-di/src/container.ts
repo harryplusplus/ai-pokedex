@@ -148,7 +148,7 @@ export class Container {
 
       callChain.add(token)
 
-      const instance = this.#resolve<object>(token, callChain)
+      const instance = await this.#resolve<object>(token, callChain)
 
       depInstances[name] = instance
     }
