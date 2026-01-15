@@ -69,7 +69,7 @@ export class Container {
 
         try {
           await onDestroyable[onDestroy]()
-        } catch (_e) {
+        } catch (e) {
           // TODO: logging
         }
       }

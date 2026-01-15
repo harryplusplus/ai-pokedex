@@ -1,5 +1,5 @@
 {
-  "name": "es-container",
+  "name": "es-di",
   "type": "module",
   "exports": {
     ".": {

@@ -1,61 +1,26 @@
 {
   "name": "@repo/api",
-  "version": "0.0.0-development",
-  "private": true,
   "type": "module",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "typescript": "./src/index.ts",
+      "default": "./dist/index.js"
     }
   },
   "scripts": {
-    "build": "nest build",
-    "dev": "nest start --watch --env-file .env",
-    "migrate:create": "dotenv run -- node-pg-migrate create -j=sql",
-    "migrate:up": "dotenv run -- node-pg-migrate up",
-    "start": "node dist/main",
-    "tsqlint": "node --conditions=typescript scripts/tsqlint.ts"
+    "build": "tsc",
+    "clean": "rimraf dist tsconfig.tsbuildinfo .turbo",
+    "dev": "node --conditions=typescript src/main.ts",
+    "check-types": "tsc --noEmit"
   },
   "dependencies": {
-    "@nestjs/common": "11.1.11",
-    "@nestjs/config": "4.0.2",
-    "@nestjs/core": "11.1.11",
-    "@nestjs/jwt": "11.0.2",
-    "@nestjs/platform-express": "11.1.11",
-    "@nestjs/swagger": "11.2.4",
-    "@repo/common": "workspace:*",
-    "@trpc/server": "11.8.1",
-    "@tygra/nestjs-graceful-shutdown": "2.0.0",
-    "camelcase-keys": "10.0.1",
-    "cookie-parser": "1.4.7",
-    "date-fns": "4.1.0",
-    "google-auth-library": "10.5.0",
-    "helmet": "8.1.0",
-    "nest-standard-schema": "workspace:*",
-    "pg": "8.16.3",
-    "reflect-metadata": "0.2.2",
-    "rxjs": "7.8.2",
-    "uuid": "13.0.0",
-    "zod": "4.3.5"
+    "es-di": "workspace:*",
+    "pg": "8.16.3"
   },
   "devDependencies": {
-    "@nestjs/cli": "11.0.14",
-    "@nestjs/schematics": "11.0.9",
-    "@nestjs/testing": "11.1.11",
-    "@types/cookie-parser": "1.4.10",
-    "@types/express": "5.0.6",
-    "@types/express-serve-static-core": "5.1.0",
     "@types/pg": "8.16.0",
-    "@types/qs": "6.14.0",
-    "@types/supertest": "6.0.3",
-    "dotenv": "17.2.3",
-    "nest-component-scan": "workspace:*",
     "node-pg-migrate": "8.0.4",
-    "source-map-support": "0.5.21",
-    "@tsqlint/core": "workspace:*",
-    "supertest": "7.1.4",
-    "tsconfig-paths": "4.2.0",
-    "unplugin-swc": "1.5.9",
     "vitest": "4.0.16"
   }
 }

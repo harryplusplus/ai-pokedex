@@ -1,26 +1,25 @@
 {
   "compilerOptions": {
+    // Languages
     "target": "esnext",
     "module": "nodenext",
     "moduleResolution": "nodenext",
-    "resolvePackageJsonExports": true,
-    "esModuleInterop": true,
-    "isolatedModules": true,
+    "erasableSyntaxOnly": true,
+    "rewriteRelativeImportExtensions": true,
+    "verbatimModuleSyntax": true,
+
+    // Types
+    "skipLibCheck": true,
+    "strict": true,
+
+    // Builds
+    "outDir": "dist",
+    "incremental": true,
+    "removeComments": true,
+    "tsBuildInfoFile": "tsconfig.tsbuildinfo",
     "declaration": true,
     "declarationMap": true,
-    "removeComments": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": true,
-    "sourceMap": true,
-    "outDir": "./dist",
-    "incremental": true,
-    "skipLibCheck": true,
-    "strictNullChecks": true,
-    "forceConsistentCasingInFileNames": true,
-    "noImplicitAny": true,
-    "strictBindCallApply": true,
-    "noFallthroughCasesInSwitch": true,
-    "rewriteRelativeImportExtensions": true
-  }
+    "sourceMap": true
+  },
+  "include": ["src/**/*.ts"]
 }
