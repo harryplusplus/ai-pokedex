@@ -1,4 +1,4 @@
-import GoogleSigninButtonIsland from '@/features/google-signin/components/google-signin-button-island'
+import GoogleSigninButtonIsland from '@/components/google-signin-button-island'
 
 export default function Home() {
   return (

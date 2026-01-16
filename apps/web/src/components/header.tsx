@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 
-import AuthStatus from '@/features/auth/components/auth-status'
+import UserCard from './user-card'
 
 export default function Header() {
   return (
@@ -24,7 +24,7 @@ export default function Header() {
           <span className="text-sm text-white">GitHub</span>
         </div>
       </Link>
-      <AuthStatus />
+      <UserCard />
     </header>
   )
 }

@@ -7,9 +7,8 @@ import localFont from 'next/font/local'
 import Background from '@/components/background'
 import Header from '@/components/header'
 import Main from '@/components/main'
-import TrpcQueryProviders from '@/components/trpc-query-providers'
+import QueryProvider from '@/components/query-provider'
 import { Toaster } from '@/components/ui/sonner'
-import { AuthProvider } from '@/features/auth/contexts/auth-context'
 import { cn } from '@/lib/utils'
 
 const cookieRunFont = localFont({
@@ -32,14 +31,12 @@ export default function RootLayout({
       <body
         className={cn('overflow-y-scroll antialiased', cookieRunFont.className)}
       >
-        <TrpcQueryProviders>
-          <AuthProvider>
-            <Background />
-            <Header />
-            <Main>{children}</Main>
-            <ReactQueryDevtools />
-          </AuthProvider>
-        </TrpcQueryProviders>
+        <QueryProvider>
+          <Background />
+          <Header />
+          <Main>{children}</Main>
+          <ReactQueryDevtools />
+        </QueryProvider>
         <Toaster />
       </body>
     </html>
