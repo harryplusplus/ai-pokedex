@@ -3,9 +3,12 @@
   "version": "0.0.0-development",
   "private": true,
   "scripts": {
-    "build": "next build",
+    "build:code": "next build",
+    "build": "pnpm run build:code && pnpm run migrate:up",
     "dev": "next dev",
-    "start": "next start"
+    "start": "next start",
+    "migrate:create": "node-pg-migrate create -j=sql",
+    "migrate:up": "node-pg-migrate up"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.4",
