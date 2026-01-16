@@ -12,5 +12,6 @@
       "persistent": true,
       "cache": false
     }
-  }
+  },
+  "globalEnv": ["TURBO_PLATFORM_ENV_DISABLED"]
 }
