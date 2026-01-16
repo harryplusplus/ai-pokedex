@@ -1,4 +1,6 @@
-import { Config, container, DbService } from '@repo/server'
+import { Config } from '@repo/server/config/config.ts'
+import { container } from '@repo/server/container.ts'
+import { DbService } from '@repo/server/db/service.ts'
 import { betterAuth } from 'better-auth'
 
 const GOOGLE_CLIENT_ID =

@@ -68,11 +68,11 @@ const config = defineConfig([
     plugins: {
       import: importPlugin,
     },
-    files: ['packages/{esdi,server}/src/**/*.ts'],
+    files: ['{packages,apps}/*/src/**/*.{ts,tsx}'],
     rules: {
       'import/extensions': [
         'error',
-        'ignorePackages',
+        'always',
         {
           js: 'never',
         },
