@@ -8,7 +8,6 @@ export class Config {
   readonly envVars: EnvVars
 
   constructor() {
-    console.log('process.env', process.env)
     this.envVars = EnvVars.parse(process.env)
   }
 }
