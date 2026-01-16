@@ -1,5 +1,9 @@
 # AI 포켓몬 도감
 
+## 인프라
+
+Vercel, Neon, Trigger, Google Auth
+
 ## 출처
 
 ### 냐오하 이미지
