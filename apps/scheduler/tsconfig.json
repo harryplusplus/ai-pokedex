@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    // Languages
+    "target": "esnext",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "erasableSyntaxOnly": true,
+    "rewriteRelativeImportExtensions": true,
+    "verbatimModuleSyntax": true,
+
+    // Types
+    "skipLibCheck": true,
+    "strict": true
+  },
+  "include": ["src/**/*.ts", "trigger.config.ts"]
+}
