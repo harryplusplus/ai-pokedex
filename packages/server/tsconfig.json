@@ -10,13 +10,7 @@
 
     // Types
     "skipLibCheck": true,
-    "strict": true,
-
-    // Builds
-    "outDir": "dist",
-    "incremental": true,
-    "removeComments": true,
-    "tsBuildInfoFile": "tsconfig.tsbuildinfo"
+    "strict": true
   },
   "include": ["src/**/*.ts"]
 }

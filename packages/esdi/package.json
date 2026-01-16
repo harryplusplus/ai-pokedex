@@ -2,15 +2,11 @@
   "name": "esdi",
   "type": "module",
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "typescript": "./src/index.ts",
-      "default": "./dist/index.js"
-    }
+    ".": "./src/index.ts"
   },
   "scripts": {
     "build": "tsc",
     "clean": "rimraf dist tsconfig.tsbuildinfo .turbo",
-    "dev": "tsc --watch"
+    "check-types": "tsc --noEmit"
   }
 }

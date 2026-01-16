@@ -1,4 +1,4 @@
-import { inject, onCreate, onDestroy } from './symbols.ts'
+import { inject, onClose, onCreate } from './symbols.ts'
 import {
   type ClassToken,
   type IndirectToken,
@@ -11,8 +11,8 @@ import {
   type Any,
   type Injectable,
   isClassTokenDependency,
+  type OnCloseable,
   type OnCreatable,
-  type OnDestroyable,
 } from './types.ts'
 
 export class Container {
@@ -57,18 +57,18 @@ export class Container {
     return this.#resolve(injectionToken, new Set([injectionToken]))
   }
 
-  async destroy(): Promise<void> {
+  async close(): Promise<void> {
     const singletons = this.#singletons.values().toArray()
     this.#singletons.clear()
 
     singletons.reverse()
 
     for (const singleton of singletons) {
-      if (onDestroy in singleton) {
-        const onDestroyable = singleton as OnDestroyable
+      if (onClose in singleton) {
+        const onCloseable = singleton as OnCloseable
 
         try {
-          await onDestroyable[onDestroy]()
+          await onCloseable[onClose]()
         } catch (e) {
           // TODO: logging
         }

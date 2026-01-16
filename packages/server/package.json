@@ -2,15 +2,10 @@
   "name": "@repo/server",
   "type": "module",
   "exports": {
-    ".": {
-      "types": "./src/index.ts",
-      "typescript": "./src/index.ts"
-    }
+    ".": "./src/index.ts"
   },
   "scripts": {
-    "build": "tsc",
-    "clean": "rimraf dist tsconfig.tsbuildinfo .turbo",
-    "dev": "node --conditions=typescript src/main.ts",
+    "dev": "node --conditions=typescript src/index.ts",
     "check-types": "tsc --noEmit"
   },
   "dependencies": {

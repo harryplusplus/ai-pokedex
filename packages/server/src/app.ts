@@ -19,6 +19,5 @@ export class App {
     await this.#c.dbPool.withClient(async () => {
       await this.#c.refreshTokenRepo.check()
     })
-    console.log('done.')
   }
 }

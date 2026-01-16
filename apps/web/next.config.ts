@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [new URL('https://*.googleusercontent.com/**')],
   },
+  serverExternalPackages: ['@repo/server'],
 }
 
 export default nextConfig

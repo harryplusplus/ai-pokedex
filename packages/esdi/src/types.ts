@@ -1,4 +1,4 @@
-import { inject, onCreate, onDestroy, type } from './symbols.ts'
+import { inject, onClose, onCreate, type } from './symbols.ts'
 import { type ClassToken, type IndirectToken } from './token.ts'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -61,6 +61,6 @@ export interface OnCreatable {
   [onCreate](): MaybePromise<void>
 }
 
-export interface OnDestroyable {
-  [onDestroy](): MaybePromise<void>
+export interface OnCloseable {
+  [onClose](): MaybePromise<void>
 }

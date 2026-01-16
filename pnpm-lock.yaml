@@ -192,6 +192,9 @@ importers:
       '@repo/common':
         specifier: workspace:*
         version: link:../../packages/common
+      '@repo/server':
+        specifier: workspace:*
+        version: link:../../packages/server
       '@tanstack/react-query':
         specifier: 5.90.16
         version: 5.90.16(react@19.2.3)
@@ -235,9 +238,6 @@ importers:
         specifier: 3.4.0
         version: 3.4.0
     devDependencies:
-      '@repo/api':
-        specifier: link:../api
-        version: link:../api
       '@tailwindcss/postcss':
         specifier: 4.1.18
         version: 4.1.18
