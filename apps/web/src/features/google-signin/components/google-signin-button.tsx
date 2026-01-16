@@ -3,7 +3,7 @@ interface Props {
   disabled?: boolean
 }
 
-export default function GoogleSignInButton({ onClick, disabled }: Props) {
+export default function GoogleSigninButton({ onClick, disabled }: Props) {
   return (
     <button
       className="gsi-material-button"

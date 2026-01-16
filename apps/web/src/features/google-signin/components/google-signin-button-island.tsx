@@ -4,11 +4,12 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import { useAuthSignIn } from '@/features/auth/hooks/use-auth-sign-in'
+import { authClient } from '@/lib/auth-client'
 import { GOOGLE_CLIENT_ID } from '@/lib/constants'
 
-import GoogleSignInButton from './google-sign-in-button'
+import GoogleSigninButton from './google-signin-button'
 
-export default function GoogleSignInButtonIsland() {
+export default function GoogleSigninButtonIsland() {
   const [isLoaded, setIsLoaded] = useState(false)
   const hiddenButtonContainerRef = useRef<HTMLDivElement>(null)
   const { mutate: mutateAuthSignIn, isPending: isAuthSignInPending } =
@@ -61,22 +62,32 @@ export default function GoogleSignInButtonIsland() {
   }, [onResponse])
 
   const onClick = () => {
-    if (hiddenButtonContainerRef.current) {
-      const button =
-        hiddenButtonContainerRef.current.querySelector('div[role="button"]')
-      if (button && button instanceof HTMLElement) {
-        button.click()
-        return
-      }
-    }
+    authClient.signIn
+      .social({
+        provider: 'google',
+      })
+      .then((res) => {
+        console.log(res)
+      })
+      .catch((e) => {
+        console.error(e)
+      })
 
-    toast.error(`Failed to click Google sign in button.`)
+    // if (hiddenButtonContainerRef.current) {
+    //   const button =
+    //     hiddenButtonContainerRef.current.querySelector('div[role="button"]')
+    //   if (button && button instanceof HTMLElement) {
+    //     button.click()
+    //     return
+    //   }
+    // }
+    // toast.error(`Failed to click Google sign in button.`)
   }
 
   return (
     <>
       <div ref={hiddenButtonContainerRef} className="hidden"></div>
-      <GoogleSignInButton
+      <GoogleSigninButton
         disabled={!isLoaded || isAuthSignInPending}
         onClick={onClick}
       />
