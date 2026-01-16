@@ -1,11 +1,10 @@
 {
-  "name": "@repo/api",
+  "name": "@repo/server",
   "type": "module",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "typescript": "./src/index.ts",
-      "default": "./dist/index.js"
+      "types": "./src/index.ts",
+      "typescript": "./src/index.ts"
     }
   },
   "scripts": {

@@ -2,7 +2,7 @@ import { Container } from 'esdi'
 
 import { App } from './app.ts'
 
-async function main() {
+export async function main() {
   const container = new Container()
 
   const app = await container.resolve(App)
@@ -10,8 +10,3 @@ async function main() {
 
   await container.destroy()
 }
-
-main().catch((e) => {
-  console.error(e)
-  process.exit(1)
-})
