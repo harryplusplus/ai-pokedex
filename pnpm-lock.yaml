@@ -189,10 +189,16 @@ importers:
       '@trigger.dev/sdk':
         specifier: 4.3.2
         version: 4.3.2(typescript@5.9.3)(zod@4.3.5)
+      pg:
+        specifier: 8.16.3
+        version: 8.16.3
     devDependencies:
       '@trigger.dev/build':
         specifier: 4.3.2
         version: 4.3.2(magicast@0.3.5)(supports-color@10.2.2)(typescript@5.9.3)
+      '@types/pg':
+        specifier: 8.16.0
+        version: 8.16.0
       trigger.dev:
         specifier: 4.3.2
         version: 4.3.2(hono@4.11.3)(typescript@5.9.3)

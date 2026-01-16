@@ -7,9 +7,11 @@
   },
   "devDependencies": {
     "@trigger.dev/build": "4.3.2",
+    "@types/pg": "8.16.0",
     "trigger.dev": "4.3.2"
   },
   "dependencies": {
-    "@trigger.dev/sdk": "4.3.2"
+    "@trigger.dev/sdk": "4.3.2",
+    "pg": "8.16.3"
   }
 }
