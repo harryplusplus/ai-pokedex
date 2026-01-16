@@ -1,12 +1,13 @@
 {
   "name": "@repo/server",
+  "private": true,
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
   },
   "scripts": {
-    "dev": "tsc --noEmit --watch",
-    "check-types": "tsc --noEmit"
+    "check-types": "tsc --noEmit",
+    "dev": "tsc --noEmit --watch"
   },
   "dependencies": {
     "esdi": "workspace:*",

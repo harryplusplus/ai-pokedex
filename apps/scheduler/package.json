@@ -1,17 +1,18 @@
 {
   "name": "@repo/scheduler",
+  "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsc --noEmit --watch",
-    "check-types": "tsc --noEmit"
+    "check-types": "tsc --noEmit",
+    "dev": "tsc --noEmit --watch"
+  },
+  "dependencies": {
+    "@trigger.dev/sdk": "4.3.2",
+    "pg": "8.16.3"
   },
   "devDependencies": {
     "@trigger.dev/build": "4.3.2",
     "@types/pg": "8.16.0",
     "trigger.dev": "4.3.2"
-  },
-  "dependencies": {
-    "@trigger.dev/sdk": "4.3.2",
-    "pg": "8.16.3"
   }
 }

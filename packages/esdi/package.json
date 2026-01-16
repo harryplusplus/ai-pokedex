@@ -5,7 +5,7 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "clean": "rimraf dist tsconfig.tsbuildinfo .turbo",
-    "check-types": "tsc --noEmit"
+    "check-types": "tsc --noEmit",
+    "clean": "rimraf dist tsconfig.tsbuildinfo .turbo"
   }
 }

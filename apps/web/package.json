@@ -5,9 +5,9 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
-    "start": "next start",
     "migrate:create": "node-pg-migrate create -j=sql",
-    "migrate:up": "node-pg-migrate up"
+    "migrate:up": "node-pg-migrate up",
+    "start": "next start"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.4",
