@@ -1,7 +1,7 @@
 import { inject, onClose, type OnCloseable } from 'esdi'
 import pg from 'pg'
 
-import { pgClientStorage } from './pg-client-storage.ts'
+import { pgClientAls } from './pg-client-storage.ts'
 import {
   type IsolationLevel,
   resetDateTypeParsers,
@@ -29,7 +29,7 @@ export class DbService implements OnCloseable {
   async withClient<R>(fn: () => Promise<R>): Promise<R> {
     const client = await this.pool.connect()
     try {
-      return await pgClientStorage.run(client, fn)
+      return await pgClientAls.run(client, fn)
     } finally {
       client.release()
     }
@@ -55,7 +55,7 @@ export class DbService implements OnCloseable {
     }
 
     return await transaction({ pool: this.pool, isolationLevel }, (client) =>
-      pgClientStorage.run(client, callback),
+      pgClientAls.run(client, callback),
     )
   }
 }

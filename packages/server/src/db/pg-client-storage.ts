@@ -4,4 +4,4 @@ import type pg from 'pg'
 
 export type PgClient = Pick<pg.ClientBase, 'query'>
 
-export const pgClientStorage = new AsyncLocalStorage<PgClient>()
+export const pgClientAls = new AsyncLocalStorage<PgClient>()
