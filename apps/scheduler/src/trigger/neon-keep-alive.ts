@@ -23,5 +23,7 @@ export const neonKeepAlive = schedules.task({
     } finally {
       await pool.end()
     }
+
+    return 'ok'
   },
 })
