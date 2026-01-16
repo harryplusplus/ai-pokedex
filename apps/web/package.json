@@ -3,8 +3,7 @@
   "version": "0.0.0-development",
   "private": true,
   "scripts": {
-    "build:code": "next build",
-    "build": "pnpm run build:code && pnpm run migrate:up",
+    "build": "next build",
     "dev": "next dev",
     "start": "next start",
     "migrate:create": "node-pg-migrate create -j=sql",
