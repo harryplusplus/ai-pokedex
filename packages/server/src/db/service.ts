@@ -2,7 +2,7 @@ import { type Context, inject, onDestroy, type OnDestroyable } from 'esdi'
 import pg from 'pg'
 
 import { Config } from '../config/config.ts'
-import { pgClientAls } from './pg-client-storage.ts'
+import { pgClientAls } from './pg-client-als.ts'
 import {
   type IsolationLevel,
   resetDateTypeParsers,

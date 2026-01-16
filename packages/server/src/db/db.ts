@@ -1,6 +1,6 @@
 import { inject } from 'esdi'
 
-import { type PgClient, pgClientAls } from './pg-client-storage.ts'
+import { type PgClient, pgClientAls } from './pg-client-als.ts'
 
 export class Db {
   static [inject] = {}
