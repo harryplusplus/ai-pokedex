@@ -13,5 +13,10 @@
       "cache": false
     }
   },
-  "globalEnv": ["TURBO_PLATFORM_ENV_DISABLED"]
+  "globalEnv": [
+    "DATABASE_URL",
+    "BETTER_AUTH_URL",
+    "BETTER_AUTH_SECRET",
+    "GOOGLE_CLIENT_SECRET"
+  ]
 }
