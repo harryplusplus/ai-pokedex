@@ -10,7 +10,10 @@ export const neonKeepAlive = schedules.task({
       throw new Error('Invalid DATABASE_URL.')
     }
 
-    const pool = new pg.Pool({ connectionString: DATABASE_URL })
+    const pool = new pg.Pool({
+      connectionString: DATABASE_URL,
+      max: 1,
+    })
 
     try {
       await pool.query('select 1')
