@@ -14,12 +14,22 @@ import {
   type Any,
   type InjectableDefinition,
   isClassTokenDependencyDefinition,
+  type Logger,
   type OnCloseable,
 } from './types.ts'
+
+export interface ContainerOptions {
+  logger?: Logger
+}
 
 export class Container {
   #context = new ContainerContext()
   #lock = new AsyncLock()
+  #options?: ContainerOptions
+
+  constructor(options?: ContainerOptions) {
+    this.#options = options
+  }
 
   provide<T extends object>(token: ClassToken<T>): this
   provide<T extends object>(
@@ -80,7 +90,7 @@ export class Container {
         try {
           await onCloseable[onClose]()
         } catch (e) {
-          // TODO: logging
+          this.#options?.logger?.error(e)
         }
       }
     }

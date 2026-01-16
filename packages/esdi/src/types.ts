@@ -78,3 +78,7 @@ export interface OnCreatable {
 export interface OnCloseable {
   [onClose](): MaybePromise<void>
 }
+
+export interface Logger {
+  error(...data: Any[]): void
+}
