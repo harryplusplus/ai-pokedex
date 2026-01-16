@@ -1,6 +1,6 @@
 import { AsyncLock } from './async-lock.ts'
 import { ContainerContext } from './container-context.ts'
-import { SingletonResolver } from './singleton-resolver.ts'
+import { Resolver } from './resolver.ts'
 import { inject, onClose } from './symbols.ts'
 import {
   type ClassToken,
@@ -53,12 +53,12 @@ export class Container {
 
   async resolve<T extends object>(token: InjectionToken<T>): Promise<T> {
     return await this.#lock.acquire(async () => {
-      return await new SingletonResolver(this.#context).resolve(token)
+      return await new Resolver(this.#context).resolve(token)
     })
   }
 
   resolveSync<T extends object>(token: InjectionToken<T>): T {
-    return new SingletonResolver(this.#context).resolveSync(token)
+    return new Resolver(this.#context).resolveSync(token)
   }
 
   async close(): Promise<void> {

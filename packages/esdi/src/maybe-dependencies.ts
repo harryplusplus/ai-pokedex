@@ -7,7 +7,7 @@ export class MaybeDependencies {
 
   set(name: string, maybeDependency: MaybePromise<object>): void {
     if (this.#map.has(name)) {
-      throw new Error('TODO')
+      throw new Error(`${name} already exists.`)
     }
 
     this.#map.set(name, maybeDependency)
@@ -26,7 +26,7 @@ export class MaybeDependencies {
   getSync(): Dependencies {
     const dependencies = this.#map.entries().map(([name, maybeDependency]) => {
       if (maybeDependency instanceof Promise) {
-        throw new Error('TODO')
+        throw new Error('Promise is not allowed.')
       }
 
       return [name, maybeDependency] as const

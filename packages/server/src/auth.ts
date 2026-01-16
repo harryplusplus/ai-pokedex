@@ -2,13 +2,13 @@ import { betterAuth } from 'better-auth'
 import { toNextJsHandler } from 'better-auth/next-js'
 
 import { container } from './container.ts'
-import { DbPool } from './db/pool.ts'
+import { DbService } from './db/service.ts'
 
-const dbPool = await container.resolve(DbPool)
+const dbService = await container.resolve(DbService)
 
 // NOTE: Scan this auth object from cli.
 export const auth = betterAuth({
-  database: dbPool.pool,
+  database: dbService.pool,
   socialProviders: {
     google: {
       clientId:

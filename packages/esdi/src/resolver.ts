@@ -1,3 +1,4 @@
+import { CircularDependencyChecker } from './circular-dependency-checker.js'
 import type { ContainerContext } from './container-context.ts'
 import { MaybeDependencies } from './maybe-dependencies.js'
 import { inject, onCreate } from './symbols.ts'
@@ -10,7 +11,7 @@ import {
   type OnCreatable,
 } from './types.ts'
 
-export class SingletonResolver {
+export class Resolver {
   readonly #context: ContainerContext
 
   constructor(context: ContainerContext) {
@@ -18,9 +19,12 @@ export class SingletonResolver {
   }
 
   async resolve<T extends object>(token: InjectionToken<T>): Promise<T> {
+    const checker = new CircularDependencyChecker()
+    checker.push(token)
+
     const instance = await this.#resolve({
       token,
-      callChain: new Set([token]),
+      checker,
       onAwaitOrThrow: this.#onAwait.bind(this),
     })
 
@@ -49,14 +53,17 @@ export class SingletonResolver {
   }
 
   resolveSync<T extends object>(token: InjectionToken<T>): T {
+    const checker = new CircularDependencyChecker()
+    checker.push(token)
+
     const result = this.#resolve({
       token,
-      callChain: new Set([token]),
+      checker,
       onAwaitOrThrow: this.#onThrow.bind(this),
     })
 
     if (result instanceof Promise) {
-      throw new Error('TODO')
+      throw new Error('Promise is not allowed.')
     }
 
     return result as T
@@ -77,7 +84,7 @@ export class SingletonResolver {
 
       const result = onCreatable[onCreate]()
       if (result instanceof Promise) {
-        throw new Error('TODO')
+        throw new Error('Promise is not allowed.')
       }
     }
 
@@ -88,14 +95,14 @@ export class SingletonResolver {
 
   #resolve(input: {
     token: InjectionToken<Any>
-    callChain: Set<InjectionToken<Any>>
+    checker: CircularDependencyChecker
     onAwaitOrThrow: (input: {
       token: InjectionToken<Any>
       injectableDef: InjectableDefinition<object>
       maybeDeps: MaybeDependencies
     }) => MaybePromise<object>
   }): MaybePromise<object> {
-    const { token, callChain, onAwaitOrThrow } = input
+    const { token, checker, onAwaitOrThrow } = input
 
     const singleton = this.#context.singletons.get(token)
     if (singleton) {
@@ -116,11 +123,11 @@ export class SingletonResolver {
         continue
       }
 
-      updateCallChain(callChain, token)
+      checker.push(token)
 
       const maybeSingleton = this.#resolve({
         token,
-        callChain,
+        checker,
         onAwaitOrThrow,
       })
 
@@ -151,19 +158,4 @@ export class SingletonResolver {
 
     throw new Error(`${tokenToString(token)} was not provided.`)
   }
-}
-
-function updateCallChain(
-  callChain: Set<InjectionToken<Any>>,
-  token: InjectionToken<Any>,
-): void {
-  if (callChain.has(token)) {
-    throw new Error(
-      `Circular dependency detected. ${[...callChain.values(), token]
-        .map((x) => tokenToString(x))
-        .join(' -> ')}`,
-    )
-  }
-
-  callChain.add(token)
 }
