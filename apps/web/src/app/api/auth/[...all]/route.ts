@@ -1,3 +1,5 @@
-import { authHandler } from '@repo/server'
+import { toNextJsHandler } from 'better-auth/next-js'
 
-export const { GET, POST } = authHandler
+import { auth } from '@/lib/auth'
+
+export const { POST, GET } = toNextJsHandler(auth)

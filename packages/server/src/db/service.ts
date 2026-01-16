@@ -1,6 +1,7 @@
-import { inject, onClose, type OnCloseable } from 'esdi'
+import { type Context, inject, onClose, type OnCloseable } from 'esdi'
 import pg from 'pg'
 
+import { Config } from '../config/config.ts'
 import { pgClientAls } from './pg-client-storage.ts'
 import {
   type IsolationLevel,
@@ -9,16 +10,17 @@ import {
 } from './pg-utils.ts'
 
 export class DbService implements OnCloseable {
-  static [inject] = {}
+  static [inject] = {
+    config: Config,
+  }
 
   readonly pool: pg.Pool
 
-  constructor() {
+  constructor(c: Context<typeof DbService>) {
     resetDateTypeParsers()
 
-    // TODO: env
     this.pool = new pg.Pool({
-      connectionString: 'postgres://postgres:postgres@localhost:5432/postgres',
+      connectionString: c.config.envVars.DATABASE_URL,
     })
   }
 
