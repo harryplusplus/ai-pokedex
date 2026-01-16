@@ -1,5 +1,5 @@
 import type { type } from './symbols.ts'
-import type { Any, Injectable } from './types.ts'
+import type { Any, InjectableDefinition } from './types.ts'
 
 export type PrimitiveToken = string | symbol
 
@@ -11,7 +11,7 @@ export function token<T>(token: PrimitiveToken): TypedToken<T> {
 
 export type IndirectToken<T> = TypedToken<T> | PrimitiveToken
 
-export type ClassToken<T> = Injectable<T>
+export type ClassToken<T> = InjectableDefinition<T>
 
 export type InjectionToken<T> = ClassToken<T> | IndirectToken<T>
 

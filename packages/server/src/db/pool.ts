@@ -8,22 +8,22 @@ export type IsolationLevel = 'READ COMMITTED' | 'SERIALIZABLE'
 export class DbPool implements OnCloseable {
   static [inject] = {}
 
-  readonly #pool: pg.Pool
+  readonly pool: pg.Pool
 
   constructor() {
     resetDateTypeParsers()
 
-    this.#pool = new pg.Pool({
+    this.pool = new pg.Pool({
       connectionString: 'postgres://postgres:postgres@localhost:5432/postgres',
     })
   }
 
   async [onClose](): Promise<void> {
-    await this.#pool.end()
+    await this.pool.end()
   }
 
   async withClient<R>(fn: () => Promise<R>): Promise<R> {
-    const client = await this.#pool.connect()
+    const client = await this.pool.connect()
     try {
       return await queryClientStorage.run(client, fn)
     } finally {
@@ -39,7 +39,7 @@ export class DbPool implements OnCloseable {
   ): Promise<R> {
     const { isolationLevel } = options ?? {}
 
-    const client = await this.#pool.connect()
+    const client = await this.pool.connect()
     try {
       await client.query(
         `BEGIN${isolationLevel ? ` ISOLATION LEVEL ${isolationLevel}` : ''}`,

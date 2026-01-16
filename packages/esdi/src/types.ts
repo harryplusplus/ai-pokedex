@@ -1,49 +1,63 @@
 import { inject, onClose, onCreate, type } from './symbols.ts'
-import { type ClassToken, type IndirectToken } from './token.ts'
+import {
+  type ClassToken,
+  type IndirectToken,
+  type InjectionToken,
+} from './token.ts'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Any = any
 
-export interface IndirectDependency<T> {
+export interface IndirectDependencyDefinition<T> {
   token: IndirectToken<T>
   [type]?: T
 }
 
 export function indirect<T extends object>(
   token: IndirectToken<T>,
-): IndirectDependency<T> {
+): IndirectDependencyDefinition<T> {
   return {
     token,
     [type]: undefined,
   }
 }
 
-export type Dependency<T> = ClassToken<T> | IndirectDependency<T>
+export type DependencyDefinition<T> =
+  | ClassToken<T>
+  | IndirectDependencyDefinition<T>
 
-export function isClassTokenDependency(
-  dependency: Dependency<Any>,
-): dependency is ClassToken<Any> {
-  return typeof dependency === 'function'
+export function isClassTokenDependencyDefinition(
+  definition: DependencyDefinition<Any>,
+): definition is ClassToken<Any> {
+  return typeof definition === 'function'
 }
 
-export function isIndirectDependency(
-  dependency: Dependency<Any>,
-): dependency is IndirectDependency<Any> {
-  return typeof dependency !== 'function' && typeof dependency === 'object'
+export function isIndirectDependencyDefinition(
+  definition: DependencyDefinition<Any>,
+): definition is IndirectDependencyDefinition<Any> {
+  return typeof definition !== 'function' && typeof definition === 'object'
 }
 
-export type Dependencies = Record<
+export function dependencyDefinitionToToken(
+  definition: DependencyDefinition<Any>,
+): InjectionToken<Any> {
+  return isClassTokenDependencyDefinition(definition)
+    ? definition
+    : definition.token
+}
+
+export type DependencyDefinitions = Record<
   string,
-  ClassToken<Any> | IndirectDependency<Any>
+  ClassToken<Any> | IndirectDependencyDefinition<Any>
 >
 
 export type Constructor<T> = new (...args: Any[]) => T
 
-export interface Injectable<T> extends Constructor<T> {
-  [inject]: Dependencies
+export interface InjectableDefinition<T> extends Constructor<T> {
+  [inject]: DependencyDefinitions
 }
 
-export type Context<T extends Injectable<Any>> = T extends {
+export type Context<T extends InjectableDefinition<Any>> = T extends {
   [inject]: infer I
 }
   ? {

@@ -1,4 +1,7 @@
-import { inject, onClose, onCreate } from './symbols.ts'
+import { AsyncLock } from './async-lock.ts'
+import { Context } from './context.ts'
+import { SingletonResolver } from './singleton-resolver.ts'
+import { inject, onClose } from './symbols.ts'
 import {
   type ClassToken,
   type IndirectToken,
@@ -9,57 +12,64 @@ import {
 } from './token.ts'
 import {
   type Any,
-  type Injectable,
-  isClassTokenDependency,
+  type InjectableDefinition,
+  isClassTokenDependencyDefinition,
   type OnCloseable,
-  type OnCreatable,
 } from './types.ts'
 
 export class Container {
-  #injectables = new Map<InjectionToken<Any>, Injectable<Any>>()
-  #singletons = new Map<InjectionToken<Any>, object>()
+  #context = new Context()
+  #lock = new AsyncLock()
 
-  provide<T extends object>(classToken: ClassToken<T>): this
+  provide<T extends object>(token: ClassToken<T>): this
   provide<T extends object>(
-    indirectToken: IndirectToken<T>,
-    injectable: Injectable<T>,
+    token: IndirectToken<T>,
+    injectableDef: InjectableDefinition<T>,
   ): this
   provide<T extends object>(
-    classOrIndirectToken: ClassToken<T> | IndirectToken<T>,
-    injectableOrUndefined?: Injectable<T>,
+    token: ClassToken<T> | IndirectToken<T>,
+    injectableDef?: InjectableDefinition<T>,
   ): this {
-    if (this.#injectables.has(classOrIndirectToken)) {
-      throw new Error(`${tokenToString(classOrIndirectToken)} already exists.`)
+    if (this.#context.injectableDefinitions.has(token)) {
+      throw new Error(`${tokenToString(token)} already exists.`)
     }
 
-    if (isClassToken(classOrIndirectToken)) {
-      this.#injectables.set(classOrIndirectToken, classOrIndirectToken)
-    } else if (isIndirectToken(classOrIndirectToken)) {
-      if (!injectableOrUndefined) {
+    if (isClassToken(token)) {
+      this.#context.injectableDefinitions.set(token, token)
+    } else if (isIndirectToken(token)) {
+      if (!injectableDef) {
         throw new Error(
-          `${tokenToString(classOrIndirectToken)}'s injectable was not provided.`,
+          `${tokenToString(token)}'s injectable definition was not provided.`,
         )
       }
 
-      this.#injectables.set(classOrIndirectToken, injectableOrUndefined)
+      this.#context.injectableDefinitions.set(token, injectableDef)
     } else {
-      throw new Error(
-        `${tokenToString(classOrIndirectToken)} is an invalid token.`,
-      )
+      throw new Error(`${tokenToString(token)} is an invalid token.`)
     }
 
     return this
   }
 
-  async resolve<T extends object>(
-    injectionToken: InjectionToken<T>,
-  ): Promise<T> {
-    return this.#resolve(injectionToken, new Set([injectionToken]))
+  async resolve<T extends object>(token: InjectionToken<T>): Promise<T> {
+    return await this.#lock.acquire(async () => {
+      return await new SingletonResolver(this.#context).resolve(token)
+    })
+  }
+
+  resolveSync<T extends object>(token: InjectionToken<T>): T {
+    return new SingletonResolver(this.#context).resolveSync(token)
   }
 
   async close(): Promise<void> {
-    const singletons = this.#singletons.values().toArray()
-    this.#singletons.clear()
+    return await this.#lock.acquire(async () => {
+      await this.#close()
+    })
+  }
+
+  async #close(): Promise<void> {
+    const singletons = this.#context.singletons.values().toArray()
+    this.#context.singletons.clear()
 
     singletons.reverse()
 
@@ -77,92 +87,27 @@ export class Container {
   }
 
   validate(target: InjectionToken<Any>): void {
-    let injectable = this.#injectables.get(target)
-    if (!injectable) {
+    let injectableDef = this.#context.injectableDefinitions.get(target)
+    if (!injectableDef) {
       if (isClassToken(target)) {
-        injectable = target
+        injectableDef = target
       } else {
         throw new Error(`${tokenToString(target)} was not provided.`)
       }
     }
 
-    const dependencies = injectable[inject]
-
-    for (const [name, dependency] of Object.entries(dependencies)) {
-      if (isClassTokenDependency(dependency)) {
-        this.validate(dependency)
+    for (const [name, dependencyDef] of Object.entries(injectableDef[inject])) {
+      if (isClassTokenDependencyDefinition(dependencyDef)) {
+        this.validate(dependencyDef)
       } else {
-        const { token } = dependency
-        const depInjectable = this.#injectables.get(token)
-        if (!depInjectable) {
+        const { token } = dependencyDef
+        const depInjectableDef = this.#context.injectableDefinitions.get(token)
+        if (!depInjectableDef) {
           throw new Error(`${tokenToString(target)}.${name} was not provided.`)
         }
 
         this.validate(token)
       }
     }
-  }
-
-  async #resolve<T extends object>(
-    injectionToken: InjectionToken<T>,
-    callChain: Set<InjectionToken<Any>>,
-  ): Promise<T> {
-    const singleton = this.#singletons.get(injectionToken)
-    if (singleton) {
-      return singleton as T
-    }
-
-    let injectable = this.#injectables.get(injectionToken)
-    if (!injectable) {
-      if (isClassToken(injectionToken)) {
-        // auto providing
-
-        this.#injectables.set(injectionToken, injectionToken)
-        injectable = injectionToken
-      } else {
-        throw new Error(`${tokenToString(injectionToken)} was not provided.`)
-      }
-    }
-
-    const depInstances: Record<string, object> = {}
-
-    for (const [name, dependency] of Object.entries(injectable[inject])) {
-      const token = isClassTokenDependency(dependency)
-        ? dependency
-        : dependency.token
-
-      const singleton = this.#singletons.get(token)
-      if (singleton) {
-        depInstances[name] = singleton
-
-        continue
-      }
-
-      if (callChain.has(token)) {
-        throw new Error(
-          `Circular dependency detected. ${[...callChain.values(), token]
-            .map((x) => tokenToString(x))
-            .join(' -> ')}`,
-        )
-      }
-
-      callChain.add(token)
-
-      const instance = await this.#resolve<object>(token, callChain)
-
-      depInstances[name] = instance
-    }
-
-    const instance = new injectable(depInstances) as T
-
-    if (onCreate in instance) {
-      const onCreatable = instance as OnCreatable
-
-      await onCreatable[onCreate]()
-    }
-
-    this.#singletons.set(injectionToken, instance)
-
-    return instance
   }
 }

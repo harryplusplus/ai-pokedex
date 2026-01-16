@@ -1,2 +1,2 @@
-export * from './app.ts'
-export * from 'esdi'
+export { authHandler } from './auth.ts'
+export { container } from './container.ts'
