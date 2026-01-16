@@ -2,7 +2,11 @@ import z from 'zod'
 
 export const EnvVars = z.object({
   NODE_ENV: z.enum(['development', 'production']),
-  TZ: z.literal('UTC'),
+  TZ: z.union([
+    z.literal('UTC'),
+    // NOTE: Vercel platform enforcement value.
+    z.literal(':UTC'),
+  ]),
   DATABASE_URL: z.url(),
   BETTER_AUTH_URL: z.url(),
   BETTER_AUTH_SECRET: z.string().min(1),
