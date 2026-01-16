@@ -1,9 +1,0 @@
-{
-  "compilerOptions": {
-    "outDir": "./dist",
-    "declarationMap": true,
-    "declaration": true,
-    "sourceMap": true,
-    "esModuleInterop": true
-  }
-}
