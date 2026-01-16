@@ -1,15 +1,12 @@
 import { CircularDependencyChecker } from './circular-dependency-checker.ts'
 import type { ContainerContext } from './container-context.ts'
+import { dependencyDefinitionToToken } from './dependency-definitions.ts'
+import type { OnCreatable } from './hooks.ts'
+import type { InjectableDefinition } from './injectable-definition.ts'
 import { MaybeDependencies } from './maybe-dependencies.ts'
 import { inject, onCreate } from './symbols.ts'
-import { type InjectionToken, isClassToken, tokenToString } from './token.ts'
-import {
-  type Any,
-  dependencyDefinitionToToken,
-  type InjectableDefinition,
-  type MaybePromise,
-  type OnCreatable,
-} from './types.ts'
+import { type InjectionToken, isClassToken, tokenToString } from './tokens.ts'
+import type { Any, MaybePromise } from './utils.ts'
 
 export class Resolver {
   readonly #context: ContainerContext

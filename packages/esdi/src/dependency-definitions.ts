@@ -1,12 +1,6 @@
-import { inject, onClose, onCreate, type } from './symbols.ts'
-import {
-  type ClassToken,
-  type IndirectToken,
-  type InjectionToken,
-} from './token.ts'
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type Any = any
+import { type } from './symbols.ts'
+import type { ClassToken, IndirectToken, InjectionToken } from './tokens.ts'
+import type { Any } from './utils.ts'
 
 export interface IndirectDependencyDefinition<T> {
   token: IndirectToken<T>
@@ -50,35 +44,3 @@ export type DependencyDefinitions = Record<
   string,
   ClassToken<Any> | IndirectDependencyDefinition<Any>
 >
-
-export type Constructor<T> = new (...args: Any[]) => T
-
-export interface InjectableDefinition<T> extends Constructor<T> {
-  [inject]: DependencyDefinitions
-}
-
-export type Context<T extends InjectableDefinition<Any>> = T extends {
-  [inject]: infer I
-}
-  ? {
-      [K in keyof I]: I[K] extends { [type]?: infer T }
-        ? T
-        : I[K] extends abstract new (...args: Any[]) => infer T
-          ? T
-          : never
-    }
-  : never
-
-export type MaybePromise<T> = T | Promise<T>
-
-export interface OnCreatable {
-  [onCreate](): MaybePromise<void>
-}
-
-export interface OnCloseable {
-  [onClose](): MaybePromise<void>
-}
-
-export interface Logger {
-  error(...data: Any[]): void
-}

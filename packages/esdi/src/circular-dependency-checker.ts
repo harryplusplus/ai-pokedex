@@ -1,5 +1,5 @@
-import { type InjectionToken, tokenToString } from './token.ts'
-import type { Any } from './types.ts'
+import { type InjectionToken, tokenToString } from './tokens.ts'
+import type { Any } from './utils.ts'
 
 export class CircularDependencyChecker {
   #chain = new Set<InjectionToken<Any>>()

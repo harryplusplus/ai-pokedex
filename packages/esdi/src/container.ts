@@ -1,7 +1,10 @@
 import { AsyncLock } from './async-lock.ts'
 import { ContainerContext } from './container-context.ts'
+import { isClassTokenDependencyDefinition } from './dependency-definitions.ts'
+import type { OnDestroyable } from './hooks.ts'
+import type { InjectableDefinition } from './injectable-definition.ts'
 import { Resolver } from './resolver.ts'
-import { inject, onClose } from './symbols.ts'
+import { inject, onDestroy } from './symbols.ts'
 import {
   type ClassToken,
   type IndirectToken,
@@ -9,14 +12,8 @@ import {
   isClassToken,
   isIndirectToken,
   tokenToString,
-} from './token.ts'
-import {
-  type Any,
-  type InjectableDefinition,
-  isClassTokenDependencyDefinition,
-  type Logger,
-  type OnCloseable,
-} from './types.ts'
+} from './tokens.ts'
+import type { Any, Logger } from './utils.ts'
 
 export interface ContainerOptions {
   logger?: Logger
@@ -71,24 +68,24 @@ export class Container {
     return new Resolver(this.#context).resolveSync(token)
   }
 
-  async close(): Promise<void> {
+  async destroy(): Promise<void> {
     return await this.#lock.acquire(async () => {
-      await this.#close()
+      await this.#destroy()
     })
   }
 
-  async #close(): Promise<void> {
+  async #destroy(): Promise<void> {
     const singletons = this.#context.singletons.values().toArray()
     this.#context.singletons.clear()
 
     singletons.reverse()
 
     for (const singleton of singletons) {
-      if (onClose in singleton) {
-        const onCloseable = singleton as OnCloseable
+      if (onDestroy in singleton) {
+        const onDestroyable = singleton as OnDestroyable
 
         try {
-          await onCloseable[onClose]()
+          await onDestroyable[onDestroy]()
         } catch (e) {
           this.#options?.logger?.error(e)
         }

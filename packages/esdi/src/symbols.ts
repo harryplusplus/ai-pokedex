@@ -4,4 +4,4 @@ export const type: unique symbol = Symbol('esdi.type')
 
 export const onCreate: unique symbol = Symbol('esdi.onCreate')
 
-export const onClose: unique symbol = Symbol('esdi.onClose')
+export const onDestroy: unique symbol = Symbol('esdi.onDestroy')

@@ -1,4 +1,4 @@
-import { type Context, inject, onClose, type OnCloseable } from 'esdi'
+import { type Context, inject, onDestroy, type OnDestroyable } from 'esdi'
 import pg from 'pg'
 
 import { Config } from '../config/config.ts'
@@ -9,7 +9,7 @@ import {
   transaction,
 } from './pg-utils.ts'
 
-export class DbService implements OnCloseable {
+export class DbService implements OnDestroyable {
   static [inject] = {
     config: Config,
   }
@@ -24,7 +24,7 @@ export class DbService implements OnCloseable {
     })
   }
 
-  async [onClose](): Promise<void> {
+  async [onDestroy](): Promise<void> {
     await this.pool.end()
   }
 

@@ -1,5 +1,6 @@
-import type { InjectionToken } from './token.ts'
-import type { Any, InjectableDefinition } from './types.ts'
+import type { InjectableDefinition } from './injectable-definition.ts'
+import type { InjectionToken } from './tokens.ts'
+import type { Any } from './utils.ts'
 
 export class ContainerContext {
   readonly injectableDefinitions = new Map<

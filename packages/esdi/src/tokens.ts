@@ -1,5 +1,6 @@
+import type { InjectableDefinition } from './injectable-definition.ts'
 import type { type } from './symbols.ts'
-import type { Any, InjectableDefinition } from './types.ts'
+import type { Any } from './utils.ts'
 
 export type PrimitiveToken = string | symbol
 

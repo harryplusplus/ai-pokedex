@@ -1,4 +1,4 @@
-import type { MaybePromise } from './types.ts'
+import type { MaybePromise } from './utils.ts'
 
 export type Dependencies = Record<string, object>
 
