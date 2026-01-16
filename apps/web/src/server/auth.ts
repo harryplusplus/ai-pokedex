@@ -1,5 +1,7 @@
-import { Config, container, DbService } from '@repo/server'
+import { Config, container, DbService, validateTimeZone } from '@repo/server'
 import { betterAuth } from 'better-auth'
+
+validateTimeZone()
 
 const dbService = await container.resolve(DbService)
 const config = await container.resolve(Config)
