@@ -15,6 +15,9 @@ export const neonKeepAlive = schedules.task({
       max: 1,
     })
 
+    process.on('SIGINT', () => void pool.end())
+    process.on('SIGTERM', () => void pool.end())
+
     try {
       await pool.query('select 1')
     } finally {
