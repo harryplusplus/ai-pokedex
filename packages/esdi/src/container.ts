@@ -1,5 +1,5 @@
 import { AsyncLock } from './async-lock.ts'
-import { Context } from './context.ts'
+import { ContainerContext } from './container-context.ts'
 import { SingletonResolver } from './singleton-resolver.ts'
 import { inject, onClose } from './symbols.ts'
 import {
@@ -18,7 +18,7 @@ import {
 } from './types.ts'
 
 export class Container {
-  #context = new Context()
+  #context = new ContainerContext()
   #lock = new AsyncLock()
 
   provide<T extends object>(token: ClassToken<T>): this

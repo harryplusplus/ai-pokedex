@@ -1,4 +1,4 @@
-import type { Context } from './context.ts'
+import type { ContainerContext } from './container-context.ts'
 import { MaybeDependencies } from './maybe-dependencies.js'
 import { inject, onCreate } from './symbols.ts'
 import { type InjectionToken, isClassToken, tokenToString } from './token.ts'
@@ -11,9 +11,9 @@ import {
 } from './types.ts'
 
 export class SingletonResolver {
-  readonly #context: Context
+  readonly #context: ContainerContext
 
-  constructor(context: Context) {
+  constructor(context: ContainerContext) {
     this.#context = context
   }
 
