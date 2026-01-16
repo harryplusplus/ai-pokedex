@@ -199,6 +199,9 @@ importers:
       '@types/pg':
         specifier: 8.16.0
         version: 8.16.0
+      dotenv:
+        specifier: 17.2.3
+        version: 17.2.3
       trigger.dev:
         specifier: 4.3.2
         version: 4.3.2(hono@4.11.3)(typescript@5.9.3)
@@ -9298,7 +9301,7 @@ snapshots:
       chokidar: 3.6.0
       confbox: 0.1.8
       defu: 6.1.4
-      dotenv: 16.4.7
+      dotenv: 16.6.1
       giget: 1.2.5
       jiti: 1.21.7
       mlly: 1.8.0
@@ -9691,7 +9694,7 @@ snapshots:
 
   dotenv-expand@12.0.1:
     dependencies:
-      dotenv: 16.4.7
+      dotenv: 16.6.1
 
   dotenv@16.4.7: {}
 
@@ -12666,7 +12669,7 @@ snapshots:
       commander: 9.5.0
       confbox: 0.2.2
       defu: 6.1.4
-      dotenv: 16.4.7
+      dotenv: 16.6.1
       esbuild: 0.23.1
       eventsource: 3.0.7
       evt: 2.5.9

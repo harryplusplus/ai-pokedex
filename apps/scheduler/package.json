@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "check-types": "tsc --noEmit",
-    "dev": "tsc --noEmit --watch"
+    "dev": "dotenv run -- trigger dev"
   },
   "dependencies": {
     "@trigger.dev/sdk": "4.3.2",
@@ -13,6 +13,7 @@
   "devDependencies": {
     "@trigger.dev/build": "4.3.2",
     "@types/pg": "8.16.0",
+    "dotenv": "17.2.3",
     "trigger.dev": "4.3.2"
   }
 }

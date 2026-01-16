@@ -1,10 +1,14 @@
 import { schedules } from '@trigger.dev/sdk'
 import pg from 'pg'
 
+import { validateTimeZone } from '../utils.ts'
+
 export const neonKeepAlive = schedules.task({
   id: 'neon-keep-alive',
   cron: '0 0 */14 * *',
   run: async () => {
+    validateTimeZone()
+
     const { DATABASE_URL } = process.env
     if (!DATABASE_URL) {
       throw new Error('Invalid DATABASE_URL.')
