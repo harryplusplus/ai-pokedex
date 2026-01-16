@@ -84,7 +84,9 @@ export class Resolver {
 
       const result = onCreatable[onCreate]()
       if (result instanceof Promise) {
-        throw new Error('Promise is not allowed.')
+        throw new Error(
+          `Cannot perform \`resolveSync()\` because \`onCreate()\` in ${tokenToString(token)} returned \`Promise\`.`,
+        )
       }
     }
 
