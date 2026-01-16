@@ -1,6 +1,5 @@
 import './globals.css'
 
-import { main } from '@repo/server'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
@@ -28,8 +27,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  void main()
-
   return (
     <html lang="ko" className="bg-black">
       <body

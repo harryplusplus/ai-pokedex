@@ -6,6 +6,7 @@ import { defineConfig, globalIgnores } from 'eslint/config'
 import nextVitals from 'eslint-config-next/core-web-vitals'
 import nextTs from 'eslint-config-next/typescript'
 import eslintPlugin from 'eslint-plugin-eslint-plugin'
+import importPlugin from 'eslint-plugin-import'
 import prettierRecommended from 'eslint-plugin-prettier/recommended'
 import reactHooks from 'eslint-plugin-react-hooks'
 import simpleImportSort from 'eslint-plugin-simple-import-sort'
@@ -63,6 +64,21 @@ const config = defineConfig([
     },
   },
   eslintPlugin.configs['all-type-checked'],
+  {
+    plugins: {
+      import: importPlugin,
+    },
+    files: ['packages/{esdi,server}/src/**/*.ts'],
+    rules: {
+      'import/extensions': [
+        'error',
+        'ignorePackages',
+        {
+          js: 'never',
+        },
+      ],
+    },
+  },
   prettierRecommended,
 ])
 

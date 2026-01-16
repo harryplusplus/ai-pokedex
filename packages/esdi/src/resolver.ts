@@ -1,6 +1,6 @@
-import { CircularDependencyChecker } from './circular-dependency-checker.js'
+import { CircularDependencyChecker } from './circular-dependency-checker.ts'
 import type { ContainerContext } from './container-context.ts'
-import { MaybeDependencies } from './maybe-dependencies.js'
+import { MaybeDependencies } from './maybe-dependencies.ts'
 import { inject, onCreate } from './symbols.ts'
 import { type InjectionToken, isClassToken, tokenToString } from './token.ts'
 import {
