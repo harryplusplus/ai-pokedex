@@ -72,9 +72,9 @@ const config = defineConfig([
     rules: {
       'import/extensions': [
         'error',
-        'always',
+        'never',
         {
-          js: 'never',
+          ts: 'always',
         },
       ],
     },
