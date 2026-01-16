@@ -1,11 +1,11 @@
-import { inject, onDestroy, type OnDestroyable } from 'esdi'
+import { inject, onClose, type OnCloseable } from 'esdi'
 import pg from 'pg'
 
 import { queryClientStorage, resetDateTypeParsers } from './pg.ts'
 
 export type IsolationLevel = 'READ COMMITTED' | 'SERIALIZABLE'
 
-export class DbPool implements OnDestroyable {
+export class DbPool implements OnCloseable {
   static [inject] = {}
 
   readonly #pool: pg.Pool
@@ -18,7 +18,7 @@ export class DbPool implements OnDestroyable {
     })
   }
 
-  async [onDestroy](): Promise<void> {
+  async [onClose](): Promise<void> {
     await this.#pool.end()
   }
 

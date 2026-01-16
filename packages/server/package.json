@@ -5,7 +5,7 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "dev": "node --conditions=typescript src/index.ts",
+    "dev": "tsc --noEmit --watch",
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
