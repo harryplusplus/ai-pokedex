@@ -282,8 +282,6 @@ importers:
         specifier: 1.4.0
         version: 1.4.0
 
-  packages/esdi: {}
-
   packages/nest-component-scan:
     dependencies:
       '@swc/core':
@@ -319,6 +317,8 @@ importers:
         specifier: 4.3.5
         version: 4.3.5
 
+  packages/pouch-di: {}
+
   packages/prettier-plugin-sql-adapter:
     dependencies:
       debug:
@@ -340,12 +340,12 @@ importers:
 
   packages/server:
     dependencies:
-      esdi:
-        specifier: workspace:*
-        version: link:../esdi
       pg:
         specifier: 8.16.3
         version: 8.16.3
+      pouch-di:
+        specifier: workspace:*
+        version: link:../pouch-di
       zod:
         specifier: 4.3.5
         version: 4.3.5

@@ -10,7 +10,7 @@
     "dev": "tsc --noEmit --watch"
   },
   "dependencies": {
-    "esdi": "workspace:*",
+    "pouch-di": "workspace:*",
     "pg": "8.16.3",
     "zod": "4.3.5"
   },

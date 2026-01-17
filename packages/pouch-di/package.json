@@ -1,11 +1,12 @@
 {
-  "name": "esdi",
+  "name": "pouch-di",
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
   },
   "scripts": {
     "check-types": "tsc --noEmit",
+    "dev": "tsc --noEmit --watch",
     "clean": "rimraf dist tsconfig.tsbuildinfo .turbo"
   }
 }
