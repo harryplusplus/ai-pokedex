@@ -12,6 +12,7 @@ import { isClassToken, type Token, tokenToString } from '../definition/token.ts'
 import { CircularDependencyChecker } from './circular-dependency-checker.ts'
 import type { ContainerContext } from './container.ts'
 import { DependenciesResolver } from './dependencies-resolver.ts'
+import type { FilledOptions } from './options.ts'
 
 interface OnAwaitOrThrowInput {
   token: Token<Any>
@@ -21,9 +22,11 @@ interface OnAwaitOrThrowInput {
 
 export class SingletonResolver {
   readonly #context: ContainerContext
+  readonly #options: FilledOptions
 
-  constructor(context: ContainerContext) {
+  constructor(context: ContainerContext, options: FilledOptions) {
     this.#context = context
+    this.#options = options
   }
 
   async resolve<T extends Injectable>(token: Token<T>): Promise<T> {
@@ -46,6 +49,8 @@ export class SingletonResolver {
     const instance = await definitionToInstance(definition, dependencies)
 
     this.#context.singletons.set(token, instance)
+
+    this.#logCreated(token)
 
     return instance
   }
@@ -81,6 +86,8 @@ export class SingletonResolver {
 
     this.#context.singletons.set(token, instance)
 
+    this.#logCreated(token)
+
     return instance
   }
 
@@ -108,10 +115,10 @@ export class SingletonResolver {
         continue
       }
 
-      checker.push(token)
+      checker.push(item)
 
       const dependencyPromise = this.#resolve({
-        token,
+        token: item,
         checker,
         onAwaitOrThrow,
       })
@@ -124,6 +131,10 @@ export class SingletonResolver {
       definition,
       dependenciesResolver,
     })
+  }
+
+  #logCreated(token: Token<Any>) {
+    this.#options.logger.debug(`[${tokenToString(token)}] singleton created.`)
   }
 
   #resolveDefinition(token: Token<Any>): Definition<Any, Any> {

@@ -6,12 +6,15 @@ import {
   tokenToString,
 } from '../definition/token.ts'
 import type { ContainerContext } from './container.ts'
+import type { FilledOptions } from './options.ts'
 
 export class Provider {
   readonly #context: ContainerContext
+  readonly #options: FilledOptions
 
-  constructor(context: ContainerContext) {
+  constructor(context: ContainerContext, options: FilledOptions) {
     this.#context = context
+    this.#options = options
   }
 
   provide(definition: Definition<Any, Any>) {
@@ -28,5 +31,7 @@ export class Provider {
     } else {
       throw new Error(`${tokenToString(token)} is an invalid token.`)
     }
+
+    this.#options.logger.debug(`[${tokenToString(token)}] provided.`)
   }
 }

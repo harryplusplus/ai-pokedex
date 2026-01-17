@@ -1,5 +1,5 @@
 import type { Any, Injectable } from '../definition/common.ts'
-import type { Definition } from '../definition/definition.ts'
+import { type Definition } from '../definition/definition.ts'
 import { type Token } from '../definition/token.ts'
 import { AsyncLock } from './async-lock.ts'
 import { Destroyer } from './destroyer.ts'
@@ -26,19 +26,23 @@ export class Container {
   }
 
   provide(definition: Definition<Any, Any>) {
-    new Provider(this.#context).provide(definition)
+    new Provider(this.#context, this.#options).provide(definition)
 
     return this
   }
 
   async resolve<T extends Injectable>(token: Token<T>): Promise<T> {
     return await this.#lock.acquire(async () => {
-      return await new SingletonResolver(this.#context).resolve(token)
+      return await new SingletonResolver(this.#context, this.#options).resolve(
+        token,
+      )
     })
   }
 
   resolveSync<T extends Injectable>(token: Token<T>): T {
-    return new SingletonResolver(this.#context).resolveSync(token)
+    return new SingletonResolver(this.#context, this.#options).resolveSync(
+      token,
+    )
   }
 
   async destroy(): Promise<void> {
