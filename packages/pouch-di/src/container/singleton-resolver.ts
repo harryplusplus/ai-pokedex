@@ -1,5 +1,10 @@
 import type { OnCreatable } from '../definition/class-definition.ts'
-import type { Any, Injectable, MaybePromise } from '../definition/common.ts'
+import {
+  type Any,
+  type Injectable,
+  type MaybePromise,
+  NAMESPACE,
+} from '../definition/common.ts'
 import { type Dependencies } from '../definition/declaration.ts'
 import {
   type Definition,
@@ -134,7 +139,9 @@ export class SingletonResolver {
   }
 
   #logCreated(token: Token<Any>) {
-    this.#options.logger.debug(`[${tokenToString(token)}] singleton created.`)
+    this.#options.logger.debug(
+      `${NAMESPACE}: Singleton created. name: '${tokenToString(token)}'`,
+    )
   }
 
   #resolveDefinition(token: Token<Any>): Definition<Any, Any> {

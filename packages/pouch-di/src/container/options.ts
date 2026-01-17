@@ -53,9 +53,18 @@ export interface FilledOptions {
 }
 
 export function fillOptions(options?: Options): FilledOptions {
-  const { logLevel = 'error', logger = console } = options ?? {}
+  const { logLevel = isDev() ? 'debug' : 'error', logger = console } =
+    options ?? {}
 
   return {
     logger: new DefaultLogger(logLevel, logger),
   }
+}
+
+export function isDev(): boolean {
+  if (typeof process === 'undefined') return false
+  if (typeof process.env === 'undefined') return false
+  if (typeof process.env.NODE_ENV === 'undefined') return false
+
+  return process.env.NODE_ENV === 'development'
 }

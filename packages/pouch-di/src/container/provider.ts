@@ -1,4 +1,4 @@
-import type { Any } from '../definition/common.ts'
+import { type Any, NAMESPACE } from '../definition/common.ts'
 import { type Definition, definitionToToken } from '../definition/definition.ts'
 import {
   isClassToken,
@@ -32,6 +32,8 @@ export class Provider {
       throw new Error(`${tokenToString(token)} is an invalid token.`)
     }
 
-    this.#options.logger.debug(`[${tokenToString(token)}] provided.`)
+    this.#options.logger.debug(
+      `${NAMESPACE}: Definition provided. name: '${tokenToString(token)}'`,
+    )
   }
 }

@@ -10,3 +10,5 @@ export type MaybePromise<T> = T | Promise<T>
 //#endregion Utils
 
 export type Injectable = object
+
+export const NAMESPACE = 'pouch-di'

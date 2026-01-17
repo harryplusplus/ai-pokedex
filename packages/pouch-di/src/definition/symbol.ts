@@ -1,7 +1,13 @@
-export const inject: unique symbol = Symbol('pouchDi.inject')
+import { NAMESPACE } from './common.ts'
 
-export const type: unique symbol = Symbol('pouchDi.type')
+function desc(x: string): string {
+  return `${NAMESPACE}.${x}`
+}
 
-export const onCreate: unique symbol = Symbol('pouchDi.onCreate')
+export const inject: unique symbol = Symbol(desc('inject'))
 
-export const onDestroy: unique symbol = Symbol('pouchDi.onDestroy')
+export const type: unique symbol = Symbol(desc('type'))
+
+export const onCreate: unique symbol = Symbol(desc('onCreate'))
+
+export const onDestroy: unique symbol = Symbol(desc('onDestroy'))
