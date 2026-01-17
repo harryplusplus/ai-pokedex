@@ -1,34 +1,32 @@
 import type { PreDestroyable } from './class-definition.ts'
 import { isClassProvider } from './class-provider.ts'
-import type { ContainerContext } from './container-context.ts'
+import type { Providers, Singletons } from './container-context.ts'
 import { isFactoryProvider } from './factory-provider.ts'
 import { preDestroy } from './symbols.ts'
 import { tokenToString } from './token.ts'
 import { isValueProvider } from './value-provider.ts'
 
 export class Destroyer {
-  readonly #context: ContainerContext
+  readonly #providers: Providers
+  readonly #singletons: Singletons
 
-  constructor(context: ContainerContext) {
-    this.#context = context
+  constructor(providers: Providers, singletons: Singletons) {
+    this.#providers = providers
+    this.#singletons = singletons
   }
 
   async destroy(): Promise<void> {
-    const { singletons, registry } = this.#context
+    const copies = this.#singletons.entries().toArray()
 
-    const copies = singletons.entries().toArray()
-
-    singletons.clear()
+    this.#singletons.clear()
 
     copies.reverse()
 
     for (const [token, singleton] of copies) {
-      const registryValue = registry.get(token)
-      if (!registryValue) {
-        throw new Error(`${tokenToString(token)} definition does not exist.`)
+      const provider = this.#providers.get(token)
+      if (!provider) {
+        throw new Error(`${tokenToString(token)} provider does not exist.`)
       }
-
-      const { provider } = registryValue
 
       try {
         if (isClassProvider(provider)) {
@@ -58,6 +56,6 @@ export class Destroyer {
       }
     }
 
-    registry.clear()
+    this.#providers.clear()
   }
 }

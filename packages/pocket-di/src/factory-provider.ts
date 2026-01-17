@@ -4,11 +4,29 @@ import type { Injectable } from './injectable.ts'
 import type { ProviderLike } from './provider.ts'
 import type { Any, MaybePromise } from './utils.ts'
 
-export interface FactoryProvider<T extends Injectable, D extends Declaration> {
+export interface SingletonFactoryProvider<
+  T extends Injectable,
+  D extends Declaration,
+> {
   inject?: D
   useFactory: (dependencies: Dependencies<D>) => MaybePromise<T>
   preDestroy?: (instance: T) => MaybePromise<void>
+  lifecycle?: 'singleton'
 }
+
+export interface TransientFactoryProvider<
+  T extends Injectable,
+  D extends Declaration,
+> {
+  inject?: D
+  useFactory: (dependencies: Dependencies<D>) => MaybePromise<T>
+  preDestroy?: never
+  lifecycle: 'transient'
+}
+
+export type FactoryProvider<T extends Injectable, D extends Declaration> =
+  | SingletonFactoryProvider<T, D>
+  | TransientFactoryProvider<T, D>
 
 export interface FactoryProviderFn<T extends Injectable> {
   <D extends Declaration>(

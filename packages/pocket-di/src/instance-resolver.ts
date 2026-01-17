@@ -23,7 +23,7 @@ export class InstanceResolver {
     const checker = new CircularDependencyChecker()
     checker.push(token)
 
-    const instance = await this.#resolve({
+    const instance = await this.#resolveRecursive({
       token,
       checker,
     })
@@ -31,32 +31,28 @@ export class InstanceResolver {
     return instance as T
   }
 
-  async #resolve(input: {
+  async #resolveRecursive(input: {
     token: Token<Any>
     checker: CircularDependencyChecker
-  }): Promise<object> {
-    const { token } = input
+  }): Promise<Injectable> {
+    const { token, checker } = input
 
-    const singleton = this.#context.singletons.get(token)
+    const singleton = this.#context.getSingleton(token)
     if (singleton) {
       return singleton
     }
 
-    const registryValue = this.#context.registry.get(token)
-    if (!registryValue) {
+    const provider = this.#context.getProvider(token)
+    if (!provider) {
       throw new Error(`${tokenToString(token)} is not registered.`)
     }
-
-    const { provider } = registryValue
 
     if (isValueProvider(provider)) {
       return provider.useValue
     }
 
-    const { checker } = input
-
     if (isClassProvider(provider)) {
-      const { useClass } = provider
+      const { useClass, lifecycle } = provider
 
       const dependencies = this.#resolveDependencies({
         checker,
@@ -69,26 +65,28 @@ export class InstanceResolver {
       }
 
       this.#resolveLifecycle({
-        lifecycle: registryValue.options.lifecycle,
         token,
         instance,
+        lifecycle,
       })
 
       return instance
     }
 
     if (isFactoryProvider(provider)) {
+      const { inject, useFactory, lifecycle } = provider
+
       const dependencies = this.#resolveDependencies({
         checker,
-        declaration: provider.inject ?? {},
+        declaration: inject ?? {},
       })
 
-      const instance = await provider.useFactory(dependencies)
+      const instance = await useFactory(dependencies)
 
       this.#resolveLifecycle({
-        lifecycle: registryValue.options.lifecycle,
         token,
         instance,
+        lifecycle,
       })
 
       return instance
@@ -109,7 +107,7 @@ export class InstanceResolver {
     for (const [name, item] of Object.entries(declaration)) {
       checker.push(item)
 
-      const dependency = await this.#resolve({
+      const dependency = await this.#resolveRecursive({
         token: item,
         checker,
       })
@@ -121,11 +119,11 @@ export class InstanceResolver {
   }
 
   #resolveLifecycle(input: {
-    lifecycle: Lifecycle
     token: Token<Any>
     instance: Injectable
+    lifecycle?: Lifecycle
   }) {
-    const { lifecycle, token, instance } = input
+    const { token, instance, lifecycle = 'singleton' } = input
 
     if (lifecycle === 'singleton') {
       this.#context.singletons.set(token, instance)
