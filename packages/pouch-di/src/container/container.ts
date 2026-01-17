@@ -1,11 +1,10 @@
 import type { Any, Injectable } from '../definition/common.ts'
 import type { Definition } from '../definition/definition.ts'
-import type { FactoryDefinition } from '../definition/factory-definition.ts'
 import { type Token } from '../definition/token.ts'
 import { AsyncLock } from './async-lock.ts'
 import { Destroyer } from './destroyer.ts'
 import { type FilledOptions, fillOptions, type Options } from './options.ts'
-import { type ProvideFn, Provider } from './provider.ts'
+import { Provider } from './provider.ts'
 import { SingletonResolver } from './singleton-resolver.ts'
 import { Validator } from './validator.ts'
 
@@ -26,11 +25,8 @@ export class Container {
     this.#options = fillOptions(options)
   }
 
-  provide: ProvideFn<this> = <T extends Injectable>(
-    token: Token<T>,
-    definition?: FactoryDefinition<T, Any>,
-  ) => {
-    new Provider(this.#context).provide<T>(token, definition)
+  provide(definition: Definition<Any, Any>) {
+    new Provider(this.#context).provide(definition)
 
     return this
   }
