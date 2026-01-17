@@ -1,5 +1,5 @@
 {
-  "name": "pouch-di",
+  "name": "pocket-di",
   "type": "module",
   "exports": {
     ".": "./src/index.ts"

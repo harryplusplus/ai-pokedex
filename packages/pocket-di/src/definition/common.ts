@@ -11,4 +11,6 @@ export type MaybePromise<T> = T | Promise<T>
 
 export type Injectable = object
 
-export const NAMESPACE = 'pouch-di'
+export const NAMESPACE = 'pocket-di'
+
+export type Scope = 'singleton' | 'transient'
