@@ -1,3 +1,5 @@
+//#region Utils
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Any = any
 
@@ -5,6 +7,6 @@ export type Constructor<T> = new (...args: Any[]) => T
 
 export type MaybePromise<T> = T | Promise<T>
 
-export interface Logger {
-  error(...data: Any[]): void
-}
+//#endregion Utils
+
+export type Injectable = object
