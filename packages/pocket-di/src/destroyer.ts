@@ -14,7 +14,7 @@ export class Destroyer {
   }
 
   async destroy(): Promise<void> {
-    const { singletons, providers } = this.#context
+    const { singletons, registry } = this.#context
 
     const copies = singletons.entries().toArray()
 
@@ -23,28 +23,41 @@ export class Destroyer {
     copies.reverse()
 
     for (const [token, singleton] of copies) {
-      const provider = providers.get(token)
-      if (!provider) {
+      const registryValue = registry.get(token)
+      if (!registryValue) {
         throw new Error(`${tokenToString(token)} definition does not exist.`)
       }
 
+      const { provider } = registryValue
+
       try {
-        if (isFactoryProvider(provider)) {
-          await provider.preDestroy?.(singleton)
-        } else if (isClassProvider(provider)) {
+        if (isClassProvider(provider)) {
           if (preDestroy in singleton) {
             await (singleton as PreDestroyable)[preDestroy]()
           }
-        } else if (isValueProvider(provider)) {
-          // noop
-        } else {
-          const _: never = provider
+
+          continue
         }
+
+        if (isFactoryProvider(provider)) {
+          await provider.preDestroy?.(singleton)
+
+          continue
+        }
+
+        if (isValueProvider(provider)) {
+          // noop
+
+          continue
+        }
+
+        const _: never = provider
+        throw new Error('Unexpected provider.')
       } catch (_e) {
         // noop
       }
     }
 
-    providers.clear()
+    registry.clear()
   }
 }

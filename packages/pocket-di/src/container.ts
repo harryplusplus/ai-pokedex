@@ -6,9 +6,10 @@ import type { Declaration } from './declaration.ts'
 import { Destroyer } from './destroyer.ts'
 import type { FactoryProvider } from './factory-provider.ts'
 import type { Injectable } from './injectable.ts'
+import { InstanceResolver } from './instance-resolver.ts'
 import { ParentContext } from './parent-context.ts'
 import type { ProviderLike } from './provider.ts'
-import { Registerer } from './registerer.ts'
+import { Registerer, type RegisterOptions } from './registerer.ts'
 import type { Token } from './token.ts'
 import type { ValueProvider } from './value-provider.ts'
 
@@ -27,24 +28,29 @@ export class Container {
   register<T extends Injectable>(
     token: Token<T>,
     provider: ValueProvider<T>,
+    options?: RegisterOptions,
   ): this
-  register<T extends Injectable>(
+  register<T extends Injectable, D extends Declaration>(
     token: Token<T>,
-    provider: ClassProvider<T>,
+    provider: ClassProvider<T, D>,
+    options?: RegisterOptions,
   ): this
   register<T extends Injectable, D extends Declaration>(
     token: Token<T>,
     provider: FactoryProvider<T, D>,
+    options?: RegisterOptions,
   ): this
   register<T extends Injectable, D extends Declaration>(
     token: Token<T>,
     definition: ClassDefinition<T, D>,
+    options?: RegisterOptions,
   ): this
   register<T extends Injectable, D extends Declaration>(
     token: Token<T>,
     providerLike: ProviderLike<T, D>,
+    options?: RegisterOptions,
   ): this {
-    new Registerer(this.#context).register(token, providerLike)
+    new Registerer(this.#context).register(token, providerLike, options)
 
     return this
   }
@@ -56,24 +62,14 @@ export class Container {
   }
 
   createChild(): Container {
-    return new Container({ parent: new ParentContext(this.#context) })
+    return new Container({
+      parent: new ParentContext(this.#context),
+    })
   }
 
-  // async resolve<T extends Injectable>(token: Token<T>): Promise<T> {
-  //   return await this.#lock.acquire(async () => {
-  //     return await new SingletonResolver(this.#context, this.#options).resolve(
-  //       token,
-  //     )
-  //   })
-  // }
-
-  // resolveSync<T extends Injectable>(token: Token<T>): T {
-  //   return new SingletonResolver(this.#context, this.#options).resolveSync(
-  //     token,
-  //   )
-  // }
-
-  // validate(target: Token<Any>): void {
-  //   new Validator(this.#context).validate(target)
-  // }
+  async resolve<T extends Injectable>(token: Token<T>): Promise<T> {
+    return await this.#lock.acquire(async () => {
+      return await new InstanceResolver(this.#context).resolve(token)
+    })
+  }
 }

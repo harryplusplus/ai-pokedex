@@ -1,20 +1,21 @@
+import type { ClassDefinition } from './class-definition.ts'
 import type { Declaration } from './declaration.ts'
 import type { Injectable } from './injectable.ts'
 import type { ProviderLike } from './provider.ts'
-import type { Any, Constructor } from './utils.ts'
+import type { Any } from './utils.ts'
 
-export interface ClassProvider<T extends Injectable> {
-  useClass: Constructor<T>
+export interface ClassProvider<T extends Injectable, D extends Declaration> {
+  useClass: ClassDefinition<T, D>
 }
 
 export function defineClass<T extends Injectable>(
-  provider: ClassProvider<T>,
-): ClassProvider<T> {
+  provider: ClassProvider<T, Declaration>,
+): ClassProvider<T, Declaration> {
   return provider
 }
 
 export function isClassProvider(
   providerLike: ProviderLike<Any, Declaration>,
-): providerLike is ClassProvider<Any> {
+): providerLike is ClassProvider<Injectable, Declaration> {
   return 'useClass' in providerLike
 }

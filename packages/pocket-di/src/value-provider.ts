@@ -15,6 +15,6 @@ export function defineValue<T extends Injectable>(
 
 export function isValueProvider(
   providerLike: ProviderLike<Any, Declaration>,
-): providerLike is ValueProvider<Any> {
+): providerLike is ValueProvider<Injectable> {
   return 'useValue' in providerLike
 }

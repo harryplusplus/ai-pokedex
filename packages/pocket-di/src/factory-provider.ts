@@ -36,6 +36,6 @@ export { defineFactory }
 
 export function isFactoryProvider(
   providerLike: ProviderLike<Any, Declaration>,
-): providerLike is FactoryProvider<Any, Declaration> {
+): providerLike is FactoryProvider<Injectable, Declaration> {
   return 'useFactory' in providerLike
 }

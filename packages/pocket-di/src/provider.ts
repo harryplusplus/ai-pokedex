@@ -8,7 +8,7 @@ import type { ValueProvider } from './value-provider.ts'
 
 export type Provider<T extends Injectable, D extends Declaration> =
   | ValueProvider<T>
-  | ClassProvider<T>
+  | ClassProvider<T, D>
   | FactoryProvider<T, D>
 
 export function isProvider(
