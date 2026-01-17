@@ -1,12 +1,12 @@
 import type { Injectable, MaybePromise } from './common.ts'
 import type { Context, Declaration } from './declaration.ts'
-import type { PrimitiveToken } from './token.ts'
+import type { IndirectToken } from './token.ts'
 
 export interface FactoryDefinition<
   T extends Injectable,
   D extends Declaration,
 > {
-  token: PrimitiveToken
+  token: IndirectToken<T>
   inject?: D
   fn: (c: Context<D>) => MaybePromise<T>
   on?: {

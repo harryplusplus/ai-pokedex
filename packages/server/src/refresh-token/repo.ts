@@ -2,15 +2,17 @@ import { type InferContext, inject } from 'pouch-di'
 
 import { Db } from '../db/db.ts'
 
+type Deps = InferContext<typeof RefreshTokenRepo>
+
 export class RefreshTokenRepo {
   static [inject] = {
     db: Db,
   }
 
-  readonly #c: InferContext<typeof RefreshTokenRepo>
+  readonly #c: Deps
 
-  constructor(c: InferContext<typeof RefreshTokenRepo>) {
-    this.#c = c
+  constructor(deps: Deps) {
+    this.#c = deps
   }
 
   async check() {

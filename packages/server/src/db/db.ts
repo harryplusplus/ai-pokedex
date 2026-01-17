@@ -1,4 +1,4 @@
-import { type PgClient, pgClientAls } from './pg-client-als.ts'
+import { type PgClient, pgClientAls } from './pg-als.ts'
 
 export class Db {
   get client(): PgClient {
