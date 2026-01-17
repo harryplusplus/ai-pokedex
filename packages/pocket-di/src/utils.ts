@@ -1,16 +1,6 @@
-//#region Utils
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Any = any
 
 export type Constructor<T> = new (...args: Any[]) => T
 
 export type MaybePromise<T> = T | Promise<T>
-
-//#endregion Utils
-
-export type Injectable = object
-
-export const NAMESPACE = 'pocket-di'
-
-export type Scope = 'singleton' | 'transient'

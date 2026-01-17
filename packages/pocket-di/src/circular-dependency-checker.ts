@@ -1,5 +1,5 @@
-import type { Any } from '../definition/common.ts'
-import { type Token, tokenToString } from '../definition/token.ts'
+import { type Token, tokenToString } from './token.ts'
+import type { Any } from './utils.ts'
 
 export class CircularDependencyChecker {
   #chain = new Set<Token<Any>>()

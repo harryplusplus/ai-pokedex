@@ -1,7 +1,8 @@
 import type { ClassDefinition } from './class-definition.ts'
-import type { Any, Injectable } from './common.ts'
 import type { Declaration } from './declaration.ts'
-import type { type } from './symbol.ts'
+import type { Injectable } from './injectable.ts'
+import type { type } from './symbols.ts'
+import type { Any } from './utils.ts'
 
 export type PrimitiveToken = string | symbol
 
@@ -13,20 +14,15 @@ export function token<T extends Injectable>(
   return token
 }
 
-export type IndirectToken<T extends Injectable> = TypedToken<T> | PrimitiveToken
-
 export type ClassToken<T extends Injectable> = ClassDefinition<T, Declaration>
 
-export type Token<T extends Injectable> = ClassToken<T> | IndirectToken<T>
+export type Token<T extends Injectable> =
+  | ClassToken<T>
+  | TypedToken<T>
+  | PrimitiveToken
 
 export function isClassToken(token: Token<Any>): token is ClassToken<Any> {
   return typeof token === 'function'
-}
-
-export function isIndirectToken(
-  token: Token<Any>,
-): token is IndirectToken<Any> {
-  return typeof token === 'string' || typeof token === 'symbol'
 }
 
 export function tokenToString(token: Token<Any>): string {
