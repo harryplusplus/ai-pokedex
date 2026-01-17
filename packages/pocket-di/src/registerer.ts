@@ -2,7 +2,7 @@ import { isClassDefinition } from './class-definition.ts'
 import type { Providers } from './container-context.ts'
 import type { Declaration } from './declaration.ts'
 import { isProvider, type Provider, type ProviderLike } from './provider.ts'
-import { type Token, tokenToString } from './token.ts'
+import { isClassToken, type Token, tokenToString } from './token.ts'
 import type { Any } from './utils.ts'
 
 export class Registerer {
@@ -12,12 +12,12 @@ export class Registerer {
     this.#providers = providers
   }
 
-  register(token: Token<Any>, providerLike: ProviderLike<Any, Any>): void {
+  register(token: Token<Any>, providerLike?: ProviderLike<Any, Any>): void {
     if (this.#providers.has(token)) {
-      throw new Error(`${tokenToString(token)} already registered.`)
+      throw new Error(`"${tokenToString(token)}" already registered.`)
     }
 
-    const provider = toProvider(providerLike)
+    const provider = toProvider(token, providerLike)
 
     this.#providers.set(token, provider)
   }
@@ -26,20 +26,32 @@ export class Registerer {
 //#region Internals
 
 function toProvider(
-  providerLike: ProviderLike<Any, Declaration>,
+  token: Token<Any>,
+  providerLike?: ProviderLike<Any, Declaration>,
 ): Provider<Any, Declaration> {
-  if (isProvider(providerLike)) {
-    return providerLike
-  }
+  if (providerLike) {
+    if (isProvider(providerLike)) {
+      return providerLike
+    }
 
-  if (isClassDefinition(providerLike)) {
-    return {
-      useClass: providerLike,
+    if (isClassDefinition(providerLike)) {
+      return {
+        useClass: providerLike,
+      }
+    }
+
+    const _: never = providerLike
+    throw new Error('Unexpected provider like.')
+  } else {
+    if (isClassToken(token)) {
+      return {
+        useClass: token,
+      }
+    } else {
+      const _: undefined = providerLike
+      throw new Error('Unexpected provider like.')
     }
   }
-
-  const _: never = providerLike
-  throw new Error('Unexpected provider like.')
 }
 
 //#endregion Internals

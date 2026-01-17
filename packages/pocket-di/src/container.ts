@@ -10,7 +10,7 @@ import { InstanceResolver } from './instance-resolver.ts'
 import { ParentContext } from './parent-context.ts'
 import type { ProviderLike } from './provider.ts'
 import { Registerer } from './registerer.ts'
-import type { Token } from './token.ts'
+import type { ClassToken, Token } from './token.ts'
 import type { ValueProvider } from './value-provider.ts'
 
 export interface Options {
@@ -41,9 +41,10 @@ export class Container {
     token: Token<T>,
     definition: ClassDefinition<T, D>,
   ): this
+  register<T extends Injectable>(token: ClassToken<T>): this
   register<T extends Injectable, D extends Declaration>(
     token: Token<T>,
-    providerLike: ProviderLike<T, D>,
+    providerLike?: ProviderLike<T, D>,
   ): this {
     new Registerer(this.#context.providers).register(token, providerLike)
 

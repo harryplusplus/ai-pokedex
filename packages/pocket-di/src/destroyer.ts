@@ -25,7 +25,7 @@ export class Destroyer {
     for (const [token, singleton] of copies) {
       const provider = this.#providers.get(token)
       if (!provider) {
-        throw new Error(`${tokenToString(token)} provider does not exist.`)
+        throw new Error(`"${tokenToString(token)}" provider does not exist.`)
       }
 
       try {

@@ -44,7 +44,7 @@ export class InstanceResolver {
 
     const provider = this.#context.getProvider(token)
     if (!provider) {
-      throw new Error(`${tokenToString(token)} is not registered.`)
+      throw new Error(`"${tokenToString(token)}" is not registered.`)
     }
 
     if (isValueProvider(provider)) {

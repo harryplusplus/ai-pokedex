@@ -7,9 +7,9 @@ export class CircularDependencyChecker {
   push(token: Token<Any>): void {
     if (this.#chain.has(token)) {
       throw new Error(
-        `Circular dependency detected. ${[...this.#chain.values(), token]
+        `Circular dependency detected. "${[...this.#chain.values(), token]
           .map((x) => tokenToString(x))
-          .join(' -> ')}`,
+          .join(' -> ')}"`,
       )
     }
 
