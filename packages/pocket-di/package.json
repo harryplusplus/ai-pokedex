@@ -1,12 +1,18 @@
 {
   "name": "pocket-di",
+  "version": "0.0.0-development",
+  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
+    "build": "tsc",
     "check-types": "tsc --noEmit",
-    "dev": "tsc --noEmit --watch",
-    "clean": "rimraf dist tsconfig.tsbuildinfo .turbo"
+    "clean": "rimraf dist tsconfig.tsbuildinfo .turbo",
+    "dev": "tsc --noEmit --watch"
   }
 }
