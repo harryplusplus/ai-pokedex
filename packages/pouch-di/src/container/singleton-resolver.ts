@@ -1,9 +1,6 @@
 import type { OnCreatable } from '../definition/class-definition.ts'
 import type { Any, Injectable, MaybePromise } from '../definition/common.ts'
-import {
-  declarationItemToToken,
-  type InstanceContext,
-} from '../definition/declaration.ts'
+import { type Context } from '../definition/declaration.ts'
 import {
   type Definition,
   definitionToDeclaration,
@@ -11,11 +8,7 @@ import {
   isFactoryDefinition,
 } from '../definition/definition.ts'
 import { onCreate } from '../definition/symbol.ts'
-import {
-  isDirectToken,
-  type Token,
-  tokenToString,
-} from '../definition/token.ts'
+import { isClassToken, type Token, tokenToString } from '../definition/token.ts'
 import { CircularDependencyChecker } from './circular-dependency-checker.ts'
 import type { ContainerContext } from './container.ts'
 import { InstanceContextResolver } from './instance-context-resolver.ts'
@@ -23,7 +16,7 @@ import { InstanceContextResolver } from './instance-context-resolver.ts'
 interface OnAwaitOrThrowInput {
   token: Token<Any>
   definition: Definition<Any, Any>
-  instanceContextResolver: InstanceContextResolver
+  contextResolver: InstanceContextResolver
 }
 
 export class SingletonResolver {
@@ -47,10 +40,10 @@ export class SingletonResolver {
   }
 
   async #onAwait(input: OnAwaitOrThrowInput): Promise<object> {
-    const { token, definition, instanceContextResolver } = input
+    const { token, definition, contextResolver } = input
 
-    const instanceContext = await instanceContextResolver.resolve()
-    const instance = await definitionToInstance(definition, instanceContext)
+    const context = await contextResolver.resolve()
+    const instance = await definitionToInstance(definition, context)
 
     this.#context.singletons.set(token, instance)
 
@@ -75,11 +68,11 @@ export class SingletonResolver {
   }
 
   #onThrow(input: OnAwaitOrThrowInput): object {
-    const { token, definition, instanceContextResolver } = input
+    const { token, definition, contextResolver } = input
 
-    const instanceContext = instanceContextResolver.resolveSync()
+    const context = contextResolver.resolveSync()
 
-    const instance = definitionToInstance(definition, instanceContext)
+    const instance = definitionToInstance(definition, context)
     if (instance instanceof Promise) {
       throw new Error(
         `${tokenToString(token)} returned \`Promise\` in \`reserveSync()\`.`,
@@ -105,14 +98,12 @@ export class SingletonResolver {
 
     const definition = this.#resolveDefinition(token)
     const declaration = definitionToDeclaration(definition)
-    const instanceContextResolver = new InstanceContextResolver(token)
+    const contextResolver = new InstanceContextResolver(token)
 
     for (const [name, item] of Object.entries(declaration)) {
-      const token = declarationItemToToken(item)
-
-      const singleton = this.#context.singletons.get(token)
+      const singleton = this.#context.singletons.get(item)
       if (singleton) {
-        instanceContextResolver.set(name, singleton)
+        contextResolver.set(name, singleton)
 
         continue
       }
@@ -125,13 +116,13 @@ export class SingletonResolver {
         onAwaitOrThrow,
       })
 
-      instanceContextResolver.set(name, itemPromise)
+      contextResolver.set(name, itemPromise)
     }
 
     return onAwaitOrThrow({
       token,
       definition,
-      instanceContextResolver,
+      contextResolver,
     })
   }
 
@@ -141,7 +132,7 @@ export class SingletonResolver {
       return definition
     }
 
-    if (isDirectToken(token)) {
+    if (isClassToken(token)) {
       // NOTE: Auto providing.
 
       this.#context.definitions.set(token, token)
@@ -154,10 +145,10 @@ export class SingletonResolver {
 
 function definitionToInstance(
   definition: Definition<Injectable, Any>,
-  instanceContext: InstanceContext,
+  context: Context<Any>,
 ): MaybePromise<Injectable> {
   if (isClassDefinition(definition)) {
-    const instance = new definition(instanceContext)
+    const instance = new definition(context)
 
     let onCreateResult: MaybePromise<void> | null = null
     if (onCreate in instance) {
@@ -172,7 +163,7 @@ function definitionToInstance(
       return instance
     }
   } else if (isFactoryDefinition(definition)) {
-    return definition.fn(instanceContext)
+    return definition.fn(context)
   } else {
     throw new Error('Invalid definition.')
   }

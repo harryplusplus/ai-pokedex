@@ -1,7 +1,13 @@
-import { type Context, inject, onDestroy, type OnDestroyable } from 'esdi'
 import pg from 'pg'
+import {
+  indirect,
+  type InferContext,
+  inject,
+  onDestroy,
+  type OnDestroyable,
+} from 'pouch-di'
 
-import { Config } from '../config/config.ts'
+import { envVarsToken } from '../env-vars.ts'
 import { pgClientAls } from './pg-client-als.ts'
 import {
   type IsolationLevel,
@@ -11,16 +17,16 @@ import {
 
 export class DbService implements OnDestroyable {
   static [inject] = {
-    config: Config,
+    envVars: envVarsToken,
   }
 
   readonly pool: pg.Pool
 
-  constructor(c: Context<typeof DbService>) {
+  constructor(c: InferContext<typeof DbService>) {
     resetDateTypeParsers()
 
     this.pool = new pg.Pool({
-      connectionString: c.config.envVars.DATABASE_URL,
+      connectionString: c.envVars.DATABASE_URL,
     })
   }
 

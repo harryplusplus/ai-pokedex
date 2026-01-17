@@ -1,5 +1,5 @@
 import type { Any, Injectable, MaybePromise } from '../definition/common.ts'
-import type { InstanceContext } from '../definition/declaration.ts'
+import type { Context } from '../definition/declaration.ts'
 import { type Token, tokenToString } from '../definition/token.ts'
 
 export class InstanceContextResolver {
@@ -18,7 +18,7 @@ export class InstanceContextResolver {
     this.#map.set(name, itemPromise)
   }
 
-  async resolve(): Promise<InstanceContext> {
+  async resolve(): Promise<Context<Any>> {
     const items = await Promise.all(
       this.#map.entries().map(async ([name, itemPromise]) => {
         return [name, await itemPromise] as const
@@ -28,7 +28,7 @@ export class InstanceContextResolver {
     return Object.fromEntries(items)
   }
 
-  resolveSync(): InstanceContext {
+  resolveSync(): Context<Any> {
     const items = this.#map.entries().map(([name, itemPromise]) => {
       if (itemPromise instanceof Promise) {
         throw new Error(

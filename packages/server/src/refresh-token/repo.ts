@@ -1,4 +1,4 @@
-import { type Context, inject } from 'esdi'
+import { type InferContext, inject } from 'pouch-di'
 
 import { Db } from '../db/db.ts'
 
@@ -7,9 +7,9 @@ export class RefreshTokenRepo {
     db: Db,
   }
 
-  readonly #c: Context<typeof RefreshTokenRepo>
+  readonly #c: InferContext<typeof RefreshTokenRepo>
 
-  constructor(c: Context<typeof RefreshTokenRepo>) {
+  constructor(c: InferContext<typeof RefreshTokenRepo>) {
     this.#c = c
   }
 

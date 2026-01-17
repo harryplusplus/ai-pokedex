@@ -1,3 +1,4 @@
+import { define, token } from 'pouch-di'
 import z from 'zod'
 
 export const EnvVars = z.object({
@@ -13,3 +14,12 @@ export const EnvVars = z.object({
   GOOGLE_CLIENT_SECRET: z.string().min(1),
 })
 export type EnvVars = z.infer<typeof EnvVars>
+
+export const envVarsToken = token<EnvVars>('envVars')
+
+export const envVarsDef = define({
+  token: envVarsToken,
+  fn: () => {
+    return EnvVars.parse(process.env)
+  },
+})

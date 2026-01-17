@@ -15,11 +15,11 @@ export function token<T extends Injectable>(
 
 export type IndirectToken<T extends Injectable> = TypedToken<T> | PrimitiveToken
 
-export type DirectToken<T extends Injectable> = ClassDefinition<T, Declaration>
+export type ClassToken<T extends Injectable> = ClassDefinition<T, Declaration>
 
-export type Token<T extends Injectable> = DirectToken<T> | IndirectToken<T>
+export type Token<T extends Injectable> = ClassToken<T> | IndirectToken<T>
 
-export function isDirectToken(token: Token<Any>): token is DirectToken<Any> {
+export function isClassToken(token: Token<Any>): token is ClassToken<Any> {
   return typeof token === 'function'
 }
 
@@ -30,7 +30,7 @@ export function isIndirectToken(
 }
 
 export function tokenToString(token: Token<Any>): string {
-  if (isDirectToken(token)) {
+  if (isClassToken(token)) {
     return token.name
   }
 

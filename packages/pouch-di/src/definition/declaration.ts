@@ -1,43 +1,39 @@
+import type { ClassDefinition } from './class-definition.ts'
 import type { Any, Injectable } from './common.ts'
-import { type } from './symbol.ts'
-import type { DirectToken, IndirectToken, Token } from './token.ts'
+import { inject } from './symbol.ts'
+import {
+  type ClassToken,
+  type IndirectToken,
+  token,
+  type TypedToken,
+} from './token.ts'
 
 //#region DeclarationItem
 
-export type DirectDeclarationItem<T extends Injectable> = DirectToken<T>
+export type ClassDeclarationItem<T extends Injectable> = ClassToken<T>
 
-export interface IndirectDeclarationItem<T extends Injectable> {
-  token: IndirectToken<T>
-  [type]?: T
-}
+export type IndirectDeclarationItem<T extends Injectable> = TypedToken<T>
 
 export function indirect<T extends Injectable>(
-  token: IndirectToken<T>,
+  x: IndirectToken<T>,
 ): IndirectDeclarationItem<T> {
-  return {
-    token,
-    [type]: undefined,
-  }
+  return token(x)
 }
 
 export type DeclarationItem<T extends Injectable> =
-  | DirectDeclarationItem<T>
+  | ClassDeclarationItem<T>
   | IndirectDeclarationItem<T>
 
-export function isDirectDeclarationItem(
+export function isClassDeclarationItem(
   item: DeclarationItem<Any>,
-): item is DirectDeclarationItem<Any> {
+): item is ClassDeclarationItem<Any> {
   return typeof item === 'function'
 }
 
 export function isIndirectDeclarationItem(
   item: DeclarationItem<Any>,
 ): item is IndirectDeclarationItem<Any> {
-  return typeof item !== 'function'
-}
-
-export function declarationItemToToken(item: DeclarationItem<Any>): Token<Any> {
-  return isDirectDeclarationItem(item) ? item : item.token
+  return typeof item !== 'function' && typeof item === 'object'
 }
 
 //#endregion DeclarationItem
@@ -48,4 +44,8 @@ export type Context<D extends Declaration> = {
   [K in keyof D]: D[K] extends DeclarationItem<infer T> ? T : never
 }
 
-export type InstanceContext = Context<Declaration>
+export type InferContext<T extends ClassDefinition<Any, Any>> = T extends {
+  [inject]?: infer D extends Declaration
+}
+  ? Context<D>
+  : never

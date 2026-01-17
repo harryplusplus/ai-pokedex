@@ -1,9 +1,9 @@
 import type { Any, Injectable } from '../definition/common.ts'
 import type { FactoryDefinition } from '../definition/factory-definition.ts'
 import {
-  type DirectToken,
+  type ClassToken,
   type IndirectToken,
-  isDirectToken,
+  isClassToken,
   isIndirectToken,
   type Token,
   tokenToString,
@@ -11,7 +11,7 @@ import {
 import type { ContainerContext } from './container.ts'
 
 export interface ProvideFn<R> {
-  <T extends Injectable>(token: DirectToken<T>): R
+  <T extends Injectable>(token: ClassToken<T>): R
   <T extends Injectable>(
     token: IndirectToken<T>,
     definition: FactoryDefinition<T, Any>,
@@ -37,8 +37,8 @@ export class Provider {
       throw new Error(`${tokenToString(token)} already provided.`)
     }
 
-    if (isDirectToken(token)) {
-      this.#provideDirectToken(token)
+    if (isClassToken(token)) {
+      this.#provideClassToken(token)
     } else if (isIndirectToken(token)) {
       this.#provideIndirectToken(token, definition)
     } else {
@@ -46,7 +46,7 @@ export class Provider {
     }
   }
 
-  #provideDirectToken(token: DirectToken<Any>): void {
+  #provideClassToken(token: ClassToken<Any>): void {
     this.#context.definitions.set(token, token)
   }
 

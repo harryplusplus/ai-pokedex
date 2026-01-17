@@ -1,16 +1,11 @@
 import type { Any } from '../definition/common.ts'
 import {
   type Declaration,
-  declarationItemToToken,
-  isDirectDeclarationItem,
+  isClassDeclarationItem,
   isIndirectDeclarationItem,
 } from '../definition/declaration.ts'
 import { definitionToDeclaration } from '../definition/definition.ts'
-import {
-  isDirectToken,
-  type Token,
-  tokenToString,
-} from '../definition/token.ts'
+import { isClassToken, type Token, tokenToString } from '../definition/token.ts'
 import type { ContainerContext } from './container.ts'
 
 export class Validator {
@@ -23,7 +18,7 @@ export class Validator {
   validate(target: Token<Any>): void {
     let definition = this.#context.definitions.get(target)
     if (!definition) {
-      if (isDirectToken(target)) {
+      if (isClassToken(target)) {
         definition = target
       } else {
         throw new Error(`${tokenToString(target)} was not provided.`)
@@ -36,17 +31,16 @@ export class Validator {
 
   #validateDeclaration(target: Token<Any>, declaration: Declaration): void {
     for (const [name, item] of Object.entries(declaration)) {
-      if (isDirectDeclarationItem(item)) {
+      if (isClassDeclarationItem(item)) {
         this.validate(item)
       } else if (isIndirectDeclarationItem(item)) {
-        const token = declarationItemToToken(item)
-        if (!this.#context.definitions.has(token)) {
+        if (!this.#context.definitions.has(item)) {
           throw new Error(
-            `${tokenToString(target)}'s dependency ${name} (token: ${tokenToString(token)}) was not provided.`,
+            `${tokenToString(target)}'s dependency ${name} (token: ${tokenToString(item)}) was not provided.`,
           )
         }
 
-        this.validate(token)
+        this.validate(item)
       } else {
         throw new Error(`${name} is an invalid declaration item.`)
       }
