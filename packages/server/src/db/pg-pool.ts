@@ -9,11 +9,11 @@ export const pgPoolDef = define({
   inject: {
     envVars: envVarsToken,
   },
-  fn: (c) => {
+  fn: (deps) => {
     resetDateTypeParsers()
 
     return new pg.Pool({
-      connectionString: c.envVars.DATABASE_URL,
+      connectionString: deps.envVars.DATABASE_URL,
     })
   },
   on: {

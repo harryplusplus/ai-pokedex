@@ -1,8 +1,8 @@
-import { type InferContext, inject } from 'pouch-di'
+import { type InferDependencies, inject } from 'pouch-di'
 
 import { Db } from '../db/db.ts'
 
-type Deps = InferContext<typeof RefreshTokenRepo>
+type Deps = InferDependencies<typeof RefreshTokenRepo>
 
 export class RefreshTokenRepo {
   static [inject] = {

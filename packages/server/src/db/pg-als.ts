@@ -1,7 +1,7 @@
 import { AsyncLocalStorage } from 'node:async_hooks'
 
 import type pg from 'pg'
-import { type InferContext, inject } from 'pouch-di'
+import { type InferDependencies, inject } from 'pouch-di'
 
 import { pgPoolToken } from './pg-pool.ts'
 import { type IsolationLevel, transaction } from './pg-utils.ts'
@@ -10,17 +10,17 @@ export type PgClient = Pick<pg.ClientBase, 'query'>
 
 export const pgClientAls = new AsyncLocalStorage<PgClient>()
 
-type Context = InferContext<typeof PgAls>
+type Deps = InferDependencies<typeof PgAls>
 
 export class PgAls {
   static [inject] = {
     pgPool: pgPoolToken,
   }
 
-  readonly #c: Context
+  readonly #c: Deps
 
-  constructor(c: Context) {
-    this.#c = c
+  constructor(deps: Deps) {
+    this.#c = deps
   }
 
   async withClient<R>(fn: () => Promise<R>): Promise<R> {

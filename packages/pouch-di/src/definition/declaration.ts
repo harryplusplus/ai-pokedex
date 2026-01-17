@@ -40,12 +40,12 @@ export function isIndirectDeclarationItem(
 
 export type Declaration = Record<string, DeclarationItem<Any>>
 
-export type Context<D extends Declaration> = {
+export type Dependencies<D extends Declaration> = {
   [K in keyof D]: D[K] extends DeclarationItem<infer T> ? T : never
 }
 
-export type InferContext<T extends ClassDefinition<Any, Any>> = T extends {
+export type InferDependencies<T extends ClassDefinition<Any, Any>> = T extends {
   [inject]?: infer D extends Declaration
 }
-  ? Context<D>
+  ? Dependencies<D>
   : never
