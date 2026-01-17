@@ -1,4 +1,4 @@
-import { type InferDependencies, inject } from 'pouch-di'
+import { type InferDependencies, inject } from 'pocket-di'
 
 import { Db } from '../db/db.ts'
 

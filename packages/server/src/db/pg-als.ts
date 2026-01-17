@@ -1,7 +1,7 @@
 import { AsyncLocalStorage } from 'node:async_hooks'
 
 import type pg from 'pg'
-import { type InferDependencies, inject } from 'pouch-di'
+import { type InferDependencies, inject } from 'pocket-di'
 
 import { pgPoolToken } from './pg-pool.ts'
 import { type IsolationLevel, transaction } from './pg-utils.ts'

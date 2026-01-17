@@ -54,10 +54,11 @@ export class InstanceResolver {
     if (isClassProvider(provider)) {
       const { useClass, lifecycle } = provider
 
-      const dependencies = this.#resolveDependencies({
-        checker,
-        declaration: useClass[inject] ?? {},
-      })
+      const dependencies: Dependencies<Declaration> =
+        await this.#resolveDependencies({
+          checker,
+          declaration: useClass[inject] ?? {},
+        })
 
       const instance = new useClass(dependencies)
       if (postConstruct in instance) {
@@ -76,10 +77,11 @@ export class InstanceResolver {
     if (isFactoryProvider(provider)) {
       const { inject, useFactory, lifecycle } = provider
 
-      const dependencies = this.#resolveDependencies({
-        checker,
-        declaration: inject ?? {},
-      })
+      const dependencies: Dependencies<Declaration> =
+        await this.#resolveDependencies({
+          checker,
+          declaration: inject ?? {},
+        })
 
       const instance = await useFactory(dependencies)
 

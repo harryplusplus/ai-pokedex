@@ -1,24 +1,23 @@
 import pg from 'pg'
-import { define } from 'pouch-di'
+import { defineFactory, token } from 'pocket-di'
 
 import { envVarsToken } from '../env-vars.ts'
 import { resetDateTypeParsers } from './pg-utils.ts'
 
-export const pgPoolDef = define({
-  token: 'pgPool',
+export const pgPoolToken = token<pg.Pool>('pgPool')
+
+export const pgPoolDef = defineFactory({
   inject: {
     envVars: envVarsToken,
   },
-  fn: (deps) => {
+  useFactory: (deps) => {
     resetDateTypeParsers()
 
     return new pg.Pool({
       connectionString: deps.envVars.DATABASE_URL,
     })
   },
-  on: {
-    destroy: (self) => self.end(),
+  preDestroy: async (instance) => {
+    await instance.end()
   },
 })
-
-export const pgPoolToken = pgPoolDef.token

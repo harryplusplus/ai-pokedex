@@ -1,4 +1,4 @@
-import { define } from 'pouch-di'
+import { defineFactory, token } from 'pocket-di'
 import z from 'zod'
 
 export const EnvVars = z.object({
@@ -15,11 +15,10 @@ export const EnvVars = z.object({
 })
 export type EnvVars = z.infer<typeof EnvVars>
 
-export const envVarsDef = define({
-  token: 'envVars',
-  fn: () => {
+export const envVarsToken = token<EnvVars>('envVars')
+
+export const envVarsDef = defineFactory({
+  useFactory: () => {
     return EnvVars.parse(process.env)
   },
 })
-
-export const envVarsToken = envVarsDef.token
