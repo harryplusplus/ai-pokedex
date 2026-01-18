@@ -1,9 +1,8 @@
-import { type ClassProvider, isClassProvider } from './class-provider.ts'
+import { type ClassProvider } from './class-provider.ts'
 import type { Declaration } from './declaration.ts'
-import { type FactoryProvider, isFactoryProvider } from './factory-provider.ts'
+import { type FactoryProvider } from './factory-provider.ts'
 import type { Injectable } from './injectable.ts'
-import type { Providable } from './providable.ts'
-import { isValueProvider, type ValueProvider } from './value-provider.ts'
+import type { ValueProvider } from './value-provider.ts'
 
 export type Provider<T extends Injectable, D extends Declaration> =
   | ValueProvider<T>
@@ -31,13 +30,3 @@ function defineProvider<T extends Injectable, D extends Declaration>(
 }
 
 export { defineProvider }
-
-export function isProvider(
-  providable: Providable<Injectable, Declaration>,
-): providable is Provider<Injectable, Declaration> {
-  return (
-    isValueProvider(providable) ||
-    isClassProvider(providable) ||
-    isFactoryProvider(providable)
-  )
-}

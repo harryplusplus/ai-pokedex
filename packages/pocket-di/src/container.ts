@@ -5,7 +5,6 @@ import type { Declaration } from './declaration.ts'
 import { destroy } from './destroy.ts'
 import type { Injectable } from './injectable.ts'
 import type { Options } from './options.ts'
-import { ParentContainer } from './parent-container.ts'
 import type { Providable } from './providable.ts'
 import type { Provider } from './provider.ts'
 import { register } from './register.ts'
@@ -42,8 +41,7 @@ export class Container {
     token: Token<T>,
     providable?: Providable<T, D>,
   ): this {
-    register({
-      providers: this.#context.providers,
+    register(this.#context, {
       token,
       providable,
     })
@@ -75,7 +73,7 @@ export class Container {
 
   createChild(): Container {
     return new Container({
-      parent: new ParentContainer(this.#context),
+      parent: this.#context,
     })
   }
 }

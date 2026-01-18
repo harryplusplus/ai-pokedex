@@ -1,6 +1,6 @@
 import type { ClassDefinition } from './class-definition.ts'
 import type { Injectable } from './injectable.ts'
-import type { TypedToken } from './token.ts'
+import type { TypedToken } from './typed-token.ts'
 
 export type DeclarationItem<T extends Injectable> =
   | ClassDefinition<T, Declaration>

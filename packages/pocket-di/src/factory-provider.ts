@@ -1,8 +1,6 @@
 import type { Declaration } from './declaration.ts'
 import type { Dependencies } from './dependencies.ts'
 import type { Injectable } from './injectable.ts'
-import type { Providable } from './providable.ts'
-import type { Provider } from './provider.ts'
 import type { Singleton, Transient } from './scope.ts'
 import type { MaybePromise } from './utils.ts'
 
@@ -34,10 +32,4 @@ export interface FactoryProviderFn<T extends Injectable> {
   <D extends Declaration>(
     provider: FactoryProvider<T, D>,
   ): FactoryProvider<T, D>
-}
-
-export function isFactoryProvider(
-  providable: Providable<Injectable, Declaration>,
-): providable is FactoryProvider<Injectable, Declaration> {
-  return 'useFactory' in providable
 }
