@@ -13,7 +13,7 @@ import type { Any } from './utils.ts'
 export function register(input: {
   providers: Providers
   token: Token<Injectable>
-  providable?: Providable<Any, Any>
+  providable?: Providable<Injectable, Declaration>
 }): void {
   const { providers, token, providable } = input
 
@@ -29,7 +29,7 @@ export function register(input: {
 function toProvider(
   token: Token<Injectable>,
   providable?: Providable<Injectable, Declaration>,
-): Provider<Any, Declaration> {
+): Provider<Injectable, Declaration> {
   if (providable) {
     if (isProvider(providable)) {
       return providable

@@ -1,11 +1,23 @@
 import type { Any } from './utils.ts'
 
-export type RecordType = Record<string, Any>
+export type AnyRecord = Record<string, Any>
 
 export class RecordBuilder {
-  #record: RecordType | null = Object.create(null) as RecordType
+  #value: AnyRecord | null = Object.create(null) as AnyRecord
 
-  set(name: string, value: Any) {
+  get #record(): AnyRecord {
+    if (this.#value === null) {
+      throw new Error('Cannot access record after build.')
+    }
+
+    return this.#value
+  }
+
+  set #record(value: AnyRecord | null) {
+    this.#value = value
+  }
+
+  set(name: string, value: Any): void {
     if (
       typeof name !== 'string' ||
       !name ||
@@ -13,25 +25,17 @@ export class RecordBuilder {
       name === 'constructor' ||
       name === 'prototype'
     ) {
-      throw new Error(`Invalid record property name: ${name}`)
+      throw new Error(`Invalid property name "${name}".`)
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    this.#getRecord()[name] = value
+    this.#record[name] = value
   }
 
-  build(): RecordType {
-    const record = this.#getRecord()
+  build(): AnyRecord {
+    const record = this.#record
     this.#record = null
 
     return record
-  }
-
-  #getRecord(): RecordType {
-    if (this.#record === null) {
-      throw new Error('Record is null.')
-    }
-
-    return this.#record
   }
 }
