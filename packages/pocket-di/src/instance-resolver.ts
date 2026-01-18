@@ -104,9 +104,20 @@ export class InstanceResolver {
   }): Promise<Dependencies<Declaration>> {
     const { checker, declaration } = input
 
-    const dependencies: Dependencies<Declaration> = {}
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const dependencies: Dependencies<Declaration> = Object.create(null)
 
     for (const [name, item] of Object.entries(declaration)) {
+      if (
+        typeof name !== 'string' ||
+        !name ||
+        name === '__proto__' ||
+        name === 'constructor' ||
+        name === 'prototype'
+      ) {
+        throw new Error(`Invalid dependency name: ${name}`)
+      }
+
       checker.push(item)
 
       const dependency = await this.#resolveRecursive({
