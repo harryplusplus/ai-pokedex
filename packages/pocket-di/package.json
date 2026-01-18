@@ -14,7 +14,7 @@
     "check-types": "tsc --noEmit",
     "clean": "rimraf dist tsconfig.tsbuildinfo .turbo",
     "dev": "tsc --noEmit --watch",
-    "test": "vitest"
+    "test": "vitest --run"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "4.0.17",
