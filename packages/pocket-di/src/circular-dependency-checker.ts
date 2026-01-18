@@ -6,11 +6,11 @@ export class CircularDependencyChecker {
 
   push(token: Token<Injectable>): void {
     if (this.#chain.has(token)) {
-      throw new Error(
-        `Circular dependency detected. "${[...this.#chain.values(), token]
-          .map((x) => tokenToString(x))
-          .join(' -> ')}"`,
-      )
+      const chain = [...this.#chain.values(), token]
+        .map((x) => tokenToString(x))
+        .join(' -> ')
+
+      throw new Error(`Circular dependency detected: ${chain}`)
     }
 
     this.#chain.add(token)
