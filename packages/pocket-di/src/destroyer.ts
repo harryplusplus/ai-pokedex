@@ -16,7 +16,7 @@ export class Destroyer {
   }
 
   async destroy(): Promise<void> {
-    const copies = this.#singletons.entries().toArray()
+    const copies = [...this.#singletons.entries()]
 
     this.#singletons.clear()
 

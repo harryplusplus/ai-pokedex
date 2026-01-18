@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     // Languages
-    "target": "esnext",
+    "target": "es2022",
     "module": "nodenext",
     "moduleResolution": "nodenext",
     "erasableSyntaxOnly": true,
@@ -11,6 +11,7 @@
     // Types
     "skipLibCheck": true,
     "strict": true,
+    "types": [],
 
     // Builds
     "outDir": "dist",
