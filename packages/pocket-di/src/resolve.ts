@@ -1,54 +1,204 @@
 import { CircularDependencyChecker } from './circular-dependency-checker.ts'
-import { isClassProvider } from './class-provider.ts'
+import { type ClassProvider, isClassProvider } from './class-provider.ts'
 import {
   type ContainerContext,
   getProvider,
   getSingleton,
+  type Singletons,
 } from './container-context.ts'
 import type { Declaration } from './declaration.ts'
 import type { Dependencies } from './dependencies.ts'
-import { isFactoryProvider } from './factory-provider.ts'
+import { type FactoryProvider, isFactoryProvider } from './factory-provider.ts'
 import type { Injectable } from './injectable.ts'
-import { RecordBuilder } from './record.ts'
+import type { PostConstructable } from './lifecycle-callbacks.ts'
+import { RecordBuilder } from './record-builder.ts'
+import type { Scope } from './scope.ts'
 import { inject, postConstruct } from './symbols.ts'
 import { type Token, tokenToString } from './token.ts'
-import type { Any, MaybePromise } from './utils.ts'
+import type { MaybePromise } from './utils.ts'
 import { isValueProvider } from './value-provider.ts'
 
 export async function resolve<T extends Injectable>(input: {
   context: ContainerContext
   token: Token<T>
 }): Promise<T> {
-  const { token } = input
+  const { context, token } = input
 
   const checker = new CircularDependencyChecker()
   checker.push(token)
 
-  return await resolveRecursive({
-    ...input,
+  const instance = await resolveRecursive({
+    context,
+    token,
     checker,
+    resolveDependencies: resolveDependenciesAsync,
   })
+
+  return instance as T
 }
 
 export function resolveSync<T extends Injectable>(input: {
   context: ContainerContext
   token: Token<T>
 }): T {
+  const { context, token } = input
+
   const checker = new CircularDependencyChecker()
   checker.push(token)
 
-  return resolveRecursive({
+  const instance = resolveRecursive({
+    context,
     token,
     checker,
+    resolveDependencies: resolveDependenciesSync,
   })
+
+  if (instance instanceof Promise) {
+    throw new Error(
+      `Cannot resolve "${tokenToString(token)}" synchronously: returns Promise.`,
+    )
+  }
+
+  return instance as T
+}
+
+type DependentProvider =
+  | ClassProvider<Injectable, Declaration>
+  | FactoryProvider<Injectable, Declaration>
+
+type DependencyMaybePromises = Record<string, MaybePromise<Injectable>>
+
+function getDependencyMaybePromises(input: {
+  context: ContainerContext
+  checker: CircularDependencyChecker
+  provider: DependentProvider
+  resolveDependencies: ResolveDependencies
+}): DependencyMaybePromises {
+  const { context, checker, provider, resolveDependencies } = input
+
+  const declaration = getDeclaration(provider)
+  const builder = new RecordBuilder()
+
+  for (const [name, item] of Object.entries(declaration)) {
+    checker.push(item)
+
+    const dependency = resolveRecursive({
+      context,
+      token: item,
+      checker,
+      resolveDependencies,
+    })
+
+    builder.set(name, dependency)
+  }
+
+  return builder.build()
+}
+
+interface ResolveDependenciesInput {
+  dependencyMaybePromises: DependencyMaybePromises
+  provider: DependentProvider
+  singletons: Singletons
+  token: Token<Injectable>
+}
+
+interface ResolveDependencies {
+  (input: ResolveDependenciesInput): MaybePromise<Injectable>
+}
+
+async function resolveDependenciesAsync(
+  input: ResolveDependenciesInput,
+): Promise<Injectable> {
+  const { dependencyMaybePromises, provider, singletons, token } = input
+
+  const dependencies = await getDependenciesAsync(dependencyMaybePromises)
+
+  const instance = await createInstance({
+    token,
+    provider,
+    dependencies,
+    sync: false,
+  })
+
+  registerSingletonByScope({
+    singletons,
+    token,
+    instance,
+    scope: provider.scope,
+  })
+
+  return instance
+}
+
+function resolveDependenciesSync(input: ResolveDependenciesInput): Injectable {
+  const { dependencyMaybePromises, provider, singletons, token } = input
+
+  const dependencies = getDependenciesSync({
+    token,
+    maybePromises: dependencyMaybePromises,
+  })
+
+  const instance = createInstance({
+    token,
+    provider,
+    dependencies,
+    sync: true,
+  })
+
+  if (instance instanceof Promise) {
+    throw new Error(
+      `Cannot resolve "${tokenToString(token)}" synchronously: returns Promise.`,
+    )
+  }
+
+  registerSingletonByScope({
+    singletons,
+    token,
+    instance,
+    scope: provider.scope,
+  })
+
+  return instance
+}
+
+async function getDependenciesAsync(
+  maybePromises: DependencyMaybePromises,
+): Promise<Dependencies<Declaration>> {
+  const promises = Object.entries(maybePromises).map(async ([key, value]) => {
+    return [key, await value] as const
+  })
+
+  const entries = await Promise.all(promises)
+
+  return Object.fromEntries(entries)
+}
+
+function getDependenciesSync(input: {
+  token: Token<Injectable>
+  maybePromises: DependencyMaybePromises
+}): Dependencies<Declaration> {
+  const { token, maybePromises } = input
+
+  const entries = Object.entries(maybePromises).map(([name, maybePromise]) => {
+    if (maybePromise instanceof Promise) {
+      throw new Error(
+        `Cannot resolve "${tokenToString(token)}" synchronously: dependency "${name}" returns Promise.`,
+      )
+    }
+
+    return [name, maybePromise] as const
+  })
+
+  return Object.fromEntries(entries)
 }
 
 function resolveRecursive(input: {
   context: ContainerContext
-  token: Token<Any>
+  token: Token<Injectable>
   checker: CircularDependencyChecker
+  resolveDependencies: ResolveDependencies
 }): MaybePromise<Injectable> {
-  const { context, token, checker } = input
+  const { context, token, checker, resolveDependencies } = input
 
   const singleton = getSingleton(context, token)
   if (singleton) {
@@ -64,172 +214,97 @@ function resolveRecursive(input: {
     return provider.useValue
   }
 
-  if (isClassProvider(provider)) {
-    const { useClass, scope } = provider
-
-    const dependencies: Dependencies<Declaration> =
-      await this.#resolveDependencies({
-        checker,
-        declaration: useClass[inject] ?? {},
-      })
-
-    const instance = new useClass(dependencies)
-    if (postConstruct in instance) {
-      await(instance as PostConstructable)[postConstruct]()
-    }
-
-    this.#resolveLifecycle({
-      token,
-      instance,
-      lifecycle,
+  if (isClassProvider(provider) || isFactoryProvider(provider)) {
+    const dependencyMaybePromises = getDependencyMaybePromises({
+      context,
+      checker,
+      provider,
+      resolveDependencies,
     })
 
-    return instance
-  }
-
-  if (isFactoryProvider(provider)) {
-    const { inject, useFactory, lifecycle } = provider
-
-    const dependencies: Dependencies<Declaration> =
-      await this.#resolveDependencies({
-        checker,
-        declaration: inject ?? {},
-      })
-
-    const instance = await useFactory(dependencies)
-
-    this.#resolveLifecycle({
+    return resolveDependencies({
+      dependencyMaybePromises,
+      provider,
+      singletons: context.singletons,
       token,
-      instance,
-      lifecycle,
     })
-
-    return instance
   }
 
   const _: never = provider
   throw new Error('Unexpected provider.')
 }
 
-export class InstanceResolver {
-  readonly #context: ContainerContext
-
-  constructor(context: ContainerContext) {
-    this.#context = context
+function getDeclaration(provider: DependentProvider): Declaration {
+  if (isClassProvider(provider)) {
+    return provider.useClass[inject] ?? {}
   }
 
-  async resolve<T extends Injectable>(token: Token<T>): Promise<T> {
-    const checker = new CircularDependencyChecker()
-    checker.push(token)
-
-    const instance = await this.#resolveRecursive({
-      token,
-      checker,
-    })
-
-    return instance as T
+  if (isFactoryProvider(provider)) {
+    return provider.inject ?? {}
   }
 
-  async #resolveRecursive(input: {
-    token: Token<Any>
-    checker: CircularDependencyChecker
-  }): Promise<Injectable> {
-    const { token, checker } = input
+  const _: never = provider
+  throw new Error('Unexpected provider.')
+}
 
-    const singleton = this.#context.getSingleton(token)
-    if (singleton) {
-      return singleton
+function createInstance(input: {
+  token: Token<Injectable>
+  provider: DependentProvider
+  dependencies: Dependencies<Declaration>
+  sync: boolean
+}): MaybePromise<Injectable> {
+  const { token, provider, dependencies, sync } = input
+
+  if (isClassProvider(provider)) {
+    const { useClass } = provider
+
+    const instance = new useClass(dependencies)
+
+    let postConstructResult: MaybePromise<void> | null = null
+    if (postConstruct in instance) {
+      postConstructResult = (instance as PostConstructable)[postConstruct]()
     }
 
-    const provider = this.#context.getProvider(token)
-    if (!provider) {
-      throw new Error(`"${tokenToString(token)}" is not registered.`)
-    }
-
-    if (isValueProvider(provider)) {
-      return provider.useValue
-    }
-
-    if (isClassProvider(provider)) {
-      const { useClass, lifecycle } = provider
-
-      const dependencies: Dependencies<Declaration> =
-        await this.#resolveDependencies({
-          checker,
-          declaration: useClass[inject] ?? {},
-        })
-
-      const instance = new useClass(dependencies)
-      if (postConstruct in instance) {
-        await (instance as PostConstructable)[postConstruct]()
+    if (postConstructResult instanceof Promise) {
+      if (sync) {
+        throw new Error(
+          `Cannot resolve "${tokenToString(token)}" (${useClass.name}) synchronously: postConstruct returns Promise.`,
+        )
       }
 
-      this.#resolveLifecycle({
-        token,
-        instance,
-        lifecycle,
-      })
-
-      return instance
+      return postConstructResult.then(() => instance)
     }
 
-    if (isFactoryProvider(provider)) {
-      const { inject, useFactory, lifecycle } = provider
-
-      const dependencies: Dependencies<Declaration> =
-        await this.#resolveDependencies({
-          checker,
-          declaration: inject ?? {},
-        })
-
-      const instance = await useFactory(dependencies)
-
-      this.#resolveLifecycle({
-        token,
-        instance,
-        lifecycle,
-      })
-
-      return instance
-    }
-
-    const _: never = provider
-    throw new Error('Unexpected provider.')
+    return instance
   }
 
-  async #resolveDependencies(input: {
-    checker: CircularDependencyChecker
-    declaration: Declaration
-  }): Promise<Dependencies<Declaration>> {
-    const { checker, declaration } = input
+  if (isFactoryProvider(provider)) {
+    const factoryResult = provider.useFactory(dependencies)
 
-    const builder = new RecordBuilder()
-
-    for (const [name, item] of Object.entries(declaration)) {
-      checker.push(item)
-
-      const dependency = await this.#resolveRecursive({
-        token: item,
-        checker,
-      })
-
-      builder.set(name, dependency)
+    if (factoryResult instanceof Promise) {
+      if (sync) {
+        throw new Error(
+          `Cannot resolve "${tokenToString(token)}" synchronously: useFactory returns Promise.`,
+        )
+      }
     }
 
-    const dependencies: Dependencies<Declaration> = builder.build()
-
-    return dependencies
+    return factoryResult
   }
 
-  #resolveLifecycle(input: {
-    token: Token<Any>
-    instance: Injectable
-    lifecycle?: Lifecycle
-  }) {
-    const { token, instance, lifecycle = 'singleton' } = input
+  const _: never = provider
+  throw new Error('Unexpected provider.')
+}
 
-    if (lifecycle === 'singleton') {
-      this.#context.singletons.set(token, instance)
-    }
+function registerSingletonByScope(input: {
+  singletons: Singletons
+  token: Token<Injectable>
+  instance: Injectable
+  scope?: Scope
+}) {
+  const { singletons, token, instance, scope = 'singleton' } = input
+
+  if (scope === 'singleton') {
+    singletons.set(token, instance)
   }
 }

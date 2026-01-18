@@ -9,6 +9,7 @@ import { ParentContainer } from './parent-container.ts'
 import type { Providable } from './providable.ts'
 import type { Provider } from './provider.ts'
 import { register } from './register.ts'
+import { resolve, resolveSync } from './resolve.ts'
 import type { Token } from './token.ts'
 
 export class Container {
@@ -58,12 +59,18 @@ export class Container {
 
   async resolve<T extends Injectable>(token: Token<T>): Promise<T> {
     return await this.#lock.acquire(async () => {
-      return await resolveInternal({})
+      return await resolve({
+        context: this.#context,
+        token,
+      })
     })
   }
 
   resolveSync<T extends Injectable>(token: Token<T>): T {
-    return resolveSyncInternal({})
+    return resolveSync({
+      context: this.#context,
+      token,
+    })
   }
 
   createChild(): Container {
