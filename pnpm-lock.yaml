@@ -317,7 +317,11 @@ importers:
         specifier: 4.3.5
         version: 4.3.5
 
-  packages/pocket-di: {}
+  packages/pocket-di:
+    devDependencies:
+      vitest:
+        specifier: 4.0.16
+        version: 4.0.16(@opentelemetry/api@1.9.0)(@types/node@25.0.3)(jiti@2.6.1)(lightningcss@1.30.2)(msw@2.12.7(@types/node@25.0.3)(typescript@5.9.3))(terser@5.44.1)
 
   packages/prettier-plugin-sql-adapter:
     dependencies:
@@ -7738,7 +7742,7 @@ snapshots:
       eventsource: 3.0.7
       eventsource-parser: 3.0.6
       express: 5.2.1(supports-color@10.2.2)
-      express-rate-limit: 7.5.1(express@5.2.1(supports-color@10.2.2))
+      express-rate-limit: 7.5.1(express@5.2.1)
       jose: 6.1.3
       json-schema-typed: 8.0.2
       pkce-challenge: 5.0.1
@@ -10270,7 +10274,7 @@ snapshots:
 
   expect-type@1.3.0: {}
 
-  express-rate-limit@7.5.1(express@5.2.1(supports-color@10.2.2)):
+  express-rate-limit@7.5.1(express@5.2.1):
     dependencies:
       express: 5.2.1(supports-color@10.2.2)
 

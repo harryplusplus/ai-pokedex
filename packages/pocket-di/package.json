@@ -14,5 +14,8 @@
     "check-types": "tsc --noEmit",
     "clean": "rimraf dist tsconfig.tsbuildinfo .turbo",
     "dev": "tsc --noEmit --watch"
+  },
+  "devDependencies": {
+    "vitest": "4.0.16"
   }
 }
