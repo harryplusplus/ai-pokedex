@@ -1,22 +1,43 @@
-import { type ClassDefinition, isClassDefinition } from './class-definition.ts'
-import type { ClassProvider } from './class-provider.ts'
+import { type ClassProvider, isClassProvider } from './class-provider.ts'
 import type { Declaration } from './declaration.ts'
-import type { FactoryProvider } from './factory-provider.ts'
+import { type FactoryProvider, isFactoryProvider } from './factory-provider.ts'
 import type { Injectable } from './injectable.ts'
-import type { Any } from './utils.ts'
-import type { ValueProvider } from './value-provider.ts'
+import type { Providable } from './providable.ts'
+import { isValueProvider, type ValueProvider } from './value-provider.ts'
 
 export type Provider<T extends Injectable, D extends Declaration> =
   | ValueProvider<T>
   | ClassProvider<T, D>
   | FactoryProvider<T, D>
 
-export function isProvider(
-  providerLike: ProviderLike<Any, Declaration>,
-): providerLike is Provider<Any, Declaration> {
-  return !isClassDefinition(providerLike)
+export interface ProviderFn<T extends Injectable> {
+  <D extends Declaration>(provider: Provider<T, D>): Provider<T, D>
 }
 
-export type ProviderLike<T extends Injectable, D extends Declaration> =
-  | Provider<T, D>
-  | ClassDefinition<T, D>
+function defineProvider<T extends Injectable, D extends Declaration>(
+  provider: Provider<T, D>,
+): Provider<T, D>
+
+function defineProvider<T extends Injectable>(): ProviderFn<T>
+
+function defineProvider<T extends Injectable, D extends Declaration>(
+  provider?: Provider<T, D>,
+): Provider<T, D> | ProviderFn<T> {
+  if (provider) {
+    return provider
+  }
+
+  return (provider) => provider
+}
+
+export { defineProvider }
+
+export function isProvider(
+  providable: Providable<Injectable, Declaration>,
+): providable is Provider<Injectable, Declaration> {
+  return (
+    isValueProvider(providable) ||
+    isClassProvider(providable) ||
+    isFactoryProvider(providable)
+  )
+}

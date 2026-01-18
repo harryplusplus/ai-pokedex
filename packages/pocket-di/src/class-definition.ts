@@ -1,10 +1,9 @@
 import type { Declaration } from './declaration.ts'
 import type { Injectable } from './injectable.ts'
-import type { ProviderLike } from './provider.ts'
-import type { inject, postConstruct, preDestroy } from './symbols.ts'
-import type { Any, Constructor, MaybePromise } from './utils.ts'
-
-//#region ClassDefinition
+import type { Providable } from './providable.ts'
+import type { inject } from './symbols.ts'
+import type { Token } from './token.ts'
+import type { Constructor } from './utils.ts'
 
 export interface ClassDefinition<
   T extends Injectable,
@@ -13,22 +12,14 @@ export interface ClassDefinition<
   [inject]?: D
 }
 
-export function isClassDefinition(
-  providerLike: ProviderLike<Any, Declaration>,
-): providerLike is ClassDefinition<Any, Declaration> {
-  return typeof providerLike === 'function'
+export function isClassDefinitionToken(
+  token: Token<Injectable>,
+): token is ClassDefinition<Injectable, Declaration> {
+  return typeof token === 'function'
 }
 
-//#endregion ClassDefinition
-
-//#region Lifecycle callbacks
-
-export interface PostConstructable {
-  [postConstruct](): MaybePromise<void>
+export function isClassDefinitionProvidable(
+  providable: Providable<Injectable, Declaration>,
+): providable is ClassDefinition<Injectable, Declaration> {
+  return typeof providable === 'function'
 }
-
-export interface PreDestroyable {
-  [preDestroy](): MaybePromise<void>
-}
-
-//#endregion Lifecycle callbacks

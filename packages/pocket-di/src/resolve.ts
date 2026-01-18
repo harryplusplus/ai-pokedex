@@ -1,17 +1,115 @@
 import { CircularDependencyChecker } from './circular-dependency-checker.ts'
-import type { PostConstructable } from './class-definition.ts'
 import { isClassProvider } from './class-provider.ts'
-import type { ContainerContext } from './container-context.ts'
+import {
+  type ContainerContext,
+  getProvider,
+  getSingleton,
+} from './container-context.ts'
 import type { Declaration } from './declaration.ts'
 import type { Dependencies } from './dependencies.ts'
 import { isFactoryProvider } from './factory-provider.ts'
 import type { Injectable } from './injectable.ts'
-import type { Lifecycle } from './lifecycle.ts'
 import { RecordBuilder } from './record.ts'
 import { inject, postConstruct } from './symbols.ts'
 import { type Token, tokenToString } from './token.ts'
-import type { Any } from './utils.ts'
+import type { Any, MaybePromise } from './utils.ts'
 import { isValueProvider } from './value-provider.ts'
+
+export async function resolve<T extends Injectable>(input: {
+  context: ContainerContext
+  token: Token<T>
+}): Promise<T> {
+  const { token } = input
+
+  const checker = new CircularDependencyChecker()
+  checker.push(token)
+
+  return await resolveRecursive({
+    ...input,
+    checker,
+  })
+}
+
+export function resolveSync<T extends Injectable>(input: {
+  context: ContainerContext
+  token: Token<T>
+}): T {
+  const checker = new CircularDependencyChecker()
+  checker.push(token)
+
+  return resolveRecursive({
+    token,
+    checker,
+  })
+}
+
+function resolveRecursive(input: {
+  context: ContainerContext
+  token: Token<Any>
+  checker: CircularDependencyChecker
+}): MaybePromise<Injectable> {
+  const { context, token, checker } = input
+
+  const singleton = getSingleton(context, token)
+  if (singleton) {
+    return singleton
+  }
+
+  const provider = getProvider(context, token)
+  if (!provider) {
+    throw new Error(`"${tokenToString(token)}" not registered.`)
+  }
+
+  if (isValueProvider(provider)) {
+    return provider.useValue
+  }
+
+  if (isClassProvider(provider)) {
+    const { useClass, scope } = provider
+
+    const dependencies: Dependencies<Declaration> =
+      await this.#resolveDependencies({
+        checker,
+        declaration: useClass[inject] ?? {},
+      })
+
+    const instance = new useClass(dependencies)
+    if (postConstruct in instance) {
+      await(instance as PostConstructable)[postConstruct]()
+    }
+
+    this.#resolveLifecycle({
+      token,
+      instance,
+      lifecycle,
+    })
+
+    return instance
+  }
+
+  if (isFactoryProvider(provider)) {
+    const { inject, useFactory, lifecycle } = provider
+
+    const dependencies: Dependencies<Declaration> =
+      await this.#resolveDependencies({
+        checker,
+        declaration: inject ?? {},
+      })
+
+    const instance = await useFactory(dependencies)
+
+    this.#resolveLifecycle({
+      token,
+      instance,
+      lifecycle,
+    })
+
+    return instance
+  }
+
+  const _: never = provider
+  throw new Error('Unexpected provider.')
+}
 
 export class InstanceResolver {
   readonly #context: ContainerContext

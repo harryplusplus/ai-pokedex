@@ -1,29 +1,9 @@
+import type { ClassDefinition } from './class-definition.ts'
 import type { Injectable } from './injectable.ts'
-import type { ClassToken, TypedToken } from './token.ts'
-import type { Any } from './utils.ts'
-
-//#region DeclarationItem
-
-export type ClassDeclarationItem<T extends Injectable> = ClassToken<T>
-
-export type TokenDeclarationItem<T extends Injectable> = TypedToken<T>
+import type { TypedToken } from './token.ts'
 
 export type DeclarationItem<T extends Injectable> =
-  | ClassDeclarationItem<T>
-  | TokenDeclarationItem<T>
+  | ClassDefinition<T, Declaration>
+  | TypedToken<T>
 
-export function isClassDeclarationItem(
-  item: DeclarationItem<Any>,
-): item is ClassDeclarationItem<Any> {
-  return typeof item === 'function'
-}
-
-export function isTokenDeclarationItem(
-  item: DeclarationItem<Any>,
-): item is TokenDeclarationItem<Any> {
-  return typeof item !== 'function'
-}
-
-//#endregion DeclarationItem
-
-export type Declaration = Record<string, DeclarationItem<Any>>
+export type Declaration = Record<string, DeclarationItem<Injectable>>

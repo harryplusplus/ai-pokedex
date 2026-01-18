@@ -1,8 +1,10 @@
 import type { Declaration } from './declaration.ts'
 import type { Dependencies } from './dependencies.ts'
 import type { Injectable } from './injectable.ts'
-import type { ProviderLike } from './provider.ts'
-import type { Any, MaybePromise } from './utils.ts'
+import type { Providable } from './providable.ts'
+import type { Provider } from './provider.ts'
+import type { Singleton, Transient } from './scope.ts'
+import type { MaybePromise } from './utils.ts'
 
 export interface SingletonFactoryProvider<
   T extends Injectable,
@@ -11,7 +13,7 @@ export interface SingletonFactoryProvider<
   inject?: D
   useFactory: (dependencies: Dependencies<D>) => MaybePromise<T>
   preDestroy?: (instance: T) => MaybePromise<void>
-  lifecycle?: 'singleton'
+  scope?: Singleton
 }
 
 export interface TransientFactoryProvider<
@@ -21,7 +23,7 @@ export interface TransientFactoryProvider<
   inject?: D
   useFactory: (dependencies: Dependencies<D>) => MaybePromise<T>
   preDestroy?: never
-  lifecycle: 'transient'
+  scope: Transient
 }
 
 export type FactoryProvider<T extends Injectable, D extends Declaration> =
@@ -34,26 +36,8 @@ export interface FactoryProviderFn<T extends Injectable> {
   ): FactoryProvider<T, D>
 }
 
-function defineFactory<T extends Injectable, D extends Declaration>(
-  provider: FactoryProvider<T, D>,
-): FactoryProvider<T, D>
-
-function defineFactory<T extends Injectable>(): FactoryProviderFn<T>
-
-function defineFactory<T extends Injectable, D extends Declaration>(
-  provider?: FactoryProvider<T, D>,
-): FactoryProvider<T, D> | FactoryProviderFn<T> {
-  if (provider) {
-    return provider
-  }
-
-  return (provider) => defineFactory(provider)
-}
-
-export { defineFactory }
-
 export function isFactoryProvider(
-  providerLike: ProviderLike<Any, Declaration>,
-): providerLike is FactoryProvider<Injectable, Declaration> {
-  return 'useFactory' in providerLike
+  providable: Providable<Injectable, Declaration>,
+): providable is FactoryProvider<Injectable, Declaration> {
+  return 'useFactory' in providable
 }

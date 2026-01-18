@@ -7,11 +7,11 @@
     "erasableSyntaxOnly": true,
     "rewriteRelativeImportExtensions": true,
     "verbatimModuleSyntax": true,
+    "types": [],
 
     // Types
     "skipLibCheck": true,
     "strict": true,
-    "types": [],
 
     // Builds
     "outDir": "dist",
