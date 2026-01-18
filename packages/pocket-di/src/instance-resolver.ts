@@ -7,6 +7,7 @@ import type { Dependencies } from './dependencies.ts'
 import { isFactoryProvider } from './factory-provider.ts'
 import type { Injectable } from './injectable.ts'
 import type { Lifecycle } from './lifecycle.ts'
+import { RecordBuilder } from './record.ts'
 import { inject, postConstruct } from './symbols.ts'
 import { type Token, tokenToString } from './token.ts'
 import type { Any } from './utils.ts'
@@ -104,20 +105,9 @@ export class InstanceResolver {
   }): Promise<Dependencies<Declaration>> {
     const { checker, declaration } = input
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const dependencies: Dependencies<Declaration> = Object.create(null)
+    const builder = new RecordBuilder()
 
     for (const [name, item] of Object.entries(declaration)) {
-      if (
-        typeof name !== 'string' ||
-        !name ||
-        name === '__proto__' ||
-        name === 'constructor' ||
-        name === 'prototype'
-      ) {
-        throw new Error(`Invalid dependency name: ${name}`)
-      }
-
       checker.push(item)
 
       const dependency = await this.#resolveRecursive({
@@ -125,8 +115,10 @@ export class InstanceResolver {
         checker,
       })
 
-      dependencies[name] = dependency
+      builder.set(name, dependency)
     }
+
+    const dependencies: Dependencies<Declaration> = builder.build()
 
     return dependencies
   }
