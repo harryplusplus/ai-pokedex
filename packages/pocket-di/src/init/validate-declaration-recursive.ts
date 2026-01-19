@@ -3,7 +3,6 @@ import {
   classProviderToDeclaration,
   factoryProviderToDeclaration,
   isClassProvider,
-  isFactoryProvider,
   isValueProvider,
   type Provider,
 } from '../types/provider.ts'
