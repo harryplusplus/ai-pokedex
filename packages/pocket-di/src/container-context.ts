@@ -95,12 +95,6 @@ export class ContainerContext implements Container {
             )
           }
 
-          if (isValueProvider(provider)) {
-            // noop
-
-            continue
-          }
-
           if (isClassProvider(provider)) {
             if (isPreDestroyable(singleton)) {
               try {
@@ -113,10 +107,12 @@ export class ContainerContext implements Container {
             continue
           }
 
-          try {
-            await provider.preDestroy?.(singleton)
-          } catch (_e) {
-            // noop
+          if (isFactoryProvider(provider)) {
+            try {
+              await provider.preDestroy?.(singleton)
+            } catch (_e) {
+              // noop
+            }
           }
         }
       }
