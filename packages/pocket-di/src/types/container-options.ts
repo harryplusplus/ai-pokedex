@@ -1,12 +1,18 @@
 import type { ContainerContext } from '../container-context.ts'
 import type { Providable } from './providable.ts'
 
-export type ContainerOptions = Pick<ContainerContextOptions, 'providers'>
+export interface ContainerOptions {
+  /** Array of providers or injectable constructors to register */
+  providers: Providable[]
+}
 
-export type ChildContainerOptions = Pick<
-  ContainerContextOptions,
-  'providers' | 'override'
->
+export interface ChildContainerOptions {
+  /** Array of providers or injectable constructors to register */
+  providers: Providable[]
+
+  /** Allow overriding providers from parent container */
+  override?: boolean
+}
 
 export interface ContainerContextOptions {
   providers: Providable[]
