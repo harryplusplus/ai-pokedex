@@ -145,12 +145,6 @@ export class ContainerContext implements Container {
       sync: true,
     })
 
-    if (instance instanceof Promise) {
-      throw new Error(
-        `Cannot resolve "${tokenToString(token)}" synchronously: returns Promise.`,
-      )
-    }
-
     return instance as I
   }
 
