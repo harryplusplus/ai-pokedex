@@ -256,6 +256,19 @@ describe('container-context', () => {
         'Internal error: provider for token "TestClass" not found during cleanup.',
       )
     })
+
+    it('should handle class without preDestroy', async () => {
+      class TestClass {}
+
+      const container = createContainer({
+        providers: [TestClass],
+      })
+
+      await container.resolve(TestClass)
+      await container.destroy()
+
+      // Should not throw
+    })
   })
 
   describe('resolve', () => {
