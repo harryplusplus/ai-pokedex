@@ -421,19 +421,7 @@ export class ContainerContext implements Container {
 
     const { token, provider, maybePromiseRecord } = input
 
-    const entries = Object.entries(maybePromiseRecord).map(
-      ([name, maybePromise]) => {
-        if (maybePromise instanceof Promise) {
-          throw new Error(
-            `Cannot resolve "${tokenToString(token)}" synchronously: dependency "${name}" returns Promise.`,
-          )
-        }
-
-        return [name, maybePromise] as const
-      },
-    )
-
-    const dependencies = Object.fromEntries(entries)
+    const dependencies = maybePromiseRecord as Record<string, Injectable>
 
     const instance = this.resolveInstance({
       token,
