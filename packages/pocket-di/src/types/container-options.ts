@@ -1,13 +1,15 @@
 import type { ContainerContext } from '../container-context.ts'
+import type { Providable } from './providable.ts'
 
-export interface ContainerOptionsBase {
-  providers: []
-}
+export type ContainerOptions = Pick<ContainerContextOptions, 'providers'>
 
-export type ContainerOptions = ContainerOptionsBase
+export type ChildContainerOptions = Pick<
+  ContainerContextOptions,
+  'providers' | 'override'
+>
 
-export type ChildContainerOptions = ContainerOptionsBase
-
-export interface ContainerContextOptions extends ContainerOptionsBase {
-  parent: ContainerContext | null
+export interface ContainerContextOptions {
+  providers: Providable[]
+  parent?: ContainerContext | null
+  override?: boolean
 }

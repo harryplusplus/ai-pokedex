@@ -20,3 +20,19 @@ export function isInjectableConstructorProvidable(
 ): providable is InjectableConstructor {
   return typeof providable === 'function'
 }
+
+export function providableToProvider(providable: Providable): Provider {
+  if (isProviderProvidable(providable)) {
+    return providable
+  }
+
+  if (isInjectableConstructorProvidable(providable)) {
+    return {
+      provide: providable,
+      useClass: providable,
+    }
+  }
+
+  const _: never = providable
+  throw new Error('Unexpected providable.')
+}

@@ -9,6 +9,14 @@ export type InjectionToken<I extends Injectable = Injectable> =
   | TypedToken<I>
   | InjectableConstructor<I, InjectDeclaration>
 
+export function tokenToString(token: InjectionToken): string {
+  if (typeof token === 'function') {
+    return token.name
+  }
+
+  return token.toString()
+}
+
 export type TypedToken<I extends Injectable = Injectable> = (
   | string
   | symbol
