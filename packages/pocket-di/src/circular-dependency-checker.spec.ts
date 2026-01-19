@@ -18,7 +18,7 @@ describe('CircularDependencyChecker', () => {
     checker.push(tokenA)
 
     expect(() => checker.push(tokenA)).toThrow(
-      'Circular dependency detected. "A -> A"',
+      'Circular dependency detected: A -> A',
     )
   })
 
@@ -33,7 +33,7 @@ describe('CircularDependencyChecker', () => {
     checker.push(tokenC)
 
     expect(() => checker.push(tokenA)).toThrow(
-      'Circular dependency detected. "A -> B -> C -> A"',
+      'Circular dependency detected: A -> B -> C -> A',
     )
   })
 
@@ -45,7 +45,7 @@ describe('CircularDependencyChecker', () => {
     checker.push(ServiceA)
 
     expect(() => checker.push(ServiceA)).toThrow(
-      'Circular dependency detected. "ServiceA -> ServiceA"',
+      'Circular dependency detected: ServiceA -> ServiceA',
     )
   })
 })
