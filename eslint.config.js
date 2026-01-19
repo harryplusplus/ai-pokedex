@@ -19,6 +19,7 @@ const config = defineConfig([
     '**/.turbo/**',
     '**/.next/**',
     'apps/web/next-env.d.ts',
+    '**/coverage/**',
   ]),
   {
     files: ['apps/*/src/**/*.{ts,tsx}', 'packages/*/src/**/*.{ts,tsx}'],
