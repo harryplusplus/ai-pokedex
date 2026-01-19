@@ -9,6 +9,10 @@ export type Provider<T extends Injectable, D extends Declaration> =
   | ClassProvider<T, D>
   | FactoryProvider<T, D>
 
+export interface ValueProvider<T extends Injectable> {
+  useValue: T
+}
+
 export interface ProviderFn<T extends Injectable> {
   <D extends Declaration>(provider: Provider<T, D>): Provider<T, D>
 }
