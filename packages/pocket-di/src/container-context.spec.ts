@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { createContainer } from './container-context.ts'
+import { ContainerContext, createContainer } from './container-context.ts'
 import { inject, postConstruct, preDestroy } from './types/symbols.ts'
 import { token } from './types/token.ts'
 
@@ -186,6 +186,7 @@ describe('container-context', () => {
     it('should ignore async preDestroy errors', async () => {
       class TestClass {
         async [preDestroy]() {
+          await Promise.resolve()
           throw new Error('async preDestroy error')
         }
       }
@@ -206,6 +207,7 @@ describe('container-context', () => {
             provide: 'test',
             useFactory: () => ({}),
             preDestroy: async () => {
+              await Promise.resolve()
               throw new Error('async preDestroy error')
             },
           },
@@ -227,7 +229,6 @@ describe('container-context', () => {
         ],
       })
 
-      // 동시에 여러 번 destroy 호출
       await Promise.all([
         container.destroy(),
         container.destroy(),
@@ -247,10 +248,8 @@ describe('container-context', () => {
       })
 
       await container.resolve(TestClass)
-
-      // 강제로 provider를 제거하여 에러 상황 생성
-      container['providers'].clear()
-      container['parent'] = null
+      ;(container as ContainerContext).providers.clear()
+      ;(container as ContainerContext).parent = null
 
       await expect(container.destroy()).rejects.toThrow(
         'Internal error: provider for token "TestClass" not found during cleanup.',
@@ -345,7 +344,11 @@ describe('container-context', () => {
       class TestClass {
         static [inject] = [depToken] as const
 
-        constructor(public deps: [{ value: string }]) {}
+        deps: [{ value: string }]
+
+        constructor(deps: [{ value: string }]) {
+          this.deps = deps
+        }
       }
 
       const container = createContainer({
@@ -369,7 +372,11 @@ describe('container-context', () => {
       class TestClass {
         static [inject] = { dep: depToken }
 
-        constructor(public deps: { dep: { value: string } }) {}
+        deps: { dep: { value: string } }
+
+        constructor(deps: { dep: { value: string } }) {
+          this.deps = deps
+        }
       }
 
       const container = createContainer({
@@ -567,7 +574,10 @@ describe('container-context', () => {
         providers: [
           {
             provide: 'test',
-            useFactory: async () => ({ value: 'test' }),
+            useFactory: async () => {
+              await Promise.resolve()
+              return { value: 'test' }
+            },
           },
         ],
       })
@@ -599,14 +609,21 @@ describe('container-context', () => {
       class TestClass {
         static [inject] = [depToken] as const
 
-        constructor(public deps: [{ value: string }]) {}
+        deps: [{ value: string }]
+
+        constructor(deps: [{ value: string }]) {
+          this.deps = deps
+        }
       }
 
       const container = createContainer({
         providers: [
           {
             provide: depToken,
-            useFactory: async () => ({ value: 'dep' }),
+            useFactory: async () => {
+              await Promise.resolve()
+              return { value: 'dep' }
+            },
           },
           TestClass,
         ],
@@ -623,14 +640,21 @@ describe('container-context', () => {
       class TestClass {
         static [inject] = { dep: depToken }
 
-        constructor(public deps: { dep: { value: string } }) {}
+        deps: { dep: { value: string } }
+
+        constructor(deps: { dep: { value: string } }) {
+          this.deps = deps
+        }
       }
 
       const container = createContainer({
         providers: [
           {
             provide: depToken,
-            useFactory: async () => ({ value: 'dep' }),
+            useFactory: async () => {
+              await Promise.resolve()
+              return { value: 'dep' }
+            },
           },
           TestClass,
         ],
@@ -660,7 +684,11 @@ describe('container-context', () => {
       class TestClass {
         static [inject] = [depToken] as const
 
-        constructor(public deps: [{ value: string }]) {}
+        deps: [{ value: string }]
+
+        constructor(deps: [{ value: string }]) {
+          this.deps = deps
+        }
       }
 
       const container = createContainer({
@@ -718,7 +746,7 @@ describe('container-context', () => {
         ],
       })
 
-      expect(container.hasProvider('test')).toBe(true)
+      expect((container as ContainerContext).hasProvider('test')).toBe(true)
     })
 
     it('should return false when provider does not exist', () => {
@@ -726,7 +754,7 @@ describe('container-context', () => {
         providers: [],
       })
 
-      expect(container.hasProvider('test')).toBe(false)
+      expect((container as ContainerContext).hasProvider('test')).toBe(false)
     })
 
     it('should return true when provider exists in parent', () => {
@@ -743,7 +771,7 @@ describe('container-context', () => {
         providers: [],
       })
 
-      expect(child.hasProvider('test')).toBe(true)
+      expect((child as ContainerContext).hasProvider('test')).toBe(true)
     })
 
     it('should throw when container is destroyed', async () => {
@@ -753,7 +781,7 @@ describe('container-context', () => {
 
       await container.destroy()
 
-      expect(() => container.hasProvider('test')).toThrow(
+      expect(() => (container as ContainerContext).hasProvider('test')).toThrow(
         'Container is destroyed.',
       )
     })
