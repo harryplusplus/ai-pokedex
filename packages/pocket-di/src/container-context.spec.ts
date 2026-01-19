@@ -216,6 +216,46 @@ describe('container-context', () => {
 
       await expect(container.destroy()).resolves.not.toThrow()
     })
+
+    it('should handle concurrent destroy calls', async () => {
+      const container = createContainer({
+        providers: [
+          {
+            provide: 'test',
+            useValue: 'value',
+          },
+        ],
+      })
+
+      // 동시에 여러 번 destroy 호출
+      await Promise.all([
+        container.destroy(),
+        container.destroy(),
+        container.destroy(),
+      ])
+
+      await expect(container.resolve('test')).rejects.toThrow(
+        'Container is destroyed.',
+      )
+    })
+
+    it('should throw when singleton provider not found during cleanup', async () => {
+      class TestClass {}
+
+      const container = createContainer({
+        providers: [TestClass],
+      })
+
+      await container.resolve(TestClass)
+
+      // 강제로 provider를 제거하여 에러 상황 생성
+      container['providers'].clear()
+      container['parent'] = null
+
+      await expect(container.destroy()).rejects.toThrow(
+        'Internal error: provider for token "TestClass" not found during cleanup.',
+      )
+    })
   })
 
   describe('resolve', () => {
