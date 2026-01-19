@@ -35,18 +35,11 @@ export function validateDeclarationRecursive(input: {
     return
   }
 
-  if (isFactoryProvider(provider)) {
-    validateDeclaration({
-      token: provider.provide,
-      declaration: factoryProviderToDeclaration(provider),
-      findProvider,
-      className: null,
-      checker,
-    })
-
-    return
-  }
-
-  const _: never = provider
-  throw new Error('Unexpected provider.')
+  validateDeclaration({
+    token: provider.provide,
+    declaration: factoryProviderToDeclaration(provider),
+    findProvider,
+    className: null,
+    checker,
+  })
 }
