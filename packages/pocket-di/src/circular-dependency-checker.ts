@@ -1,10 +1,9 @@
-import type { Injectable } from './injectable.ts'
-import { type Token, tokenToString } from './token.ts'
+import { type InjectionToken, tokenToString } from './types/token.ts'
 
 export class CircularDependencyChecker {
-  #chain = new Set<Token<Injectable>>()
+  #chain = new Set<InjectionToken>()
 
-  push(token: Token<Injectable>): void {
+  push(token: InjectionToken): void {
     if (this.#chain.has(token)) {
       const chain = [...this.#chain.values(), token]
         .map((x) => tokenToString(x))
