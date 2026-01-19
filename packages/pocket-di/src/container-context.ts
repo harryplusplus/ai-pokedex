@@ -1,3 +1,4 @@
+import { AsyncLock } from './async-lock.ts'
 import { parse } from './init/parse.ts'
 import type { Container } from './types/container.ts'
 import type {
@@ -8,7 +9,6 @@ import type {
 import type { Injectable } from './types/injectable.ts'
 import { type Provider } from './types/provider.ts'
 import { type InjectionToken } from './types/token.ts'
-import { AsyncLock } from './utils/async-lock.ts'
 
 export type Providers = Map<InjectionToken, Provider>
 
@@ -66,8 +66,17 @@ export class ContainerContext implements Container {
     throw new Error('Method not implemented.')
   }
 
-  createChild(options?: ChildContainerOptions): Container {
-    throw new Error('Method not implemented.')
+  createChild(options: ChildContainerOptions): Container {
+    this.ensureNotDestroyed()
+
+    const child = new ContainerContext({
+      ...options,
+      parent: this,
+    })
+
+    this.children.push(child)
+
+    return child
   }
 
   ensureNotDestroyed(): void {
