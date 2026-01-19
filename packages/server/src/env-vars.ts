@@ -18,6 +18,7 @@ export type EnvVars = z.infer<typeof EnvVars>
 export const envVarsToken = token<EnvVars>('envVars')
 
 export const envVarsProvider = defineProvider({
+  provide: envVarsToken,
   useFactory: () => {
     return EnvVars.parse(process.env)
   },

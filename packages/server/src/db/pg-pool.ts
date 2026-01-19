@@ -7,6 +7,7 @@ import { resetDateTypeParsers } from './pg-utils.ts'
 export const pgPoolToken = token<pg.Pool>('pgPool')
 
 export const pgPoolProvider = defineProvider({
+  provide: pgPoolToken,
   inject: {
     envVars: envVarsToken,
   },

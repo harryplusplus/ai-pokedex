@@ -1,10 +1,8 @@
-import { Container } from 'pocket-di'
+import { createContainer } from 'pocket-di'
 
-import { pgPoolProvider, pgPoolToken } from './db/pg-pool.ts'
-import { envVarsProvider, envVarsToken } from './env-vars.ts'
+import { pgPoolProvider } from './db/pg-pool.ts'
+import { envVarsProvider } from './env-vars.ts'
 
-export const container = new Container()
-
-container
-  .register(envVarsToken, envVarsProvider)
-  .register(pgPoolToken, pgPoolProvider)
+export const container = createContainer({
+  providers: [envVarsProvider, pgPoolProvider],
+})
