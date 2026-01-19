@@ -1,7 +1,6 @@
 import type { CircularDependencyChecker } from '../circular-dependency-checker.ts'
 import type { Provider } from '../types/provider.ts'
 import * as ProviderModule from '../types/provider.ts'
-import { inject } from '../types/symbols.ts'
 import type { FindProvider } from './find-provider.ts'
 import { validateDeclaration } from './validate-declaration.ts'
 
