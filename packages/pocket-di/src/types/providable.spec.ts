@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 import {
   isInjectableConstructorProvidable,
   isProviderProvidable,
+  type Providable,
   providableToProvider,
 } from './providable.ts'
 import type { ClassProvider, ValueProvider } from './provider.ts'
@@ -77,6 +78,14 @@ describe('providable', () => {
         provide: TestClass,
         useClass: TestClass,
       } satisfies ClassProvider)
+    })
+
+    it('should throw error for unexpected providable', () => {
+      const invalidProvidable = {} as Providable
+
+      expect(() => providableToProvider(invalidProvidable)).toThrow(
+        'Unexpected providable.',
+      )
     })
   })
 })
