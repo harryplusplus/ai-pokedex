@@ -365,15 +365,7 @@ export class ContainerContext implements Container {
 
     const { token, provider, maybePromises } = input
 
-    const dependencies = maybePromises.map((x, i) => {
-      if (x instanceof Promise) {
-        throw new Error(
-          `Cannot resolve "${tokenToString(token)}" synchronously: dependency "${i}" returns Promise.`,
-        )
-      }
-
-      return x
-    })
+    const dependencies = maybePromises as Injectable[]
 
     const instance = this.resolveInstance({
       token,
