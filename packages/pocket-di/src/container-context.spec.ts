@@ -640,6 +640,30 @@ describe('container-context', () => {
 
       expect(first).toBe(second)
     })
+
+    it('should resolveSync with tuple dependencies', () => {
+      const depToken = token<{ value: string }>('dep')
+
+      class TestClass {
+        static [inject] = [depToken] as const
+
+        constructor(public deps: [{ value: string }]) {}
+      }
+
+      const container = createContainer({
+        providers: [
+          {
+            provide: depToken,
+            useValue: { value: 'dep' },
+          },
+          TestClass,
+        ],
+      })
+
+      const result = container.resolveSync(TestClass)
+
+      expect(result.deps[0].value).toBe('dep')
+    })
   })
 
   describe('createChild', () => {
