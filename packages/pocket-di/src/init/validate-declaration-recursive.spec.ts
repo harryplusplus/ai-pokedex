@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { CircularDependencyChecker } from '../circular-dependency-checker.ts'
+import { createCircularDependencyChecker } from '../circular-dependency-checker.ts'
 import { inject } from '../types/symbols.ts'
 import type { FindProvider } from './find-provider.ts'
 import { validateDeclarationRecursive } from './validate-declaration-recursive.ts'
@@ -13,7 +13,7 @@ describe('validate-declaration-recursive', () => {
     }
 
     const findProvider: FindProvider = () => null
-    const checker = new CircularDependencyChecker()
+    const checker = createCircularDependencyChecker()
 
     expect(() =>
       validateDeclarationRecursive({
@@ -39,7 +39,7 @@ describe('validate-declaration-recursive', () => {
       useValue: 'value',
     })
 
-    const checker = new CircularDependencyChecker()
+    const checker = createCircularDependencyChecker()
 
     expect(() =>
       validateDeclarationRecursive({
@@ -62,7 +62,7 @@ describe('validate-declaration-recursive', () => {
       useValue: 'value',
     })
 
-    const checker = new CircularDependencyChecker()
+    const checker = createCircularDependencyChecker()
 
     expect(() =>
       validateDeclarationRecursive({
@@ -84,7 +84,7 @@ describe('validate-declaration-recursive', () => {
     }
 
     const findProvider: FindProvider = () => null
-    const checker = new CircularDependencyChecker()
+    const checker = createCircularDependencyChecker()
 
     expect(() =>
       validateDeclarationRecursive({
@@ -105,7 +105,7 @@ describe('validate-declaration-recursive', () => {
     }
 
     const findProvider: FindProvider = () => null
-    const checker = new CircularDependencyChecker()
+    const checker = createCircularDependencyChecker()
 
     expect(() =>
       validateDeclarationRecursive({

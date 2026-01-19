@@ -1,4 +1,4 @@
-import { CircularDependencyChecker } from '../circular-dependency-checker.ts'
+import { createCircularDependencyChecker } from '../circular-dependency-checker.ts'
 import type { ContainerContext, Providers } from '../container-context.ts'
 import type { ContainerContextOptions } from '../types/container-options.ts'
 import { createFindProvider } from './find-provider.ts'
@@ -23,7 +23,7 @@ export function parse(input: ContainerContextOptions): {
   })
 
   for (const provider of providers.values()) {
-    const checker = new CircularDependencyChecker()
+    const checker = createCircularDependencyChecker()
     checker.push(provider.provide)
 
     validateDeclarationRecursive({

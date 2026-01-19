@@ -1,18 +1,18 @@
 import { describe, expect, it } from 'vitest'
 
-import { CircularDependencyChecker } from './circular-dependency-checker.ts'
+import { createCircularDependencyChecker } from './circular-dependency-checker.ts'
 import { token } from './types/token.ts'
 
 describe('CircularDependencyChecker', () => {
   it('should add token to chain', () => {
-    const checker = new CircularDependencyChecker()
+    const checker = createCircularDependencyChecker()
     const tokenA = token('A')
 
     expect(() => checker.push(tokenA)).not.toThrow()
   })
 
   it('should detect circular dependency with same token', () => {
-    const checker = new CircularDependencyChecker()
+    const checker = createCircularDependencyChecker()
     const tokenA = token('A')
 
     checker.push(tokenA)
@@ -23,7 +23,7 @@ describe('CircularDependencyChecker', () => {
   })
 
   it('should detect circular dependency with multiple tokens', () => {
-    const checker = new CircularDependencyChecker()
+    const checker = createCircularDependencyChecker()
     const tokenA = token('A')
     const tokenB = token('B')
     const tokenC = token('C')
@@ -38,7 +38,7 @@ describe('CircularDependencyChecker', () => {
   })
 
   it('should work with class tokens', () => {
-    const checker = new CircularDependencyChecker()
+    const checker = createCircularDependencyChecker()
 
     class ServiceA {}
 

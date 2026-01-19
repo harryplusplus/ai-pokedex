@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { CircularDependencyChecker } from '../circular-dependency-checker.ts'
+import { createCircularDependencyChecker } from '../circular-dependency-checker.ts'
 import type { InjectDeclaration } from '../types/inject-declaration.ts'
 import { inject } from '../types/symbols.ts'
 import type { FindProvider } from './find-provider.ts'
@@ -16,7 +16,7 @@ describe('validate-declaration', () => {
         useValue: 'value',
       })
 
-      const checker = new CircularDependencyChecker()
+      const checker = createCircularDependencyChecker()
 
       expect(() =>
         validateDeclaration({
@@ -34,7 +34,7 @@ describe('validate-declaration', () => {
 
       const findProvider: FindProvider = () => null
 
-      const checker = new CircularDependencyChecker()
+      const checker = createCircularDependencyChecker()
 
       expect(() =>
         validateDeclaration({
@@ -54,7 +54,7 @@ describe('validate-declaration', () => {
 
       const findProvider: FindProvider = () => null
 
-      const checker = new CircularDependencyChecker()
+      const checker = createCircularDependencyChecker()
 
       expect(() =>
         validateDeclaration({
@@ -82,7 +82,7 @@ describe('validate-declaration', () => {
         useValue: 'value',
       })
 
-      const checker = new CircularDependencyChecker()
+      const checker = createCircularDependencyChecker()
 
       expect(() =>
         validateDeclaration({
@@ -102,7 +102,7 @@ describe('validate-declaration', () => {
 
       const findProvider: FindProvider = () => null
 
-      const checker = new CircularDependencyChecker()
+      const checker = createCircularDependencyChecker()
 
       expect(() =>
         validateDeclaration({
@@ -128,7 +128,7 @@ describe('validate-declaration', () => {
         useValue: 'value',
       })
 
-      const checker = new CircularDependencyChecker()
+      const checker = createCircularDependencyChecker()
 
       expect(() =>
         validateDeclaration({
@@ -154,7 +154,7 @@ describe('validate-declaration', () => {
         useValue: 'value',
       })
 
-      const checker = new CircularDependencyChecker()
+      const checker = createCircularDependencyChecker()
 
       expect(() =>
         validateDeclaration({
@@ -179,7 +179,7 @@ describe('validate-declaration', () => {
         useValue: 'value',
       })
 
-      const checker = new CircularDependencyChecker()
+      const checker = createCircularDependencyChecker()
 
       expect(() =>
         validateDeclaration({
@@ -204,7 +204,7 @@ describe('validate-declaration', () => {
         useValue: 'value',
       })
 
-      const checker = new CircularDependencyChecker()
+      const checker = createCircularDependencyChecker()
 
       expect(() =>
         validateDeclaration({
@@ -230,7 +230,7 @@ describe('validate-declaration', () => {
         useValue: 'value',
       })
 
-      const checker = new CircularDependencyChecker()
+      const checker = createCircularDependencyChecker()
 
       expect(() =>
         validateDeclaration({
@@ -260,7 +260,7 @@ describe('validate-declaration', () => {
         useClass: Dependency,
       })
 
-      const checker = new CircularDependencyChecker()
+      const checker = createCircularDependencyChecker()
 
       expect(() =>
         validateDeclaration({
