@@ -7,17 +7,21 @@ import type {
   ContainerOptions,
 } from './types/container-options.ts'
 import type { Injectable } from './types/injectable.ts'
+import { isPreDestroyable } from './types/lifecycle-events.ts'
 import { type Provider } from './types/provider.ts'
-import { type InjectionToken } from './types/token.ts'
+import * as ProviderModule from './types/provider.ts'
+import { preDestroy } from './types/symbols.ts'
+import { type InjectionToken, tokenToString } from './types/token.ts'
 
 export type Providers = Map<InjectionToken, Provider>
+
+export type Singletons = Map<InjectionToken, Injectable>
 
 export class ContainerContext implements Container {
   lock = new AsyncLock()
   children: ContainerContext[] = []
+  singletons: Singletons = new Map()
   providers: Map<InjectionToken, Provider>
-  // TODO
-  // singletons: Map<InjectionToken, Injectable>
   parent: ContainerContext | null
   destroyed = false
 
@@ -40,18 +44,61 @@ export class ContainerContext implements Container {
 
       this.destroyed = true
 
-      for (let i = this.children.length - 1; i >= 0; i--) {
-        try {
-          await this.children[i].destroy()
-        } catch (_e) {
-          // noop
+      {
+        for (let i = this.children.length - 1; i >= 0; i--) {
+          try {
+            await this.children[i].destroy()
+          } catch (_e) {
+            // noop
+          }
         }
+
+        this.children.length = 0
       }
 
-      this.children.length = 0
+      {
+        const copiedSingletons = [...this.singletons.entries()]
+        this.singletons.clear()
+        copiedSingletons.reverse()
 
-      // TODO: destroy singletons
-      // this.singletons.clear()
+        for (const [token, singleton] of copiedSingletons) {
+          const provider = this.findProvider(token)
+          if (!provider) {
+            throw new Error(`Token "${tokenToString(token)}" not found.`)
+          }
+
+          if (ProviderModule.isValue(provider)) {
+            // noop
+
+            continue
+          }
+
+          if (ProviderModule.isClass(provider)) {
+            if (isPreDestroyable(singleton)) {
+              try {
+                await singleton[preDestroy]()
+              } catch (_e) {
+                // noop
+              }
+            }
+
+            continue
+          }
+
+          if (ProviderModule.isFactory(provider)) {
+            try {
+              await provider.preDestroy?.(singleton)
+            } catch (_e) {
+              // noop
+            }
+
+            continue
+          }
+
+          const _: never = provider
+          throw new Error('Unexpected provider.')
+        }
+      }
 
       this.providers.clear()
       this.parent = null
@@ -94,6 +141,17 @@ export class ContainerContext implements Container {
     }
 
     return this.parent?.hasProvider(token) ?? false
+  }
+
+  findProvider(token: InjectionToken): Provider | null {
+    this.ensureNotDestroyed()
+
+    const provider = this.providers.get(token)
+    if (provider) {
+      return provider
+    }
+
+    return this.parent?.findProvider(token) ?? null
   }
 }
 
