@@ -1,4 +1,4 @@
-import { AsyncLock } from './async-lock.ts'
+import { createAsyncLock } from './async-lock.ts'
 import { parse } from './init/parse.ts'
 import type { Container } from './types/container.ts'
 import type {
@@ -40,7 +40,7 @@ export type DependencyMaybePromiseRecord = Record<
 >
 
 export class ContainerContext implements Container {
-  lock = new AsyncLock()
+  lock = createAsyncLock()
   children: ContainerContext[] = []
   singletons: Map<InjectionToken, Injectable> = new Map()
   providers: Map<InjectionToken, Provider>

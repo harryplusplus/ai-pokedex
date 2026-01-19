@@ -1,12 +1,16 @@
-export class AsyncLock {
-  #promise = Promise.resolve()
+export interface AsyncLock {
+  acquire<T>(fn: () => Promise<T>): Promise<T>
+}
+
+class AsyncLockImpl implements AsyncLock {
+  promise = Promise.resolve()
 
   async acquire<T>(fn: () => Promise<T>): Promise<T> {
-    const previous = this.#promise
+    const previous = this.promise
 
     let release!: () => void
 
-    this.#promise = new Promise((resolve) => {
+    this.promise = new Promise((resolve) => {
       release = resolve
     })
 
@@ -18,4 +22,8 @@ export class AsyncLock {
       release()
     }
   }
+}
+
+export function createAsyncLock(): AsyncLock {
+  return new AsyncLockImpl()
 }
