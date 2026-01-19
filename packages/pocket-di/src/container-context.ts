@@ -7,7 +7,6 @@ import type {
   ContainerOptions,
 } from './types/container-options.ts'
 import {
-  isRecordInjectDeclaration,
   isTupleInjectDeclaration,
   type RecordInjectDeclaration,
   type TupleInjectDeclaration,
