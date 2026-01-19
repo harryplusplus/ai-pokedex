@@ -1,6 +1,9 @@
 import type { CircularDependencyChecker } from '../circular-dependency-checker.ts'
-import type { InjectDeclaration } from '../types/inject-declaration.ts'
-import * as DeclarationModule from '../types/inject-declaration.ts'
+import {
+  type InjectDeclaration,
+  isRecordInjectDeclaration,
+  isTupleInjectDeclaration,
+} from '../types/inject-declaration.ts'
 import type { InjectionToken } from '../types/token.ts'
 import type { FindProvider } from './find-provider.ts'
 import { validateDeclarationItem } from './validate-declaration-item.ts'
@@ -15,7 +18,7 @@ export function validateDeclaration(input: {
 }): void {
   const { token, declaration, findProvider, checker, className } = input
 
-  if (DeclarationModule.isTuple(declaration)) {
+  if (isTupleInjectDeclaration(declaration)) {
     for (const item of declaration) {
       validateDeclarationItem({
         item,
@@ -29,7 +32,7 @@ export function validateDeclaration(input: {
     return
   }
 
-  if (DeclarationModule.isRecord(declaration)) {
+  if (isRecordInjectDeclaration(declaration)) {
     for (const [name, item] of Object.entries(declaration)) {
       validateDeclarationName({
         token,

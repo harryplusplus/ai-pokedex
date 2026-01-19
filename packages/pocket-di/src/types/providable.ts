@@ -9,22 +9,22 @@ export type Providable<
   C extends I = I,
 > = Provider<I, ID, C> | InjectableConstructor<I, ID>
 
-export function isProvider(x: Providable): x is Provider {
+export function isProviderProvidable(x: Providable): x is Provider {
   return 'provide' in x
 }
 
-export function isInjectableConstructor(
+export function isInjectableConstructorProvidable(
   x: Providable,
 ): x is InjectableConstructor {
   return typeof x === 'function'
 }
 
 export function providableToProvider(x: Providable): Provider {
-  if (isProvider(x)) {
+  if (isProviderProvidable(x)) {
     return x
   }
 
-  if (isInjectableConstructor(x)) {
+  if (isInjectableConstructorProvidable(x)) {
     return {
       provide: x,
       useClass: x,

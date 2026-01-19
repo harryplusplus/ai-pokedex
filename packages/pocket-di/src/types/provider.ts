@@ -49,7 +49,7 @@ export interface ValueProvider<
   useValue: Injectable
 }
 
-export function isValue(x: Provider): x is ValueProvider {
+export function isValueProvider(x: Provider): x is ValueProvider {
   return 'useValue' in x
 }
 
@@ -60,11 +60,13 @@ export interface ClassProvider<
   scope?: Scope
 }
 
-export function isClass(x: Provider): x is ClassProvider {
+export function isClassProvider(x: Provider): x is ClassProvider {
   return 'useClass' in x
 }
 
-export function classToDeclaration(x: ClassProvider): InjectDeclaration {
+export function classProviderToDeclaration(
+  x: ClassProvider,
+): InjectDeclaration {
   return x.useClass[inject] ?? {}
 }
 
@@ -96,10 +98,12 @@ export type FactoryProvider<
   C extends I = I,
 > = SingletonFactoryProvider<I, ID, C> | TransientFactoryProvider<I, ID, C>
 
-export function isFactory(x: Provider): x is FactoryProvider {
+export function isFactoryProvider(x: Provider): x is FactoryProvider {
   return 'useFactory' in x
 }
 
-export function factoryToDeclaration(x: FactoryProvider): InjectDeclaration {
+export function factoryProviderToDeclaration(
+  x: FactoryProvider,
+): InjectDeclaration {
   return x.inject ?? {}
 }

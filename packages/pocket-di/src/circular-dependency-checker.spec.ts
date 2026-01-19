@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { CircularDependencyChecker } from './circular-dependency-checker.ts'
-import { token } from './token.ts'
+import { token } from './types/token.ts'
 
 describe('CircularDependencyChecker', () => {
   it('should add token to chain', () => {

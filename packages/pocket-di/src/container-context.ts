@@ -6,11 +6,12 @@ import type {
   ContainerContextOptions,
   ContainerOptions,
 } from './types/container-options.ts'
-import type {
-  RecordInjectDeclaration,
-  TupleInjectDeclaration,
+import {
+  isRecordInjectDeclaration,
+  isTupleInjectDeclaration,
+  type RecordInjectDeclaration,
+  type TupleInjectDeclaration,
 } from './types/inject-declaration.ts'
-import * as DeclarationModule from './types/inject-declaration.ts'
 import type { Injectable } from './types/injectable.ts'
 import {
   isPostConstructable,
@@ -18,10 +19,14 @@ import {
 } from './types/lifecycle-events.ts'
 import {
   type ClassProvider,
+  classProviderToDeclaration,
   type FactoryProvider,
+  factoryProviderToDeclaration,
+  isClassProvider,
+  isFactoryProvider,
+  isValueProvider,
   type Provider,
 } from './types/provider.ts'
-import * as ProviderModule from './types/provider.ts'
 import { postConstruct, preDestroy } from './types/symbols.ts'
 import { type InjectionToken, tokenToString } from './types/token.ts'
 import type { MaybePromise } from './types/utils.ts'
@@ -87,13 +92,13 @@ export class ContainerContext implements Container {
             )
           }
 
-          if (ProviderModule.isValue(provider)) {
+          if (isValueProvider(provider)) {
             // noop
 
             continue
           }
 
-          if (ProviderModule.isClass(provider)) {
+          if (isClassProvider(provider)) {
             if (isPreDestroyable(singleton)) {
               try {
                 await singleton[preDestroy]()
@@ -105,7 +110,7 @@ export class ContainerContext implements Container {
             continue
           }
 
-          if (ProviderModule.isFactory(provider)) {
+          if (isFactoryProvider(provider)) {
             try {
               await provider.preDestroy?.(singleton)
             } catch (_e) {
@@ -229,14 +234,11 @@ export class ContainerContext implements Container {
       )
     }
 
-    if (ProviderModule.isValue(provider)) {
+    if (isValueProvider(provider)) {
       return provider.useValue
     }
 
-    if (
-      ProviderModule.isClass(provider) ||
-      ProviderModule.isFactory(provider)
-    ) {
+    if (isClassProvider(provider) || isFactoryProvider(provider)) {
       return this.resolveDependentProvider({
         token,
         provider,
@@ -257,11 +259,11 @@ export class ContainerContext implements Container {
 
     const { token, provider, sync } = input
 
-    const declaration = ProviderModule.isClass(provider)
-      ? ProviderModule.classToDeclaration(provider)
-      : ProviderModule.factoryToDeclaration(provider)
+    const declaration = isClassProvider(provider)
+      ? classProviderToDeclaration(provider)
+      : factoryProviderToDeclaration(provider)
 
-    if (DeclarationModule.isTuple(declaration)) {
+    if (isTupleInjectDeclaration(declaration)) {
       return this.resolveTupleDeclaration({
         token,
         declaration,
@@ -270,7 +272,7 @@ export class ContainerContext implements Container {
       })
     }
 
-    if (DeclarationModule.isRecord(declaration)) {
+    if (isRecordInjectDeclaration(declaration)) {
       return this.resolveRecordDeclaration({
         token,
         declaration,
@@ -501,7 +503,7 @@ export class ContainerContext implements Container {
 
     const { token, provider, dependencies, sync } = input
 
-    if (ProviderModule.isClass(provider)) {
+    if (isClassProvider(provider)) {
       const { useClass } = provider
       const instance = new useClass(dependencies)
 
@@ -523,7 +525,7 @@ export class ContainerContext implements Container {
       return instance
     }
 
-    if (ProviderModule.isFactory(provider)) {
+    if (isFactoryProvider(provider)) {
       const { useFactory } = provider
       const instance = useFactory(dependencies)
 
