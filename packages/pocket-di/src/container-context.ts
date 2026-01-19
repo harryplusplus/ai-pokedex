@@ -85,7 +85,11 @@ export class ContainerContext implements Container {
         copiedSingletons.reverse()
 
         for (const [token, singleton] of copiedSingletons) {
-          const provider = this.findProvider(token)
+          const provider =
+            this.providers.get(token) ??
+            this.parent?.providers.get(token) ??
+            null
+
           if (!provider) {
             throw new Error(
               `Internal error: provider for token "${tokenToString(token)}" not found during cleanup.`,

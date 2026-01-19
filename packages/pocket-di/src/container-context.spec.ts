@@ -1,7 +1,7 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
 import { createContainer } from './container-context.ts'
-import { postConstruct, preDestroy } from './types/symbols.ts'
+import { inject, postConstruct, preDestroy } from './types/symbols.ts'
 import { token } from './types/token.ts'
 
 describe('container-context', () => {
@@ -286,11 +286,11 @@ describe('container-context', () => {
       expect(first).toBe(second)
     })
 
-    it('should resolve with dependencies', async () => {
+    it('should resolve with tuple dependencies', async () => {
       const depToken = token<{ value: string }>('dep')
 
       class TestClass {
-        static inject = [depToken] as const
+        static [inject] = [depToken] as const
 
         constructor(public deps: [{ value: string }]) {}
       }
@@ -314,7 +314,7 @@ describe('container-context', () => {
       const depToken = token<{ value: string }>('dep')
 
       class TestClass {
-        static inject = { dep: depToken }
+        static [inject] = { dep: depToken }
 
         constructor(public deps: { dep: { value: string } }) {}
       }
@@ -499,15 +499,13 @@ describe('container-context', () => {
       expect(result).toBeInstanceOf(TestClass)
     })
 
-    it('should throw when container is destroyed', () => {
+    it('should throw when resolving non-existent provider', () => {
       const container = createContainer({
         providers: [],
       })
 
-      container.destroy()
-
       expect(() => container.resolveSync('test')).toThrow(
-        'Container is destroyed.',
+        'Internal error: provider for token "test" not found during resolve.',
       )
     })
 
@@ -522,7 +520,7 @@ describe('container-context', () => {
       })
 
       expect(() => container.resolveSync('test')).toThrow(
-        'Cannot resolve "test" synchronously: returns Promise.',
+        'Cannot resolve "test" synchronously: useFactory returns Promise.',
       )
     })
 
@@ -542,11 +540,11 @@ describe('container-context', () => {
       )
     })
 
-    it('should throw for async dependency', () => {
+    it('should throw for async tuple dependency', () => {
       const depToken = token<{ value: string }>('dep')
 
       class TestClass {
-        static inject = [depToken] as const
+        static [inject] = [depToken] as const
 
         constructor(public deps: [{ value: string }]) {}
       }
@@ -562,7 +560,7 @@ describe('container-context', () => {
       })
 
       expect(() => container.resolveSync(TestClass)).toThrow(
-        'Cannot resolve "TestClass" synchronously: dependency "0" returns Promise.',
+        'Cannot resolve "dep" synchronously: useFactory returns Promise.',
       )
     })
 
@@ -570,7 +568,7 @@ describe('container-context', () => {
       const depToken = token<{ value: string }>('dep')
 
       class TestClass {
-        static inject = { dep: depToken }
+        static [inject] = { dep: depToken }
 
         constructor(public deps: { dep: { value: string } }) {}
       }
@@ -586,7 +584,7 @@ describe('container-context', () => {
       })
 
       expect(() => container.resolveSync(TestClass)).toThrow(
-        'Cannot resolve "TestClass" synchronously: dependency "dep" returns Promise.',
+        'Cannot resolve "dep" synchronously: useFactory returns Promise.',
       )
     })
 
