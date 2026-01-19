@@ -6,21 +6,39 @@ import type {
   ContainerContextOptions,
   ContainerOptions,
 } from './types/container-options.ts'
+import type {
+  RecordInjectDeclaration,
+  TupleInjectDeclaration,
+} from './types/inject-declaration.ts'
+import * as DeclarationModule from './types/inject-declaration.ts'
 import type { Injectable } from './types/injectable.ts'
-import { isPreDestroyable } from './types/lifecycle-events.ts'
-import { type Provider } from './types/provider.ts'
+import {
+  isPostConstructable,
+  isPreDestroyable,
+} from './types/lifecycle-events.ts'
+import {
+  type ClassProvider,
+  type FactoryProvider,
+  type Provider,
+} from './types/provider.ts'
 import * as ProviderModule from './types/provider.ts'
-import { preDestroy } from './types/symbols.ts'
+import { postConstruct, preDestroy } from './types/symbols.ts'
 import { type InjectionToken, tokenToString } from './types/token.ts'
+import type { MaybePromise } from './types/utils.ts'
 
 export type Providers = Map<InjectionToken, Provider>
 
-export type Singletons = Map<InjectionToken, Injectable>
+export type DependencyMaybePromises = MaybePromise<Injectable>[]
+
+export type DependencyMaybePromiseRecord = Record<
+  string,
+  MaybePromise<Injectable>
+>
 
 export class ContainerContext implements Container {
   lock = new AsyncLock()
   children: ContainerContext[] = []
-  singletons: Singletons = new Map()
+  singletons: Map<InjectionToken, Injectable> = new Map()
   providers: Map<InjectionToken, Provider>
   parent: ContainerContext | null
   destroyed = false
@@ -64,7 +82,9 @@ export class ContainerContext implements Container {
         for (const [token, singleton] of copiedSingletons) {
           const provider = this.findProvider(token)
           if (!provider) {
-            throw new Error(`Token "${tokenToString(token)}" not found.`)
+            throw new Error(
+              `Internal error: provider for token "${tokenToString(token)}" not found during cleanup.`,
+            )
           }
 
           if (ProviderModule.isValue(provider)) {
@@ -105,12 +125,36 @@ export class ContainerContext implements Container {
     })
   }
 
-  resolve<I extends Injectable>(token: InjectionToken<I>): Promise<I> {
-    throw new Error('Method not implemented.')
+  async resolve<I extends Injectable>(token: InjectionToken<I>): Promise<I> {
+    this.ensureNotDestroyed()
+
+    const instance = await this.lock.acquire(async () => {
+      this.ensureNotDestroyed()
+
+      return await this.resolveRecursive({
+        token,
+        sync: false,
+      })
+    })
+
+    return instance as I
   }
 
   resolveSync<I extends Injectable>(token: InjectionToken<I>): I {
-    throw new Error('Method not implemented.')
+    this.ensureNotDestroyed()
+
+    const instance = this.resolveRecursive({
+      token,
+      sync: true,
+    })
+
+    if (instance instanceof Promise) {
+      throw new Error(
+        `Cannot resolve "${tokenToString(token)}" synchronously: returns Promise.`,
+      )
+    }
+
+    return instance as I
   }
 
   createChild(options: ChildContainerOptions): Container {
@@ -152,6 +196,366 @@ export class ContainerContext implements Container {
     }
 
     return this.parent?.findProvider(token) ?? null
+  }
+
+  findSingleton(token: InjectionToken): Injectable | null {
+    this.ensureNotDestroyed()
+
+    const singleton = this.singletons.get(token)
+    if (singleton) {
+      return singleton
+    }
+
+    return this.parent?.findSingleton(token) ?? null
+  }
+
+  resolveRecursive(input: {
+    token: InjectionToken
+    sync: boolean
+  }): MaybePromise<Injectable> {
+    this.ensureNotDestroyed()
+
+    const { token, sync } = input
+
+    const singleton = this.findSingleton(token)
+    if (singleton) {
+      return singleton
+    }
+
+    const provider = this.findProvider(token)
+    if (!provider) {
+      throw new Error(
+        `Internal error: provider for token "${tokenToString(token)}" not found during resolve.`,
+      )
+    }
+
+    if (ProviderModule.isValue(provider)) {
+      return provider.useValue
+    }
+
+    if (
+      ProviderModule.isClass(provider) ||
+      ProviderModule.isFactory(provider)
+    ) {
+      return this.resolveDependentProvider({
+        token,
+        provider,
+        sync,
+      })
+    }
+
+    const _: never = provider
+    throw new Error('Unexpected provider.')
+  }
+
+  resolveDependentProvider(input: {
+    token: InjectionToken
+    provider: ClassProvider | FactoryProvider
+    sync: boolean
+  }): MaybePromise<Injectable> {
+    this.ensureNotDestroyed()
+
+    const { token, provider, sync } = input
+
+    const declaration = ProviderModule.isClass(provider)
+      ? ProviderModule.classToDeclaration(provider)
+      : ProviderModule.factoryToDeclaration(provider)
+
+    if (DeclarationModule.isTuple(declaration)) {
+      return this.resolveTupleDeclaration({
+        token,
+        declaration,
+        provider,
+        sync,
+      })
+    }
+
+    if (DeclarationModule.isRecord(declaration)) {
+      return this.resolveRecordDeclaration({
+        token,
+        declaration,
+        provider,
+        sync,
+      })
+    }
+
+    const _: never = declaration
+    throw new Error('Unexpected declaration.')
+  }
+
+  resolveTupleDeclaration(input: {
+    token: InjectionToken
+    declaration: TupleInjectDeclaration
+    provider: ClassProvider | FactoryProvider
+    sync: boolean
+  }): MaybePromise<Injectable> {
+    this.ensureNotDestroyed()
+
+    const { token, provider, declaration, sync } = input
+
+    const maybePromises: DependencyMaybePromises = []
+    for (const item of declaration) {
+      maybePromises.push(
+        this.resolveRecursive({
+          token: item,
+          sync,
+        }),
+      )
+    }
+
+    if (sync) {
+      return this.resolveDependenciesSync({
+        token,
+        provider,
+        maybePromises,
+      })
+    }
+
+    return this.resolveDependenciesAsync({
+      token,
+      provider,
+      maybePromises,
+    })
+  }
+
+  resolveRecordDeclaration(input: {
+    token: InjectionToken
+    declaration: RecordInjectDeclaration
+    provider: ClassProvider | FactoryProvider
+    sync: boolean
+  }): MaybePromise<Injectable> {
+    this.ensureNotDestroyed()
+
+    const { declaration, sync, provider, token } = input
+
+    const maybePromiseRecord: DependencyMaybePromiseRecord = {}
+    for (const [name, item] of Object.entries(declaration)) {
+      maybePromiseRecord[name] = this.resolveRecursive({
+        token: item,
+        sync,
+      })
+    }
+
+    if (sync) {
+      return this.resolveDependencyRecordSync({
+        token,
+        provider,
+        maybePromiseRecord,
+      })
+    }
+
+    return this.resolveDependencyRecordAsync({
+      maybePromiseRecord,
+      provider,
+      token,
+    })
+  }
+
+  async resolveDependenciesAsync(input: {
+    token: InjectionToken
+    maybePromises: DependencyMaybePromises
+    provider: ClassProvider | FactoryProvider
+  }): Promise<Injectable> {
+    this.ensureNotDestroyed()
+
+    const { maybePromises, token, provider } = input
+
+    const dependencies = await Promise.all(
+      maybePromises.map((x) => Promise.resolve(x)),
+    )
+
+    const instance = await this.resolveInstance({
+      token,
+      provider,
+      dependencies,
+      sync: false,
+    })
+
+    return this.resolveSingleton({
+      token,
+      provider,
+      instance,
+    })
+  }
+
+  resolveDependenciesSync(input: {
+    token: InjectionToken
+    provider: ClassProvider | FactoryProvider
+    maybePromises: DependencyMaybePromises
+  }): Injectable {
+    this.ensureNotDestroyed()
+
+    const { token, provider, maybePromises } = input
+
+    const dependencies = maybePromises.map((x, i) => {
+      if (x instanceof Promise) {
+        throw new Error(
+          `Cannot resolve "${tokenToString(token)}" synchronously: dependency "${i}" returns Promise.`,
+        )
+      }
+
+      return x
+    })
+
+    const instance = this.resolveInstance({
+      token,
+      provider,
+      dependencies,
+      sync: true,
+    })
+
+    if (instance instanceof Promise) {
+      throw new Error(
+        `Cannot resolve "${tokenToString(token)}" synchronously: returns Promise.`,
+      )
+    }
+
+    return this.resolveSingleton({
+      token,
+      provider,
+      instance,
+    })
+  }
+
+  async resolveDependencyRecordAsync(input: {
+    token: InjectionToken
+    provider: ClassProvider | FactoryProvider
+    maybePromiseRecord: DependencyMaybePromiseRecord
+  }): Promise<Injectable> {
+    this.ensureNotDestroyed()
+
+    const { token, provider, maybePromiseRecord } = input
+
+    const entries = await Promise.all(
+      Object.entries(maybePromiseRecord).map(async ([name, maybePromise]) => {
+        return [name, await maybePromise] as const
+      }),
+    )
+
+    const dependencies = Object.fromEntries(entries)
+
+    const instance = await this.resolveInstance({
+      token,
+      provider,
+      dependencies,
+      sync: false,
+    })
+
+    return this.resolveSingleton({
+      token,
+      provider,
+      instance,
+    })
+  }
+
+  resolveDependencyRecordSync(input: {
+    token: InjectionToken
+    provider: ClassProvider | FactoryProvider
+    maybePromiseRecord: DependencyMaybePromiseRecord
+  }): Injectable {
+    this.ensureNotDestroyed()
+
+    const { token, provider, maybePromiseRecord } = input
+
+    const entries = Object.entries(maybePromiseRecord).map(
+      ([name, maybePromise]) => {
+        if (maybePromise instanceof Promise) {
+          throw new Error(
+            `Cannot resolve "${tokenToString(token)}" synchronously: dependency "${name}" returns Promise.`,
+          )
+        }
+
+        return [name, maybePromise] as const
+      },
+    )
+
+    const dependencies = Object.fromEntries(entries)
+
+    const instance = this.resolveInstance({
+      token,
+      provider,
+      dependencies,
+      sync: true,
+    })
+
+    if (instance instanceof Promise) {
+      throw new Error(
+        `Cannot resolve "${tokenToString(token)}" synchronously: returns Promise.`,
+      )
+    }
+
+    return this.resolveSingleton({
+      token,
+      provider,
+      instance,
+    })
+  }
+
+  resolveInstance(input: {
+    token: InjectionToken
+    provider: ClassProvider | FactoryProvider
+    dependencies: Injectable[] | Record<string, Injectable>
+    sync: boolean
+  }): MaybePromise<Injectable> {
+    this.ensureNotDestroyed()
+
+    const { token, provider, dependencies, sync } = input
+
+    if (ProviderModule.isClass(provider)) {
+      const { useClass } = provider
+      const instance = new useClass(dependencies)
+
+      let postConstructResult: MaybePromise<void> | null = null
+      if (isPostConstructable(instance)) {
+        postConstructResult = instance[postConstruct]()
+      }
+
+      if (postConstructResult instanceof Promise) {
+        if (sync) {
+          throw new Error(
+            `Cannot resolve "${tokenToString(token)}" (${useClass.name}) synchronously: postConstruct returns Promise.`,
+          )
+        }
+
+        return postConstructResult.then(() => instance)
+      }
+
+      return instance
+    }
+
+    if (ProviderModule.isFactory(provider)) {
+      const { useFactory } = provider
+      const instance = useFactory(dependencies)
+
+      if (instance instanceof Promise && sync) {
+        throw new Error(
+          `Cannot resolve "${tokenToString(token)}" synchronously: useFactory returns Promise.`,
+        )
+      }
+
+      return instance
+    }
+
+    const _: never = provider
+    throw new Error('Unexpected provider.')
+  }
+
+  resolveSingleton(input: {
+    token: InjectionToken
+    provider: ClassProvider | FactoryProvider
+    instance: Injectable
+  }): Injectable {
+    this.ensureNotDestroyed()
+
+    const { token, provider, instance } = input
+
+    const { scope = 'singleton' } = provider
+
+    if (scope === 'singleton') {
+      this.singletons.set(token, instance)
+    }
+
+    return instance
   }
 }
 

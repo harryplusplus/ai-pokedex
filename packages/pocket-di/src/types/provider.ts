@@ -3,6 +3,7 @@ import type { InjectDeclaration } from './inject-declaration.ts'
 import type { Injectable } from './injectable.ts'
 import type { InjectableConstructor } from './injectable-constructor.ts'
 import type { Scope, Singleton, Transient } from './scope.ts'
+import { inject } from './symbols.ts'
 import type { InjectionToken } from './token.ts'
 import type { MaybePromise } from './utils.ts'
 
@@ -63,6 +64,10 @@ export function isClass(x: Provider): x is ClassProvider {
   return 'useClass' in x
 }
 
+export function classToDeclaration(x: ClassProvider): InjectDeclaration {
+  return x.useClass[inject] ?? {}
+}
+
 export interface SingletonFactoryProvider<
   I extends Injectable,
   ID extends InjectDeclaration,
@@ -93,4 +98,8 @@ export type FactoryProvider<
 
 export function isFactory(x: Provider): x is FactoryProvider {
   return 'useFactory' in x
+}
+
+export function factoryToDeclaration(x: FactoryProvider): InjectDeclaration {
+  return x.inject ?? {}
 }

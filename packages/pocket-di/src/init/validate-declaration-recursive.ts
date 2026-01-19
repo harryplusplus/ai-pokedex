@@ -21,7 +21,7 @@ export function validateDeclarationRecursive(input: {
   if (ProviderModule.isClass(provider)) {
     validateDeclaration({
       token: provider.provide,
-      declaration: provider.useClass[inject] ?? {},
+      declaration: ProviderModule.classToDeclaration(provider),
       findProvider,
       className: provider.useClass.name,
       checker,
@@ -33,7 +33,7 @@ export function validateDeclarationRecursive(input: {
   if (ProviderModule.isFactory(provider)) {
     validateDeclaration({
       token: provider.provide,
-      declaration: provider.inject ?? {},
+      declaration: ProviderModule.factoryToDeclaration(provider),
       findProvider,
       className: null,
       checker,
