@@ -113,18 +113,11 @@ export class ContainerContext implements Container {
             continue
           }
 
-          if (isFactoryProvider(provider)) {
-            try {
-              await provider.preDestroy?.(singleton)
-            } catch (_e) {
-              // noop
-            }
-
-            continue
+          try {
+            await provider.preDestroy?.(singleton)
+          } catch (_e) {
+            // noop
           }
-
-          const _: never = provider
-          throw new Error('Unexpected provider.')
         }
       }
 
