@@ -95,19 +95,13 @@ export class ContainerContext implements Container {
             )
           }
 
-          if (isClassProvider(provider)) {
-            if (isPreDestroyable(singleton)) {
-              try {
-                await singleton[preDestroy]()
-              } catch (_e) {
-                // noop
-              }
+          if (isClassProvider(provider) && isPreDestroyable(singleton)) {
+            try {
+              await singleton[preDestroy]()
+            } catch (_e) {
+              // noop
             }
-
-            continue
-          }
-
-          if (isFactoryProvider(provider)) {
+          } else if (isFactoryProvider(provider)) {
             try {
               await provider.preDestroy?.(singleton)
             } catch (_e) {
