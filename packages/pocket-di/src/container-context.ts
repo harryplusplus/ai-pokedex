@@ -242,16 +242,11 @@ export class ContainerContext implements Container {
       return provider.useValue
     }
 
-    if (isClassProvider(provider) || isFactoryProvider(provider)) {
-      return this.resolveDependentProvider({
-        token,
-        provider,
-        sync,
-      })
-    }
-
-    const _: never = provider
-    throw new Error('Unexpected provider.')
+    return this.resolveDependentProvider({
+      token,
+      provider,
+      sync,
+    })
   }
 
   resolveDependentProvider(input: {
@@ -276,17 +271,12 @@ export class ContainerContext implements Container {
       })
     }
 
-    if (isRecordInjectDeclaration(declaration)) {
-      return this.resolveRecordDeclaration({
-        token,
-        declaration,
-        provider,
-        sync,
-      })
-    }
-
-    const _: never = declaration
-    throw new Error('Unexpected declaration.')
+    return this.resolveRecordDeclaration({
+      token,
+      declaration,
+      provider,
+      sync,
+    })
   }
 
   resolveTupleDeclaration(input: {
@@ -529,21 +519,16 @@ export class ContainerContext implements Container {
       return instance
     }
 
-    if (isFactoryProvider(provider)) {
-      const { useFactory } = provider
-      const instance = useFactory(dependencies)
+    const { useFactory } = provider
+    const instance = useFactory(dependencies)
 
-      if (instance instanceof Promise && sync) {
-        throw new Error(
-          `Cannot resolve "${tokenToString(token)}" synchronously: useFactory returns Promise.`,
-        )
-      }
-
-      return instance
+    if (instance instanceof Promise && sync) {
+      throw new Error(
+        `Cannot resolve "${tokenToString(token)}" synchronously: useFactory returns Promise.`,
+      )
     }
 
-    const _: never = provider
-    throw new Error('Unexpected provider.')
+    return instance
   }
 
   resolveSingleton(input: {
